@@ -1,24 +1,44 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import {defineConfig, loadEnv} from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
-export default defineConfig(({mode}) => {
-  const env = loadEnv(mode, '.', '');
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => {
+  // טעינת משתני סביבה לפי המצב (development/production)
+  const env = loadEnv(mode, process.cwd(), '');
+
   return {
-    plugins: [react(), tailwindcss()],
+    // הגדרה קריטית לפריסה ב-GitHub Pages
+    // מחליף את '/' בנתיב של המאגר שלך
+    base: '/moshe1ch-kidi/',
+
+    plugins: [
+      react(),
+      tailwindcss(),
+    ],
+
     define: {
+      // חשיפת המפתח לאפליקציה בזמן ה-Build
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
+
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, '.'),
+        // הגדרת קיצור דרך לתיקיית השורש/src
+        '@': path.resolve(__dirname, './src'),
       },
     },
+
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modifyâfile watching is disabled to prevent flickering during agent edits.
+      // הגדרות עבור סביבות פיתוח מבוססות ענן/AI
       hmr: process.env.DISABLE_HMR !== 'true',
+      host: true,
+    },
+
+    build: {
+      // תיקיית הפלט הסטנדרטית עבור GitHub Actions
+      outDir: 'dist',
     },
   };
 });
