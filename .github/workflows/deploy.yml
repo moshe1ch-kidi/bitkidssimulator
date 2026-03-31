@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+ name: Deploy to GitHub Pages
 
 on:
   push:
@@ -23,7 +23,8 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        # הוספת הדגל פותרת את התנגשות הגרסאות בין React 19 ל-react-blockly
+        run: npm install --legacy-peer-deps
 
       - name: Build
         run: npm run build
