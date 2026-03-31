@@ -23,13 +23,14 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        # פתרון להתנגשות בין React 19 ל-react-blockly
+        # פותר את בעיית התאימות בין React 19 ל-react-blockly
         run: npm install --legacy-peer-deps
 
       - name: Build
-        # כאן אנחנו מחברים את המפתח שהגדרת ב-GitHub Secrets לתוך ה-Build של Vite
+        # הזרקת המפתח הסודי שהגדרת ב-GitHub Secrets לתוך תהליך הבנייה
         run: npm run build
         env:
+          VITE_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Upload Artifacts
