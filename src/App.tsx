@@ -1,4 +1,4 @@
- import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
@@ -693,19 +693,16 @@ export default function App() {
       {showMobileWarning && (
         <div className="fixed inset-0 z-[9999] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-6 text-center">
           <div className="bg-white rounded-3xl p-8 max-w-md shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-300">
-            <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Monitor size={48} />
-            </div>
-            <h2 className="text-2xl font-black text-slate-900 mb-4 tracking-tight">BITKIDI מיועד למחשב</h2>
+            <h2 className="text-2xl font-black text-slate-900 mb-4 tracking-tight">Desktop Only Experience</h2>
             <p className="text-slate-600 mb-8 leading-relaxed">
-              הסימולטור והתכנות בבלוקים דורשים מסך גדול ועכבר לחוויית עבודה מיטבית. 
-              מומלץ לעבור למחשב שולחני או ללפטופ.
+              This application is designed for desktop computers. 
+              Please switch to a larger screen for the best experience.
             </p>
             <button 
               onClick={() => setShowMobileWarning(false)}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95"
             >
-              הבנתי, המשך בכל זאת
+              Continue Anyway
             </button>
           </div>
         </div>
