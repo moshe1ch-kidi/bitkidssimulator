@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+/* Hide Blockly scrollbars */
+.blocklyScrollbarVertical, 
+.blocklyScrollbarHorizontal,
+.blocklyScrollbarBackground,
+.blocklyScrollbarHandle {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Hide toolbox scrollbar */
+.blocklyToolboxDiv {
+  scrollbar-width: none !important;
+}
+.blocklyToolboxDiv::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Generic no-scrollbar class */
+.no-scrollbar {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+
+/* Custom Blockly Toolbox Styling */
+.blocklyToolboxDiv {
+  background-color: #f0f0f0 !important;
+  width: 72px !important;
+  border-right: 1px solid #ddd !important;
+}
+
+.blocklyTreeRowCustom {
+  height: 72px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.blocklyTreeRowCustom .blocklyTreeLabel {
+  display: none !important; /* Hide labels to match the icon-only look in the image */
+}
+
+.blocklyTreeRowCustom .blocklyTreeIcon {
+  display: none !important; /* Hide default icons */
+}
+
+/* Category Square and Icon */
+.blocklyTreeRowCustom::before {
+  content: '';
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: block;
+  position: relative;
+  z-index: 1;
+  transition: all 0.2s;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 32px;
+}
+
+.blocklyTreeRowCustom:hover::before {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+}
+
+.blocklyTreeSelected::before {
+  transform: scale(1.05);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.1) !important;
+  translate: 0 2px;
+}
+
+/* Specific Category Colors and Icons (using simple white SVGs) */
+.events-category { background-color: #FFF9E6 !important; }
+.events-category::before { 
+  background-color: #FFBF00; 
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h14v18H5zM5 3a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2H5V3z"/></svg>');
+}
+
+.microbit-category { background-color: #E6F0FF !important; }
+.microbit-category::before { 
+  background-color: #4C97FF; 
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>');
+}
+
+.sensors-category { background-color: #F2E6FF !important; }
+.sensors-category::before { 
+  background-color: #9966FF; 
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/></svg>');
+}
+
+.sound-category { background-color: #E6FFF2 !important; }
+.sound-category::before { 
+  background-color: #0FBD8C; 
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07"/></svg>');
+}
+
+.control-category { background-color: #FFF2E6 !important; }
+.control-category::before { 
+  background-color: #FFAB19; 
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>');
+}
+
+.operators-category { background-color: #FFE6E6 !important; }
+.operators-category::before { 
+  background-color: #FF6666; 
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M2 12h20"/></svg>');
+}

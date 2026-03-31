@@ -1,0 +1,214 @@
+import * as Blockly from 'blockly';
+import { javascriptGenerator, Order } from 'blockly/javascript';
+
+console.log('generators.ts loaded');
+
+// Register blocks on the imported instance
+const register = (gen: any) => {
+  console.log('Registering blocks on generator:', gen);
+  
+  const target = gen.forBlock || gen;
+
+  target['microbit_show_icon'] = function(block: any) {
+    const icon = block.getFieldValue('ICON');
+    return `boardRef.current.showIcon('${icon}');\n`;
+  };
+
+  target['microbit_show_text'] = function(block: any) {
+    const text = block.getFieldValue('TEXT');
+    return `boardRef.current.showText('${text}');\n`;
+  };
+
+  target['microbit_set_led_color'] = function(block: any) {
+    const color = block.getFieldValue('COLOR');
+    return `boardRef.current.setLedColor('${color}');\n`;
+  };
+
+  target['microbit_button_pressed'] = function(block: any) {
+    return ''; // Handled by scrub_
+  };
+
+  target['microbit_set_pin'] = function(block: any) {
+    const pin = block.getFieldValue('PIN');
+    const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
+    return `boardRef.current.setPin('${pin}', ${value});\n`;
+  };
+
+  target['microbit_set_motor'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    const direction = block.getFieldValue('DIRECTION');
+    const speed = block.getFieldValue('SPEED');
+    return `boardRef.current.setMotor('${port}', '${direction}', ${speed});\n`;
+  };
+
+  target['microbit_set_servo'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    const angle = block.getFieldValue('ANGLE');
+    return `boardRef.current.setServo('${port}', ${angle});\n`;
+  };
+
+  target['microbit_ultrasonic_distance'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return [`await boardRef.current.getUltrasonicDistance('${port}')`, Order.AWAIT];
+  };
+
+  target['microbit_color_sensor'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return [`await boardRef.current.getColor('${port}')`, Order.AWAIT];
+  };
+
+  target['microbit_light_sensor'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return [`await boardRef.current.getLightLevel('${port}')`, Order.AWAIT];
+  };
+
+  target['microbit_led_toggle'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    const state = block.getFieldValue('STATE');
+    const value = state === 'ON' ? 1 : 0;
+    return `boardRef.current.setPin('${port}', ${value});\n`;
+  };
+
+  target['microbit_play_tone'] = function(block: any) {
+    const tone = javascriptGenerator.valueToCode(block, 'TONE', Order.ATOMIC) || '440';
+    return `boardRef.current.playTone(${tone});\n`;
+  };
+
+  target['event_when_green_flag_clicked'] = function(block: any) {
+    return ''; // Handled by scrub_
+  };
+
+  target['control_repeat'] = function(block: any) {
+    const times = block.getFieldValue('TIMES');
+    const branch = javascriptGenerator.statementToCode(block, 'DO');
+    const loopVar = 'i_' + Math.random().toString(36).substr(2, 5);
+    return `for (let ${loopVar} = 0; ${loopVar} < ${times}; ${loopVar}++) {\n  checkStop();\n${branch}  await new Promise(resolve => setTimeout(resolve, 20));\n}\n`;
+  };
+
+  target['control_forever'] = function(block: any) {
+    const branch = javascriptGenerator.statementToCode(block, 'DO');
+    return `while (true) {\n  checkStop();\n${branch}  await new Promise(resolve => setTimeout(resolve, 20));\n}\n`;
+  };
+
+  target['control_wait_until'] = function(block: any) {
+    const condition = javascriptGenerator.valueToCode(block, 'CONDITION', Order.NONE) || 'false';
+    return `while (!(${condition})) {\n  checkStop();\n  await new Promise(resolve => setTimeout(resolve, 20));\n}\n`;
+  };
+
+  target['control_wait'] = function(block: any) {
+    const duration = block.getFieldValue('DURATION');
+    return `checkStop();\nawait new Promise(resolve => setTimeout(resolve, ${duration} * 1000));\ncheckStop();\n`;
+  };
+
+  target['control_if'] = function(block: any) {
+    const condition = javascriptGenerator.valueToCode(block, 'IF0', Order.NONE) || 'false';
+    const branch = javascriptGenerator.statementToCode(block, 'DO0');
+    return `if (${condition}) {\n${branch}}\n`;
+  };
+
+  target['control_if_else'] = function(block: any) {
+    const condition = javascriptGenerator.valueToCode(block, 'IF0', Order.NONE) || 'false';
+    const branch0 = javascriptGenerator.statementToCode(block, 'DO0');
+    const branch1 = javascriptGenerator.statementToCode(block, 'ELSE');
+    return `if (${condition}) {\n${branch0}} else {\n${branch1}}\n`;
+  };
+
+  target['operator_add'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'NUM1', Order.ADDITION) || '0';
+    const val2 = javascriptGenerator.valueToCode(block, 'NUM2', Order.ADDITION) || '0';
+    return [`${val1} + ${val2}`, Order.ADDITION];
+  };
+
+  target['operator_subtract'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'NUM1', Order.SUBTRACTION) || '0';
+    const val2 = javascriptGenerator.valueToCode(block, 'NUM2', Order.SUBTRACTION) || '0';
+    return [`${val1} - ${val2}`, Order.SUBTRACTION];
+  };
+
+  target['operator_multiply'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'NUM1', Order.MULTIPLICATION) || '0';
+    const val2 = javascriptGenerator.valueToCode(block, 'NUM2', Order.MULTIPLICATION) || '0';
+    return [`${val1} * ${val2}`, Order.MULTIPLICATION];
+  };
+
+  target['operator_divide'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'NUM1', Order.DIVISION) || '0';
+    const val2 = javascriptGenerator.valueToCode(block, 'NUM2', Order.DIVISION) || '0';
+    return [`${val1} / ${val2}`, Order.DIVISION];
+  };
+
+  target['operator_random'] = function(block: any) {
+    const from = javascriptGenerator.valueToCode(block, 'FROM', Order.NONE) || '1';
+    const to = javascriptGenerator.valueToCode(block, 'TO', Order.NONE) || '10';
+    return [`Math.floor(Math.random() * (${to} - ${from} + 1)) + ${from}`, Order.FUNCTION_CALL];
+  };
+
+  target['operator_lt'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'OP1', Order.RELATIONAL) || '0';
+    const val2 = javascriptGenerator.valueToCode(block, 'OP2', Order.RELATIONAL) || '0';
+    return [`${val1} < ${val2}`, Order.RELATIONAL];
+  };
+
+  target['operator_equals'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'OP1', Order.EQUALITY) || '0';
+    const val2 = javascriptGenerator.valueToCode(block, 'OP2', Order.EQUALITY) || '0';
+    return [`${val1} === ${val2}`, Order.EQUALITY];
+  };
+
+  target['operator_gt'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'OP1', Order.RELATIONAL) || '0';
+    const val2 = javascriptGenerator.valueToCode(block, 'OP2', Order.RELATIONAL) || '0';
+    return [`${val1} > ${val2}`, Order.RELATIONAL];
+  };
+
+  target['operator_and'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'BOOL1', Order.LOGICAL_AND) || 'false';
+    const val2 = javascriptGenerator.valueToCode(block, 'BOOL2', Order.LOGICAL_AND) || 'false';
+    return [`${val1} && ${val2}`, Order.LOGICAL_AND];
+  };
+
+  target['operator_or'] = function(block: any) {
+    const val1 = javascriptGenerator.valueToCode(block, 'BOOL1', Order.LOGICAL_OR) || 'false';
+    const val2 = javascriptGenerator.valueToCode(block, 'BOOL2', Order.LOGICAL_OR) || 'false';
+    return [`${val1} || ${val2}`, Order.LOGICAL_OR];
+  };
+
+  target['operator_not'] = function(block: any) {
+    const val = javascriptGenerator.valueToCode(block, 'BOOL', Order.LOGICAL_NOT) || 'false';
+    return [`!${val}`, Order.LOGICAL_NOT];
+  };
+};
+
+register(javascriptGenerator);
+
+// Override scrub_ to handle hat blocks
+const originalScrub = javascriptGenerator.scrub_;
+javascriptGenerator.scrub_ = function(block: any, code: string, opt_thisOnly?: boolean) {
+  let nextCode = '';
+  if (!opt_thisOnly && block.nextConnection && block.nextConnection.targetBlock()) {
+    nextCode = javascriptGenerator.blockToCode(block.nextConnection.targetBlock()) as string;
+  }
+
+  // Inject checkStop() before every statement block (except hat blocks which define the function)
+  const isHatBlock = block.type === 'microbit_button_pressed' || block.type === 'event_when_green_flag_clicked';
+  const isStatementBlock = !block.outputConnection;
+  const checkStopCode = (!isHatBlock && isStatementBlock) ? 'checkStop();\n' : '';
+
+  if (block.type === 'microbit_button_pressed') {
+    const button = block.getFieldValue('BUTTON');
+    const methodName = button === 'A+B' ? 'onButtonAB' : `onButton${button}`;
+    return `boardRef.current.${methodName}(async () => {\ntry {\n${checkStopCode}${code}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
+  }
+  if (block.type === 'event_when_green_flag_clicked') {
+    return `boardRef.current.onGreenFlag(async () => {\ntry {\n${checkStopCode}${code}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
+  }
+
+  return checkStopCode + code + nextCode;
+};
+
+// Ensure Blockly.JavaScript is also registered if it's a different instance
+if ((Blockly as any).JavaScript && (Blockly as any).JavaScript !== javascriptGenerator) {
+    register((Blockly as any).JavaScript);
+}
+
+export { javascriptGenerator };
