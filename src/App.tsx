@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+ import React, { useState, useRef, useEffect } from 'react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
-import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen } from 'lucide-react';
+import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor } from 'lucide-react';
 import { MicrobitBoard } from './components/MicrobitBoard';
 import { ElectronicComponents, DraggableComponent } from './components/ElectronicComponents';
 
@@ -205,6 +205,17 @@ export default function App() {
   const blocklyDiv = useRef<HTMLDivElement>(null);
   const workspace = useRef<Blockly.WorkspaceSvg | null>(null);
   const boardRef = useRef<any>(null);
+
+  const [showMobileWarning, setShowMobileWarning] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      if (window.innerWidth < 1024) {
+        setShowMobileWarning(true);
+      }
+    };
+    checkMobile();
+  }, []);
 
   // Wire drawing state
   const [wires, setWires] = useState<{ from: string; to: string }[]>([]);
@@ -679,28 +690,48 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen bg-slate-50 font-sans overflow-hidden">
-      <header className="bg-[#5188c1] p-4 flex items-center gap-4 border-b border-blue-400 z-50 relative shadow-md">
-        <div className="flex items-center gap-4 mr-4">
-          <img src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/logo/bitkidi.png" alt="BITKIDI" className="h-20" referrerPolicy="no-referrer" />
-          <h1 className="text-4xl font-black text-white tracking-tighter hidden sm:block">BITKIDI</h1>
+      {showMobileWarning && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-6 text-center">
+          <div className="bg-white rounded-3xl p-8 max-w-md shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-300">
+            <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Monitor size={48} />
+            </div>
+            <h2 className="text-2xl font-black text-slate-900 mb-4 tracking-tight">BITKIDI מיועד למחשב</h2>
+            <p className="text-slate-600 mb-8 leading-relaxed">
+              הסימולטור והתכנות בבלוקים דורשים מסך גדול ועכבר לחוויית עבודה מיטבית. 
+              מומלץ לעבור למחשב שולחני או ללפטופ.
+            </p>
+            <button 
+              onClick={() => setShowMobileWarning(false)}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-blue-200 transition-all active:scale-95"
+            >
+              הבנתי, המשך בכל זאת
+            </button>
+          </div>
+        </div>
+      )}
+      <header className="bg-[#5188c1] p-2 flex items-center gap-4 border-b border-blue-400 z-50 relative shadow-md">
+        <div className="flex items-center gap-2 mr-4">
+          <img src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/logo/bitkidi.png" alt="BITKIDI" className="h-10 w-auto object-contain" referrerPolicy="no-referrer" />
+          <h1 className="text-xl font-black text-white tracking-tighter hidden sm:block">BITKIDI</h1>
         </div>
         
         <div className="flex items-center gap-2">
-          <button onClick={runCode} className="bg-green-500 hover:bg-green-600 text-white p-2.5 rounded-xl shadow-lg border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all" title="Run Code">
+          <button onClick={runCode} className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-xl shadow-lg border-b-4 border-green-700 active:border-b-0 active:translate-y-1 transition-all" title="Run Code">
             <Play size={24} fill="currentColor" />
           </button>
-          <button onClick={stopCode} className="bg-red-500 hover:bg-red-600 text-white p-2.5 rounded-xl shadow-lg border-b-4 border-red-700 active:border-b-0 active:translate-y-1 transition-all" title="Stop Code">
+          <button onClick={stopCode} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-xl shadow-lg border-b-4 border-red-700 active:border-b-0 active:translate-y-1 transition-all" title="Stop Code">
             <Square size={24} fill="currentColor" />
           </button>
         </div>
 
-        <div className="w-px h-10 bg-blue-400/50 mx-2"></div>
+        <div className="w-px h-8 bg-blue-400/50 mx-2"></div>
 
         <div className="flex items-center gap-2">
-          <button onClick={saveProject} className="bg-white/20 hover:bg-white/30 text-white p-2.5 rounded-xl transition-all" title="Save Project">
+          <button onClick={saveProject} className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-xl transition-all" title="Save Project">
             <Save size={24} />
           </button>
-          <button onClick={loadProject} className="bg-white/20 hover:bg-white/30 text-white p-2.5 rounded-xl transition-all" title="Load Project">
+          <button onClick={loadProject} className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-xl transition-all" title="Load Project">
             <FolderOpen size={24} />
           </button>
           <button 
@@ -711,7 +742,7 @@ export default function App() {
                 boardRef.current?.clear();
               }
             }} 
-            className="bg-white/20 hover:bg-white/30 text-white p-2.5 rounded-xl transition-all"
+            className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-xl transition-all"
             title="Clear Simulation"
           >
             <Trash2 size={24} />
