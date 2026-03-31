@@ -343,6 +343,7 @@ export default function App() {
                 { kind: 'block', type: 'microbit_set_pin' },
                 { kind: 'block', type: 'microbit_set_motor' },
                 { kind: 'block', type: 'microbit_set_servo' },
+                { kind: 'block', type: 'microbit_play_tone' },
               ],
             },
             {
@@ -388,11 +389,13 @@ export default function App() {
             {
               kind: 'category',
               name: 'Operators',
-              colour: '#FF6666',
+              colour: '#59C059',
               cssConfig: {
                 row: 'blocklyTreeRowCustom operators-category'
               },
               contents: [
+                { kind: 'block', type: 'math_number' },
+                { kind: 'block', type: 'logic_boolean' },
                 {
                   kind: 'block',
                   type: 'operator_add',
@@ -461,6 +464,15 @@ export default function App() {
                 { kind: 'block', type: 'operator_or' },
                 { kind: 'block', type: 'operator_not' },
               ],
+            },
+            {
+              kind: 'category',
+              name: 'Variables',
+              colour: '#FF8C1A',
+              custom: 'VARIABLE',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom variables-category'
+              },
             },
           ],
         } as any,
@@ -724,7 +736,7 @@ export default function App() {
       </header>
       
       <main className={`flex-1 grid gap-4 p-4 relative h-full ${isSimulationExpanded ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}>
-        <div className={`bg-white rounded-lg shadow-md overflow-hidden h-full w-full z-10 relative no-scrollbar ${isSimulationExpanded ? 'hidden' : 'block'}`}>
+        <div className={`bg-white rounded-lg shadow-md h-full w-full z-10 relative no-scrollbar ${isSimulationExpanded ? 'hidden' : 'block'}`}>
           <div className="bg-[#f0f0f0] border-b border-gray-200 p-2 flex items-center gap-2">
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden">
                <img src="https://img.icons8.com/color/48/000000/panda.png" alt="Panda" className="w-6 h-6" referrerPolicy="no-referrer" />
