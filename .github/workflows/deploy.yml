@@ -1,4 +1,4 @@
- name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -23,6 +23,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
+        # שימוש ב-legacy-peer-deps פותר את בעיית ה-react-blockly
         run: npm install --legacy-peer-deps
 
       - name: Build
@@ -38,8 +39,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-    outputs:
-      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
