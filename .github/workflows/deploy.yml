@@ -2,7 +2,7 @@
 
 on:
   push:
-    branches: ["main"] # וודא שזה שם הענף הראשי שלך
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -23,7 +23,6 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        # הוספת הדגל פותרת את התנגשות הגרסאות בין React 19 ל-react-blockly
         run: npm install --legacy-peer-deps
 
       - name: Build
@@ -32,15 +31,16 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./dist" # התיקייה ש-Vite מייצר
+          path: "./dist"
 
   deploy:
     needs: build_site
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
