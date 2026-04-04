@@ -62,6 +62,23 @@ const register = (gen: any) => {
     return [`await boardRef.current.getLightLevel('${port}')`, Order.AWAIT];
   };
 
+  target['microbit_temperature_sensor'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return [`await boardRef.current.getTemperature('${port}')`, Order.AWAIT];
+  };
+
+  target['microbit_humidity_sensor'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return [`await boardRef.current.getHumidity('${port}')`, Order.AWAIT];
+  };
+
+  target['microbit_dht11'] = function(block: any) {
+    const mode = block.getFieldValue('MODE');
+    const port = block.getFieldValue('PORT');
+    const method = mode === 'TEMP' ? 'getTemperature' : 'getHumidity';
+    return [`await boardRef.current.${method}('${port}')`, Order.AWAIT];
+  };
+
   target['microbit_led_toggle'] = function(block: any) {
     const port = block.getFieldValue('PORT');
     const state = block.getFieldValue('STATE');

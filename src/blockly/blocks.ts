@@ -55,7 +55,7 @@ export const microbitBlocks = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#0FBD8C',
+    colour: '#4C97FF',
   },
   {
     type: 'microbit_show_text',
@@ -69,7 +69,7 @@ export const microbitBlocks = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#0FBD8C',
+    colour: '#4C97FF',
   },
   {
     type: 'microbit_set_led_color',
@@ -83,7 +83,7 @@ export const microbitBlocks = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#0FBD8C',
+    colour: '#4C97FF',
   },
   {
     type: 'microbit_button_pressed',
@@ -119,7 +119,7 @@ export const microbitBlocks = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#0FBD8C',
+    colour: '#4C97FF',
   },
   {
     type: 'microbit_set_motor',
@@ -131,7 +131,7 @@ export const microbitBlocks = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#0FBD8C',
+    colour: '#4C97FF',
   },
   {
     type: 'microbit_set_servo',
@@ -142,7 +142,7 @@ export const microbitBlocks = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#0FBD8C',
+    colour: '#4C97FF',
   },
   {
     type: 'microbit_ultrasonic_distance',
@@ -151,7 +151,7 @@ export const microbitBlocks = [
       { type: 'field_dropdown', name: 'PORT', options: [['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4']] },
     ],
     output: 'Number',
-    colour: '#0FBD8C',
+    colour: '#9966FF',
   },
   {
     type: 'microbit_color_sensor',
@@ -160,7 +160,7 @@ export const microbitBlocks = [
       { type: 'field_dropdown', name: 'PORT', options: [['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4']] },
     ],
     output: 'String',
-    colour: '#0FBD8C',
+    colour: '#9966FF',
   },
   {
     type: 'microbit_light_sensor',
@@ -169,7 +169,46 @@ export const microbitBlocks = [
       { type: 'field_dropdown', name: 'PORT', options: [['J1', 'J1'], ['J2', 'J2']] },
     ],
     output: 'Number',
-    colour: '#0FBD8C',
+    colour: '#9966FF',
+  },
+  {
+    type: 'microbit_temperature_sensor',
+    message0: 'Temperature sensor %1 value',
+    args0: [
+      { type: 'field_dropdown', name: 'PORT', options: [['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4'], ['I1', 'I1'], ['I2', 'I2'], ['I3', 'I3'], ['I4', 'I4']] },
+    ],
+    output: 'Number',
+    colour: '#9966FF',
+  },
+  {
+    type: 'microbit_humidity_sensor',
+    message0: 'Humidity sensor %1 value',
+    args0: [
+      { type: 'field_dropdown', name: 'PORT', options: [['I1', 'I1'], ['I2', 'I2'], ['I3', 'I3'], ['I4', 'I4']] },
+    ],
+    output: 'Number',
+    colour: '#9966FF',
+  },
+  {
+    type: 'microbit_dht11',
+    message0: 'DHT11 %1 %2 value',
+    args0: [
+      { 
+        type: 'field_dropdown', 
+        name: 'MODE', 
+        options: [
+          ['Temperature', 'TEMP'],
+          ['Humidity', 'HUM']
+        ] 
+      },
+      { 
+        type: 'field_dropdown', 
+        name: 'PORT', 
+        options: [['J1', 'J1'], ['J2', 'J2']] 
+      },
+    ],
+    output: 'Number',
+    colour: '#9966FF',
   },
   {
     type: 'microbit_led_toggle',
@@ -191,7 +230,7 @@ export const microbitBlocks = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#FF661A',
+    colour: '#4C97FF',
   },
   {
     type: 'microbit_play_tone',
@@ -201,7 +240,7 @@ export const microbitBlocks = [
     ],
     previousStatement: null,
     nextStatement: null,
-    colour: '#0FBD8C',
+    colour: '#4C97FF',
   },
   {
     type: 'event_when_green_flag_clicked',
@@ -209,9 +248,9 @@ export const microbitBlocks = [
     args0: [
       {
         type: 'field_image',
-        src: 'https://scratch.mit.edu/static/assets/e5e29955896a3a1a361304523789090b.svg',
-        width: 24,
-        height: 24,
+        src: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iNDBweCIgdmlld0JveD0iMCAtOTYwIDk2MCA5NjAiIHdpZHRoPSI0MHB4IiBmaWxsPSIjMkU3RDMyIj48cGF0aCBkPSJNMjAwLTEyMHYtNjgwaDM2MGwxNiA4MGgyMjR2NDAwSDUyMGwtMTYtODBIMjgwdjI4MGgtODBaIi8+PC9zdmc+',
+        width: 29,
+        height: 29,
         alt: 'Green Flag'
       }
     ],
