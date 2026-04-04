@@ -3,7 +3,7 @@ import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
-import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor } from 'lucide-react';
+import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap } from 'lucide-react';
 import { MicrobitBoard } from './components/MicrobitBoard';
 import { ElectronicComponents, DraggableComponent } from './components/ElectronicComponents';
 
@@ -207,6 +207,9 @@ export default function App() {
   const boardRef = useRef<any>(null);
 
   const [showMobileWarning, setShowMobileWarning] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showMissionsModal, setShowMissionsModal] = useState(false);
+  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat'>('components');
 
   useEffect(() => {
     const checkMobile = () => {
@@ -216,6 +219,85 @@ export default function App() {
     };
     checkMobile();
   }, []);
+
+  const componentData = [
+    { category: "Input", name: "Ultrasonic Sensor", role: "Measures distance (cm)", port: "J1 / J2 / J3 / J4", notes: "Range: 2cm–400cm. Uses sound waves." },
+    { category: "Input", name: "Line Tracking Sensor", role: "Detects lines for navigation", port: "J1 / J2 / J3 / J4", notes: "Detects IR reflection (Black/White)." },
+    { category: "Input", name: "Light Sensor", role: "Measures ambient light", port: "J1 / J2 / J3 / J4", notes: "Analog input (0–1023 range)." },
+    { category: "Input", name: "Temperature Sensor", role: "Measures ambient temperature", port: "J1 / J2 / J3 / J4", notes: "Range: -10°C to 60°C." },
+    { category: "Input", name: "Sound Sensor", role: "Detects noise/claps", port: "J1 / J2 / J3 / J4", notes: "Sensitivity can be adjusted via onboard screw." },
+    { category: "Input", name: "Soil Moisture Sensor", role: "Checks soil wetness", port: "J1 / J2 / J3 / J4", notes: "Clean the probes after use to prevent rust." },
+    { category: "Input", name: "Crash Sensor", role: "Detects physical touch", port: "J1 / J2 / J3 / J4", notes: "A mechanical switch (Returns 0 or 1)." },
+    { category: "Input", name: "Color Sensor", role: "Detects RGB colors", port: "I1 / I2 / I3 / I4", notes: "Requires I2C protocol. Calibrate for best results." },
+    { category: "Input", name: "Gesture Sensor", role: "Detects hand movements", port: "I1 / I2 / I3 / I4", notes: "Senses Up, Down, Left, Right, Near, Far." },
+    { category: "Input", name: "DHT11 Sensor", role: "Measures Temp & Humidity", port: "J1 / J2 / I1 / I2 / I3 / I4", notes: "The DHT11 is a low-cost, digital temperature and humidity sensor." },
+    { category: "Input", name: "Smart AI Cam", role: "Recognizes faces/objects", port: "I1 / I2 / I3 / I4", notes: "Advanced AI processing. High power draw." },
+    { category: "Output", name: "LED (Red/Yellow/Green)", role: "Simple light output", port: "J1 / J2 / J3 / J4", notes: "Digital or PWM control (brightness)." },
+    { category: "Output", name: "Rainbow LED", role: "Full RGB color light", port: "J1 / J2 / J3 / J4", notes: "Can display any color in the spectrum." },
+    { category: "Output", name: "Buzzer", role: "Plays tones/melodies", port: "J1 / J2 / J3 / J4", notes: "Used for alarms or simple music." },
+    { category: "Output", name: "OLED Display", role: "Displays text/graphics", port: "I1 / I2 / I3 / I4", notes: "128x64 pixels. Clear screen before updates." },
+    { category: "Output", name: "DC Motor", role: "Continuous rotation", port: "M1 / M2 / M3 / M4", notes: "For wheels/fans. Speed control (0-100)." },
+    { category: "Output", name: "Servo Motor", role: "Precise angle rotation", port: "S1 / S2 / S3 / S4", notes: "Rotates 0–180°. For arms or gates." }
+  ];
+
+  const missions = [
+    {
+      id: 'lamp',
+      title: 'Table Lamp',
+      description: 'Create a smart table lamp. When the external button (Crash Sensor) is pressed, the LED should turn on. When released, it should turn off.',
+      icon: <Lightbulb className="text-yellow-500" />,
+      difficulty: 'Easy',
+      components: ['Micro:bit', 'Crash Sensor', 'LED']
+    },
+    {
+      id: 'alarm',
+      title: 'Distance Alarm',
+      description: 'Build a security system. If the Ultrasonic Sensor detects an object closer than 20cm, play a warning tone on the Buzzer.',
+      icon: <ShieldAlert className="text-red-500" />,
+      difficulty: 'Medium',
+      components: ['Micro:bit', 'Ultrasonic Sensor', 'Buzzer']
+    },
+    {
+      id: 'nightlight',
+      title: 'Automatic Night Light',
+      description: 'Program the Micro:bit to be a night light. If the Light Sensor value drops below 300, turn on the Rainbow LED with a soft white color.',
+      icon: <Zap className="text-blue-500" />,
+      difficulty: 'Medium',
+      components: ['Micro:bit', 'Light Sensor', 'Rainbow LED']
+    },
+    {
+      id: 'plant',
+      title: 'Plant Monitor',
+      description: 'Help your plants stay hydrated! If the Soil Moisture Sensor detects dry soil (value < 400), show a "Sad Face" icon on the Micro:bit screen.',
+      icon: <Droplets className="text-cyan-500" />,
+      difficulty: 'Easy',
+      components: ['Micro:bit', 'Soil Moisture Sensor']
+    },
+    {
+      id: 'thermostat',
+      title: 'Smart Fan',
+      description: 'Maintain a stable temperature of 30°C. If the temperature is below 30°C, turn on the LED to heat. If it reaches 30°C, turn off the LED and start the Fan Motor.',
+      icon: <Thermometer className="text-orange-500" />,
+      difficulty: 'Hard',
+      components: ['Micro:bit', 'Temperature Sensor', 'LED', 'Fan Motor']
+    },
+    {
+      id: 'sorter',
+      title: 'Color Sorter',
+      description: 'Sort objects by color. Move the Servo Motor to 0° if Red is detected, 90° if Green is detected, and 180° if Blue is detected.',
+      icon: <Palette className="text-purple-500" />,
+      difficulty: 'Hard',
+      components: ['Micro:bit', 'Color Sensor', 'Servo Motor']
+    },
+    {
+      id: 'gate',
+      title: 'Security Gate',
+      description: 'Use the Gesture Sensor to control a gate. Swipe "Up" to open the Servo (180°) and swipe "Down" to close it (0°).',
+      icon: <Move className="text-green-500" />,
+      difficulty: 'Medium',
+      components: ['Micro:bit', 'Gesture Sensor', 'Servo Motor']
+    }
+  ];
 
   // Wire drawing state
   const [wires, setWires] = useState<{ from: string; to: string }[]>([]);
@@ -235,6 +317,8 @@ export default function App() {
   const [pinStates, setPinStates] = useState<{ [key: string]: number }>({});
   const [colorSensorValues, setColorSensorValues] = useState<{ [compId: string]: string }>({});
   const [lightLevels, setLightLevels] = useState<{ [compId: string]: number }>({});
+  const [temperatures, setTemperatures] = useState<{ [compId: string]: number }>({});
+  const [dht11Data, setDht11Data] = useState<{ [compId: string]: { mode: 'temp' | 'hum', value: number } }>({});
 
   const getMotorStateForComponent = (compId: string) => {
     const wire = wires.find(w => 
@@ -305,6 +389,29 @@ export default function App() {
     return 0;
   };
 
+  const getTemperatureForPort = async (port: string) => {
+    const portId = `port-${port}`;
+    const wire = wires.find(w => w.from === portId || w.to === portId);
+    if (wire) {
+      const compId = wire.from === portId ? wire.to : wire.from;
+      if (temperatures[compId] !== undefined) return temperatures[compId];
+      const dhtData = dht11Data[compId];
+      if (dhtData && dhtData.mode === 'temp') return dhtData.value;
+    }
+    return 25;
+  };
+
+  const getHumidityForPort = async (port: string) => {
+    const portId = `port-${port}`;
+    const wire = wires.find(w => w.from === portId || w.to === portId);
+    if (wire) {
+      const compId = wire.from === portId ? wire.to : wire.from;
+      const dhtData = dht11Data[compId];
+      if (dhtData && dhtData.mode === 'hum') return dhtData.value;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     const handleResize = () => setResizeTrigger(prev => prev + 1);
     window.addEventListener('resize', handleResize);
@@ -368,6 +475,9 @@ export default function App() {
                 { kind: 'block', type: 'microbit_ultrasonic_distance' },
                 { kind: 'block', type: 'microbit_color_sensor' },
                 { kind: 'block', type: 'microbit_light_sensor' },
+                { kind: 'block', type: 'microbit_temperature_sensor' },
+                { kind: 'block', type: 'microbit_humidity_sensor' },
+                { kind: 'block', type: 'microbit_dht11' },
               ],
             },
             {
@@ -707,6 +817,350 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {showMissionsModal && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[85vh] overflow-hidden shadow-2xl flex flex-col">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-blue-50/50">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-600 text-white p-2 rounded-xl">
+                  <ClipboardList size={24} />
+                </div>
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">BITKIDI Missions</h2>
+              </div>
+              <button 
+                onClick={() => setShowMissionsModal(false)}
+                className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-400 hover:text-slate-600"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+              {missions.map((mission) => (
+                <div key={mission.id} className="border border-slate-100 rounded-2xl p-5 hover:border-blue-200 hover:bg-blue-50/30 transition-all group">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                      {mission.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="font-bold text-slate-900">{mission.title}</h3>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          mission.difficulty === 'Easy' ? 'bg-green-100 text-green-700' :
+                          mission.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-red-100 text-red-700'
+                        }`}>
+                          {mission.difficulty}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-600 mb-3 line-clamp-2">{mission.description}</p>
+                      <div className="flex flex-wrap gap-1 mb-3">
+                        {mission.components.map((comp, i) => (
+                          <span key={i} className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md">
+                            {comp}
+                          </span>
+                        ))}
+                      </div>
+                      {(mission.id === 'nightlight' || mission.id === 'thermostat') && (
+                        <button 
+                          onClick={() => {
+                            setHelpTab(mission.id === 'nightlight' ? 'nightlight' : 'thermostat');
+                            setShowHelpModal(true);
+                            setShowMissionsModal(false);
+                          }}
+                          className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
+                        >
+                          <HelpCircle size={14} />
+                          צפה במדריך המלא
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center">
+              <p className="text-xs text-slate-400 italic">Complete missions to master BITKIDI!</p>
+              <button 
+                onClick={() => setShowMissionsModal(false)}
+                className="bg-blue-600 text-white font-bold py-2 px-8 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showHelpModal && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-100 text-blue-600 p-2 rounded-xl">
+                  <HelpCircle size={24} />
+                </div>
+                <div className="flex flex-col">
+                  <h2 className="text-2xl font-black text-slate-900 tracking-tight">
+                    {helpTab === 'components' ? 'Component Guide & Connection Table' : 
+                     helpTab === 'nightlight' ? 'Automatic Night Light - מדריך משימה' : 
+                     'Smart Fan - מדריך משימה'}
+                  </h2>
+                  <div className="flex gap-4 mt-1">
+                    <button 
+                      onClick={() => setHelpTab('components')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'components' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Components
+                    </button>
+                    <button 
+                      onClick={() => setHelpTab('nightlight')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'nightlight' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Night Light Guide
+                    </button>
+                    <button 
+                      onClick={() => setHelpTab('thermostat')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'thermostat' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Smart Fan Guide
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowHelpModal(false)}
+                className="p-2 hover:bg-slate-200 rounded-full transition-colors text-slate-400 hover:text-slate-600"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto p-6">
+              {helpTab === 'components' ? (
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-100 text-slate-600 text-sm uppercase tracking-wider">
+                      <th className="p-4 font-bold border-b border-slate-200">Category</th>
+                      <th className="p-4 font-bold border-b border-slate-200">Component Name</th>
+                      <th className="p-4 font-bold border-b border-slate-200">Primary Role</th>
+                      <th className="p-4 font-bold border-b border-slate-200">Connection Port</th>
+                      <th className="p-4 font-bold border-b border-slate-200">Technical Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {componentData.map((comp, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50 transition-colors">
+                        <td className="p-4 text-sm font-medium">
+                          <span className={`px-2 py-1 rounded-md text-xs font-bold ${comp.category === 'Input' ? 'bg-purple-100 text-purple-700' : 'bg-orange-100 text-orange-700'}`}>
+                            {comp.category}
+                          </span>
+                        </td>
+                        <td className="p-4 text-sm font-bold text-slate-900">{comp.name}</td>
+                        <td className="p-4 text-sm text-slate-600">{comp.role}</td>
+                        <td className="p-4 text-sm font-mono text-blue-600 font-bold">{comp.port}</td>
+                        <td className="p-4 text-sm text-slate-500 italic">{comp.notes}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : helpTab === 'nightlight' ? (
+                <div className="max-w-4xl mx-auto space-y-10 text-left py-4" dir="ltr">
+                  <section className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                    <h3 className="text-2xl font-black text-blue-900 mb-4">Automatic Night Light</h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      To create an automatic night light with the Micro:bit system, we need to build logic that constantly checks the ambient light level and responds accordingly.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/lightsensormodel.png" 
+                        alt="Light Sensor Model" 
+                        className="rounded-2xl shadow-lg max-w-full h-auto border-4 border-white"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">1. System Components</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold">1</div>
+                        <span className="font-medium text-slate-700">Controller: Micro:bit</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold">2</div>
+                        <span className="font-medium text-slate-700">Expansion Board: bitkidi Breakout Board</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold">3</div>
+                        <span className="font-medium text-slate-700">Sensor: Analog Light Sensor (connected to port J1)</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold">4</div>
+                        <span className="font-medium text-slate-700">Output: LED bulb or LED strip (connected to port J4)</span>
+                      </li>
+                    </ul>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/lightsensorsimulation.png" 
+                        alt="Simulation Setup" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">2. Code Logic (The Algorithm)</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      The code runs in an infinite loop (Forever) and performs a logical comparison:
+                    </p>
+                    <div className="bg-slate-900 text-white p-6 rounded-3xl space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-blue-400 font-bold">Data Reading:</span> The system samples the analog value from the sensor on port J1.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-green-400 font-bold">Comparison (Threshold):</span> If the value is less than 300 (Light &lt; 300) - it means it's dark enough to turn on the light.</p>
+                      </div>
+                      <div className="flex items-start gap-3 ml-5">
+                        <div className="w-2 h-2 bg-slate-500 rounded-full mt-2 shrink-0"></div>
+                        <p>If the value is greater than or equal to 300 (Light ≥ 300) - it means there is enough light in the room and the bulb should remain off.</p>
+                      </div>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/lightsensorcode.png" 
+                        alt="Code Logic" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">3. Analog Values Detail</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      The system translates light intensity into numbers ranging from 0 to 1023:
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="bg-slate-800 p-6 rounded-2xl text-center">
+                        <div className="text-3xl font-black text-white mb-2">0</div>
+                        <div className="text-slate-400 text-sm">Minimum: Absolute Darkness</div>
+                      </div>
+                      <div className="bg-yellow-500 p-6 rounded-2xl text-center">
+                        <div className="text-3xl font-black text-white mb-2">1023</div>
+                        <div className="text-yellow-100 text-sm">Maximum: Very Strong Light</div>
+                      </div>
+                    </div>
+                    <div className="bg-blue-50 p-6 rounded-2xl border-l-4 border-blue-500">
+                      <p className="text-blue-900 font-medium">
+                        <span className="font-black">Why did we choose 300?</span> This is the "Threshold". At this value, the system decides to switch from "Day" mode to "Night" mode.
+                      </p>
+                    </div>
+                  </section>
+                </div>
+              ) : (
+                <div className="max-w-4xl mx-auto space-y-10 text-left py-4" dir="ltr">
+                  <section className="bg-orange-50 p-6 rounded-3xl border border-orange-100">
+                    <h3 className="text-2xl font-black text-orange-900 mb-4">Smart Fan</h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      When connecting an external thermistor to the Micro:bit, the Micro:bit does not "read" temperature directly. Instead, it performs an **Analog Read** of the voltage on the pin where the thermistor is connected. Since the thermistor's resistance changes with temperature, the measured voltage also changes. To obtain a temperature reading in degrees Celsius, the software must perform mathematical calculations on the raw analog value.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/hotmodel.png" 
+                        alt="Smart Fan Model" 
+                        className="rounded-2xl shadow-lg max-w-full h-auto border-4 border-white"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-orange-500 pl-4">1. System Components</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-orange-600 font-bold">1</div>
+                        <span className="font-medium text-slate-700">Controller: Micro:bit</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-orange-600 font-bold">2</div>
+                        <span className="font-medium text-slate-700">Expansion Board: bitkidi Breakout Board</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-orange-600 font-bold">3</div>
+                        <span className="font-medium text-slate-700">Sensor: Temperature Sensor (connected to port J1)</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-orange-600 font-bold">4</div>
+                        <span className="font-medium text-slate-700">Output 1: LED Light (connected to port J4)</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-orange-600 font-bold">5</div>
+                        <span className="font-medium text-slate-700">Output 2: Fan Motor (connected to port M1)</span>
+                      </li>
+                    </ul>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/hotSimulationBoard.png" 
+                        alt="Simulation Setup" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-orange-500 pl-4">2. Code Logic (The Algorithm)</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      The system is designed to maintain a stable temperature around 30°C:
+                    </p>
+                    <div className="bg-slate-900 text-white p-6 rounded-3xl space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-orange-400 font-bold">Heating Mode:</span> If the temperature is <span className="text-orange-300 font-bold">below 30°C</span>, the LED turns ON to provide heat, and the Fan Motor stays at speed 0 (stopped).</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-blue-400 font-bold">Cooling Mode:</span> If the temperature reaches <span className="text-blue-300 font-bold">30°C or higher</span>, the Fan Motor starts spinning to cool the system, and the LED turns OFF.</p>
+                      </div>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/hotcode.png" 
+                        alt="Code Logic" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-orange-500 pl-4">3. Analog to Temperature</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      The Micro:bit reads values from 0 to 1023. The code converts these raw numbers into actual temperature degrees using mathematical formulas based on the thermistor's characteristics.
+                    </p>
+                  </section>
+                </div>
+              )}
+            </div>
+            
+            <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-end">
+              <button 
+                onClick={() => setShowHelpModal(false)}
+                className="bg-slate-900 text-white font-bold py-2 px-6 rounded-xl hover:bg-slate-800 transition-all"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <header className="bg-[#5188c1] p-2 flex items-center gap-4 border-b border-blue-400 z-50 relative shadow-md">
         <div className="flex items-center gap-2 mr-4">
           <img src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/logo/bitkidi.png" alt="BITKIDI" className="h-10 w-auto object-contain" referrerPolicy="no-referrer" />
@@ -730,6 +1184,9 @@ export default function App() {
           </button>
           <button onClick={loadProject} className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-xl transition-all" title="Load Project">
             <FolderOpen size={24} />
+          </button>
+          <button onClick={() => setShowMissionsModal(true)} className="bg-blue-500/40 hover:bg-blue-500/60 text-white p-2 rounded-xl transition-all border border-blue-300/30" title="Missions">
+            <ClipboardList size={24} />
           </button>
           <button 
             onClick={() => {
@@ -834,6 +1291,8 @@ export default function App() {
                         getUltrasonicDistance={getUltrasonicDistanceForPort}
                         getColor={getColorForPort}
                         getLightLevel={getLightLevelForPort}
+                        getTemperature={getTemperatureForPort}
+                        getHumidity={getHumidityForPort}
                       />
                       {droppedComponents.map(comp => (
                         <div key={comp.id} style={{ 
@@ -867,6 +1326,14 @@ export default function App() {
                             onLightLevelChange={(val) => {
                               setLightLevels(prev => ({ ...prev, [comp.id]: val }));
                             }}
+                            temperature={temperatures[comp.id] || 25}
+                            onTemperatureChange={(val) => {
+                              setTemperatures(prev => ({ ...prev, [comp.id]: val }));
+                            }}
+                            dht11Data={dht11Data[comp.id] || { mode: 'hum', value: 45 }}
+                            onDht11Change={(data) => {
+                              setDht11Data(prev => ({ ...prev, [comp.id]: data }));
+                            }}
                             onDelete={() => {
                               setDroppedComponents(prev => prev.filter(c => c.id !== comp.id));
                               setWires(prev => prev.filter(w => w.from !== comp.id && w.to !== comp.id));
@@ -884,7 +1351,16 @@ export default function App() {
               
               {/* Right Side: Components */}
               <div className="w-36 flex flex-col items-center shrink-0 p-2 overflow-y-auto relative z-20">
-                <h2 className="text-lg font-semibold mb-4 text-center">Components</h2>
+                <div className="flex items-center justify-center gap-2 mb-4 w-full">
+                  <h2 className="text-lg font-semibold text-center">Components</h2>
+                  <button 
+                    onClick={() => setShowHelpModal(true)}
+                    className="text-blue-500 hover:text-blue-700 transition-colors"
+                    title="Component Help"
+                  >
+                    <HelpCircle size={20} />
+                  </button>
+                </div>
                 <ElectronicComponents 
                   zoomLevel={zoomLevel * 0.623}
                   onComponentClick={handleNodeClick} 
