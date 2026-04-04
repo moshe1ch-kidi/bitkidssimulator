@@ -1,4 +1,4 @@
- import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
@@ -21,7 +21,7 @@ const WireCanvas = ({ wires, drawingWireFrom, mousePos, resizeTrigger }: { wires
       }
       const boardRect = boardEl.getBoundingClientRect();
       
-      const newPaths: {id: string, d: string, color: string, isDashed: boolean}[] = [];
+      const newPaths: {id: string, d: string, color: string, isDashed: boolean, label?: string, labelPos?: {x: number, y: number}}[] = [];
       
       const calcPath = (startId: string, endId: string, isDrawing: boolean) => {
         const startEl = document.getElementById(startId);
@@ -137,7 +137,7 @@ const WireCanvas = ({ wires, drawingWireFrom, mousePos, resizeTrigger }: { wires
           d += `L ${endX} ${startY} L ${endX} ${endY}`;
         }
         
-        return d;
+        return { d, endX, endY };
       };
 
       const getColor = (from: string, to: string) => {
@@ -150,16 +150,24 @@ const WireCanvas = ({ wires, drawingWireFrom, mousePos, resizeTrigger }: { wires
       };
 
       wires.forEach((wire, i) => {
-        const d = calcPath(wire.from, wire.to, false);
-        if (d) {
-          newPaths.push({ id: `wire-${i}`, d, color: getColor(wire.from, wire.to), isDashed: false });
+        const res = calcPath(wire.from, wire.to, false);
+        if (res) {
+          const label = wire.from.replace('port-', '');
+          newPaths.push({ 
+            id: `wire-${i}`, 
+            d: res.d, 
+            color: getColor(wire.from, wire.to), 
+            isDashed: false,
+            label,
+            labelPos: { x: res.endX, y: res.endY - 25 }
+          });
         }
       });
       
       if (drawingWireFrom) {
-        const d = calcPath(drawingWireFrom, 'mouse-tracker', true);
-        if (d) {
-          newPaths.push({ id: 'wire-drawing', d, color: getColor(drawingWireFrom, 'mouse-tracker'), isDashed: true });
+        const res = calcPath(drawingWireFrom, 'mouse-tracker', true);
+        if (res) {
+          newPaths.push({ id: 'wire-drawing', d: res.d, color: getColor(drawingWireFrom, 'mouse-tracker'), isDashed: true });
         }
       }
       
@@ -186,17 +194,32 @@ const WireCanvas = ({ wires, drawingWireFrom, mousePos, resizeTrigger }: { wires
         `}
       </style>
       {paths.map(p => (
-        <path
-          key={p.id}
-          d={p.d}
-          fill="none"
-          stroke={p.color}
-          strokeWidth={4}
-          strokeDasharray={p.isDashed ? "8,8" : "none"}
-          className={p.isDashed ? "animate-dash" : ""}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        />
+        <React.Fragment key={p.id}>
+          <path
+            d={p.d}
+            fill="none"
+            stroke={p.color}
+            strokeWidth={4}
+            strokeDasharray={p.isDashed ? "8,8" : "none"}
+            className={p.isDashed ? "animate-dash" : ""}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+          />
+          {p.label && p.labelPos && (
+            <g transform={`translate(${p.labelPos.x}, ${p.labelPos.y})`}>
+              <circle r="10" fill="white" stroke={p.color} strokeWidth="2" />
+              <text
+                textAnchor="middle"
+                dominantBaseline="central"
+                fontSize="10"
+                fontWeight="bold"
+                fill={p.color}
+              >
+                {p.label}
+              </text>
+            </g>
+          )}
+        </React.Fragment>
       ))}
     </svg>
   );
@@ -221,7 +244,7 @@ export default function App() {
     callback: (value: string | null) => void;
   } | null>(null);
   const [promptInputValue, setPromptInputValue] = useState('');
-  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat'>('components');
+  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer'>('components');
 
   useEffect(() => {
     const checkMobile = () => {
@@ -292,6 +315,14 @@ export default function App() {
       icon: <Thermometer className="text-orange-500" />,
       difficulty: 'Hard',
       components: ['Micro:bit', 'Temperature Sensor', 'LED', 'Fan Motor']
+    },
+    {
+      id: 'visual_thermometer',
+      title: 'מד חום ויזואלי',
+      description: 'בנה מערכת התרעה חזותית לטמפרטורה המשתמשת בחיישן DHT11 ושלוש נוריות לד (ירוק, צהוב, אדום) כדי להציג את רמת החום.',
+      icon: <Thermometer className="text-blue-500" />,
+      difficulty: 'Hard',
+      components: ['Micro:bit', 'DHT11 Sensor', '3x LED']
     },
     {
       id: 'sorter',
@@ -898,10 +929,10 @@ export default function App() {
                           </span>
                         ))}
                       </div>
-                      {(mission.id === 'nightlight' || mission.id === 'thermostat') && (
+                      {(mission.id === 'nightlight' || mission.id === 'thermostat' || mission.id === 'visual_thermometer') && (
                         <button 
                           onClick={() => {
-                            setHelpTab(mission.id === 'nightlight' ? 'nightlight' : 'thermostat');
+                            setHelpTab(mission.id as any);
                             setShowHelpModal(true);
                             setShowMissionsModal(false);
                           }}
@@ -989,7 +1020,8 @@ export default function App() {
                   <h2 className="text-2xl font-black text-slate-900 tracking-tight">
                     {helpTab === 'components' ? 'Component Guide & Connection Table' : 
                      helpTab === 'nightlight' ? 'Automatic Night Light - מדריך משימה' : 
-                     'Smart Fan - מדריך משימה'}
+                     helpTab === 'thermostat' ? 'Smart Fan - מדריך משימה' :
+                     'Visual Thermometer - Mission Guide'}
                   </h2>
                   <div className="flex gap-4 mt-1">
                     <button 
@@ -1009,6 +1041,12 @@ export default function App() {
                       className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'thermostat' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                     >
                       Smart Fan Guide
+                    </button>
+                    <button 
+                      onClick={() => setHelpTab('visual_thermometer')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'visual_thermometer' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Visual Thermometer
                     </button>
                   </div>
                 </div>
@@ -1147,7 +1185,7 @@ export default function App() {
                     </div>
                   </section>
                 </div>
-              ) : (
+              ) : helpTab === 'thermostat' ? (
                 <div className="max-w-4xl mx-auto space-y-10 text-left py-4" dir="ltr">
                   <section className="bg-orange-50 p-6 rounded-3xl border border-orange-100">
                     <h3 className="text-2xl font-black text-orange-900 mb-4">Smart Fan</h3>
@@ -1228,6 +1266,117 @@ export default function App() {
                     <p className="text-slate-600 leading-relaxed">
                       The Micro:bit reads values from 0 to 1023. The code converts these raw numbers into actual temperature degrees using mathematical formulas based on the thermistor's characteristics.
                     </p>
+                  </section>
+                </div>
+              ) : (
+                <div className="max-w-4xl mx-auto space-y-10 text-left py-4" dir="ltr">
+                  <section className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                    <h3 className="text-2xl font-black text-blue-900 mb-4">Visual Thermometer</h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      The DHT11 is one of the most popular and common sensors in the maker world (Arduino, Raspberry Pi, and Micro:bit), mainly due to its low cost and simplicity of operation. It is used to measure temperature and relative humidity.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/humiditymodel.png" 
+                        alt="Visual Thermometer Model" 
+                        className="rounded-2xl shadow-lg max-w-full h-auto border-4 border-white"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">1. How does it work?</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      The sensor consists of two main parts for measurement:
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-blue-700 mb-2">Capacitive Humidity Sensor</h4>
+                        <p className="text-sm text-slate-600">Consists of two electrodes with a polymer layer between them that stores moisture. As humidity changes, the electrical conductivity changes.</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-blue-700 mb-2">Thermistor (NTC)</h4>
+                        <p className="text-sm text-slate-600">A resistor that changes its resistance according to the temperature.</p>
+                      </div>
+                    </div>
+                    <p className="text-slate-600 leading-relaxed">
+                      Inside the blue casing, there is also a small controller that converts the analog measurements into a digital signal, making it very simple for external controllers to read.
+                    </p>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">2. System Connection</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      According to the diagram, the system is connected using four digital communication channels (J1-J4):
+                    </p>
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center font-black">J1</div>
+                        <div>
+                          <h4 className="font-bold text-slate-900">DHT11 Sensor (Input)</h4>
+                          <p className="text-sm text-slate-500">Sends digital data about temperature and humidity to the controller.</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center font-black">J2</div>
+                        <div>
+                          <h4 className="font-bold text-slate-900">Green LED (Output)</h4>
+                          <p className="text-sm text-slate-500">Low temperature range (2°C-18°C).</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center font-black">J3</div>
+                        <div>
+                          <h4 className="font-bold text-slate-900">Yellow LED (Output)</h4>
+                          <p className="text-sm text-slate-500">Medium temperature range (21°C-39°C).</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center font-black">J4</div>
+                        <div>
+                          <h4 className="font-bold text-slate-900">Red LED (Output)</h4>
+                          <p className="text-sm text-slate-500">High temperature (above 40°C).</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/hotsensorsimulation.png" 
+                        alt="Connection Diagram" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">3. Code Logic (The Algorithm)</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      The code continuously reads temperature data from the DHT11 sensor connected to J1, and activates the LEDs according to the following ranges:
+                    </p>
+                    <div className="bg-slate-900 text-white p-6 rounded-3xl space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-green-400 font-bold">Low Temperature (2°C-18°C):</span> The Green LED (J2) turns ON, others stay OFF.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-yellow-400 font-bold">Pleasant Temperature (21°C-39°C):</span> The Yellow LED (J3) turns ON, others stay OFF.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-red-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-red-400 font-bold">High Temperature (above 40°C):</span> The Red LED (J4) turns ON, others stay OFF.</p>
+                      </div>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/hotcode.png" 
+                        alt="Code Logic" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
                   </section>
                 </div>
               )}
