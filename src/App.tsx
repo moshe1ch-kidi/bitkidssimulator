@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+ import React, { useState, useRef, useEffect } from 'react';
+import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
@@ -211,9 +212,8 @@ export default function App() {
   const [showMissionsModal, setShowMissionsModal] = useState(false);
   const [showVariableWatcher, setShowVariableWatcher] = useState(false);
   const [variableValues, setVariableValues] = useState<{ [key: string]: any }>({});
-  const [watcherPos, setWatcherPos] = useState({ x: 24, y: 80 });
-  const [isDraggingWatcher, setIsDraggingWatcher] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const simulationContainerRef = useRef<HTMLDivElement>(null);
+  const dragControls = useDragControls();
   const [promptConfig, setPromptConfig] = useState<{
     visible: boolean;
     message: string;
@@ -437,43 +437,10 @@ export default function App() {
       }
     };
     window.addEventListener('mousemove', handleMouseMove);
-    const handleMouseUp = () => {
-      setIsDraggingWatcher(false);
-    };
-    window.addEventListener('mouseup', handleMouseUp);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [drawingWireFrom]);
-
-  useEffect(() => {
-    if (isDraggingWatcher) {
-      const handleGlobalMouseMove = (e: MouseEvent) => {
-        const container = document.getElementById('simulation-container');
-        const watcher = document.getElementById('variable-watcher-panel');
-        if (!container || !watcher) return;
-
-        const containerRect = container.getBoundingClientRect();
-        const watcherRect = watcher.getBoundingClientRect();
-
-        // Calculate position relative to container
-        let newX = e.clientX - containerRect.left - dragOffset.x;
-        let newY = e.clientY - containerRect.top - dragOffset.y;
-
-        // Clamp within container boundaries
-        const maxX = containerRect.width - watcherRect.width;
-        const maxY = containerRect.height - watcherRect.height;
-
-        newX = Math.max(0, Math.min(newX, maxX));
-        newY = Math.max(0, Math.min(newY, maxY));
-
-        setWatcherPos({ x: newX, y: newY });
-      };
-      window.addEventListener('mousemove', handleGlobalMouseMove);
-      return () => window.removeEventListener('mousemove', handleGlobalMouseMove);
-    }
-  }, [isDraggingWatcher, dragOffset]);
 
   useEffect(() => {
     if (blocklyDiv.current && !workspace.current) {
@@ -713,6 +680,7 @@ export default function App() {
       console.log('Generated code:', code);
       
       const updateVars = (vars: any) => {
+        console.log('Updating variables:', vars);
         setVariableValues(prev => {
           // Only update if values actually changed to avoid unnecessary re-renders
           const changed = Object.keys(vars).some(key => vars[key] !== prev[key]);
@@ -1348,68 +1316,74 @@ export default function App() {
           <>
             <div className="flex flex-row w-full h-full p-4 relative z-10">
               {/* Left Side: Simulation Board */}
-              <div id="simulation-container" className="flex-1 relative rounded-2xl shadow-inner border border-gray-200 overflow-hidden bg-gray-50">
+              <div id="simulation-container" ref={simulationContainerRef} className="flex-1 relative rounded-2xl shadow-inner border border-gray-200 overflow-hidden bg-gray-50">
                 <WireCanvas wires={wires} drawingWireFrom={drawingWireFrom} mousePos={mousePos} resizeTrigger={resizeTrigger} />
                 
-                {/* Variable Watcher Overlay - Moved here to be independent of zoom */}
-                {showVariableWatcher && (
-                  <div 
-                    id="variable-watcher-panel"
-                    style={{ left: watcherPos.x, top: watcherPos.y }}
-                    className="absolute bg-white/95 backdrop-blur-md border-2 border-blue-200 rounded-2xl shadow-2xl p-5 z-50 min-w-[240px] max-w-[320px] max-h-[450px] overflow-y-auto animate-in fade-in zoom-in duration-300 ring-4 ring-blue-500/5 cursor-default"
-                  >
-                    <div 
-                      className="flex items-center justify-between gap-3 mb-4 border-b-2 border-blue-50 pb-2 cursor-move select-none"
-                      onMouseDown={(e) => {
-                        const rect = e.currentTarget.parentElement?.getBoundingClientRect();
-                        if (rect) {
-                          setDragOffset({
-                            x: e.clientX - rect.left,
-                            y: e.clientY - rect.top
-                          });
-                          setIsDraggingWatcher(true);
-                        }
-                      }}
+                {/* Variable Watcher Overlay - Using motion for smooth dragging */}
+                <AnimatePresence>
+                  {showVariableWatcher && (
+                    <motion.div 
+                      layout
+                      drag
+                      dragControls={dragControls}
+                      dragListener={false}
+                      dragConstraints={simulationContainerRef}
+                      dragMomentum={false}
+                      initial={{ x: 24, y: 24, opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      id="variable-watcher-panel"
+                      className="absolute bg-white/95 backdrop-blur-md border-2 border-blue-200 rounded-2xl shadow-2xl p-5 z-50 min-w-[240px] max-w-[320px] max-h-[450px] overflow-y-auto ring-4 ring-blue-500/5 cursor-default"
                     >
-                      <div className="flex items-center gap-2 pointer-events-none">
-                        <div className="bg-blue-100 p-1.5 rounded-lg">
-                          <ClipboardList size={18} className="text-blue-600" />
-                        </div>
-                        <span className="text-sm font-black text-blue-900 uppercase tracking-tight">Variable Watcher</span>
-                      </div>
-                      <button 
-                        onClick={() => setShowVariableWatcher(false)}
-                        className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                      <motion.div 
+                        onPointerDown={(e) => dragControls.start(e)}
+                        whileHover={{ backgroundColor: 'rgba(239, 246, 255, 0.5)' }}
+                        className="flex items-center justify-between gap-3 mb-4 border-b-2 border-blue-50 pb-2 cursor-grab active:cursor-grabbing select-none rounded-t-lg -m-2 p-2"
                       >
-                        <X size={16} />
-                      </button>
-                    </div>
-                    <div className="space-y-2.5">
-                      {Object.keys(variableValues).length > 0 ? (
-                        Object.entries(variableValues).map(([name, value]) => (
-                          <div key={name} className="flex justify-between items-center gap-4 bg-slate-50 p-2 rounded-xl border border-slate-100 hover:border-blue-200 transition-colors group">
-                            <span className="text-xs font-bold text-slate-600 truncate max-w-[120px] group-hover:text-blue-700 transition-colors" title={name}>{name}</span>
-                            <span className="text-xs font-mono font-black text-blue-700 bg-white border border-blue-100 px-2.5 py-1 rounded-lg shadow-sm">
-                              {typeof value === 'boolean' ? (value ? 'true' : 'false') : 
-                               value === undefined ? '?' : 
-                               String(value)}
-                            </span>
+                        <div className="flex items-center gap-2 pointer-events-none">
+                          <div className="bg-blue-100 p-1.5 rounded-lg">
+                            <ClipboardList size={18} className="text-blue-600" />
                           </div>
-                        ))
-                      ) : (
-                        <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
-                          <div className="bg-slate-100 p-3 rounded-full">
-                            <Zap size={24} className="text-slate-300" />
-                          </div>
-                          <div className="text-xs text-slate-400 font-medium leading-relaxed">
-                            No variables active yet.<br/>
-                            <span className="text-[10px] opacity-75">Run your code to see values update!</span>
-                          </div>
+                          <span className="text-sm font-black text-blue-900 uppercase tracking-tight">Variable Watcher</span>
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                        <button 
+                          onClick={() => setShowVariableWatcher(false)}
+                          className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                        >
+                          <X size={16} />
+                        </button>
+                      </motion.div>
+                      <div className="space-y-2.5">
+                        {Object.keys(variableValues).length > 0 ? (
+                          Object.entries(variableValues).map(([name, value]) => (
+                            <motion.div 
+                              layout
+                              key={name} 
+                              className="flex justify-between items-center gap-4 bg-slate-50 p-2 rounded-xl border border-slate-100 hover:border-blue-200 transition-colors group"
+                            >
+                              <span className="text-xs font-bold text-slate-600 truncate max-w-[120px] group-hover:text-blue-700 transition-colors" title={name}>{name}</span>
+                              <span className="text-xs font-mono font-black text-blue-700 bg-white border border-blue-100 px-2.5 py-1 rounded-lg shadow-sm">
+                                {typeof value === 'boolean' ? (value ? 'true' : 'false') : 
+                                 value === undefined || value === null ? '?' : 
+                                 String(value)}
+                              </span>
+                            </motion.div>
+                          ))
+                        ) : (
+                          <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
+                            <div className="bg-slate-100 p-3 rounded-full">
+                              <Zap size={24} className="text-slate-300" />
+                            </div>
+                            <div className="text-xs text-slate-400 font-medium leading-relaxed">
+                              No variables active yet.<br/>
+                              <span className="text-[10px] opacity-75">Run your code to see values update!</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 <div className="absolute inset-0 overflow-y-auto overflow-x-hidden p-6 flex flex-col items-center">
                   {/* Grid Background */}
