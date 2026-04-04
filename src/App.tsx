@@ -209,6 +209,18 @@ export default function App() {
   const [showMobileWarning, setShowMobileWarning] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showMissionsModal, setShowMissionsModal] = useState(false);
+  const [showVariableWatcher, setShowVariableWatcher] = useState(false);
+  const [variableValues, setVariableValues] = useState<{ [key: string]: any }>({});
+  const [watcherPos, setWatcherPos] = useState({ x: 24, y: 80 });
+  const [isDraggingWatcher, setIsDraggingWatcher] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [promptConfig, setPromptConfig] = useState<{
+    visible: boolean;
+    message: string;
+    defaultValue: string;
+    callback: (value: string | null) => void;
+  } | null>(null);
+  const [promptInputValue, setPromptInputValue] = useState('');
   const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat'>('components');
 
   useEffect(() => {
@@ -425,11 +437,57 @@ export default function App() {
       }
     };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const handleMouseUp = () => {
+      setIsDraggingWatcher(false);
+    };
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
   }, [drawingWireFrom]);
 
   useEffect(() => {
+    if (isDraggingWatcher) {
+      const handleGlobalMouseMove = (e: MouseEvent) => {
+        const container = document.getElementById('simulation-container');
+        const watcher = document.getElementById('variable-watcher-panel');
+        if (!container || !watcher) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const watcherRect = watcher.getBoundingClientRect();
+
+        // Calculate position relative to container
+        let newX = e.clientX - containerRect.left - dragOffset.x;
+        let newY = e.clientY - containerRect.top - dragOffset.y;
+
+        // Clamp within container boundaries
+        const maxX = containerRect.width - watcherRect.width;
+        const maxY = containerRect.height - watcherRect.height;
+
+        newX = Math.max(0, Math.min(newX, maxX));
+        newY = Math.max(0, Math.min(newY, maxY));
+
+        setWatcherPos({ x: newX, y: newY });
+      };
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+      return () => window.removeEventListener('mousemove', handleGlobalMouseMove);
+    }
+  }, [isDraggingWatcher, dragOffset]);
+
+  useEffect(() => {
     if (blocklyDiv.current && !workspace.current) {
+      // Override prompt for variable naming to be more robust in iframes
+      Blockly.dialog.setPrompt((message, defaultValue, callback) => {
+        setPromptInputValue(defaultValue);
+        setPromptConfig({
+          visible: true,
+          message,
+          defaultValue,
+          callback
+        });
+      });
+
       workspace.current = Blockly.inject(blocklyDiv.current, {
         toolbox: {
           kind: 'categoryToolbox',
@@ -653,11 +711,21 @@ export default function App() {
 
       const code = javascriptGenerator.workspaceToCode(workspace.current);
       console.log('Generated code:', code);
+      
+      const updateVars = (vars: any) => {
+        setVariableValues(prev => {
+          // Only update if values actually changed to avoid unnecessary re-renders
+          const changed = Object.keys(vars).some(key => vars[key] !== prev[key]);
+          return changed ? { ...prev, ...vars } : prev;
+        });
+      };
+
       try {
         boardRef.current?.clear();
+        setVariableValues({}); // Reset variables on start
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         // eslint-disable-next-line no-new-func
-        new AsyncFunction('boardRef', 'checkStop', code)(boardRef, checkStop);
+        new AsyncFunction('boardRef', 'checkStop', 'updateVars', code)(boardRef, checkStop, updateVars);
         boardRef.current?.triggerGreenFlag();
       } catch (e) {
         console.error(e);
@@ -888,6 +956,53 @@ export default function App() {
                 className="bg-blue-600 text-white font-bold py-2 px-8 rounded-xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100"
               >
                 Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Prompt Modal for Blockly */}
+      {promptConfig?.visible && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[9999] p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">{promptConfig.message}</h3>
+              <input
+                type="text"
+                autoFocus
+                value={promptInputValue}
+                onChange={(e) => setPromptInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    promptConfig.callback(promptInputValue);
+                    setPromptConfig(null);
+                  } else if (e.key === 'Escape') {
+                    promptConfig.callback(null);
+                    setPromptConfig(null);
+                  }
+                }}
+                className="w-full px-4 py-2 border-2 border-blue-100 rounded-lg focus:border-blue-500 focus:outline-none transition-colors"
+              />
+            </div>
+            <div className="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  promptConfig.callback(null);
+                  setPromptConfig(null);
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  promptConfig.callback(promptInputValue);
+                  setPromptConfig(null);
+                }}
+                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors shadow-md"
+              >
+                OK
               </button>
             </div>
           </div>
@@ -1235,6 +1350,67 @@ export default function App() {
               {/* Left Side: Simulation Board */}
               <div id="simulation-container" className="flex-1 relative rounded-2xl shadow-inner border border-gray-200 overflow-hidden bg-gray-50">
                 <WireCanvas wires={wires} drawingWireFrom={drawingWireFrom} mousePos={mousePos} resizeTrigger={resizeTrigger} />
+                
+                {/* Variable Watcher Overlay - Moved here to be independent of zoom */}
+                {showVariableWatcher && (
+                  <div 
+                    id="variable-watcher-panel"
+                    style={{ left: watcherPos.x, top: watcherPos.y }}
+                    className="absolute bg-white/95 backdrop-blur-md border-2 border-blue-200 rounded-2xl shadow-2xl p-5 z-50 min-w-[240px] max-w-[320px] max-h-[450px] overflow-y-auto animate-in fade-in zoom-in duration-300 ring-4 ring-blue-500/5 cursor-default"
+                  >
+                    <div 
+                      className="flex items-center justify-between gap-3 mb-4 border-b-2 border-blue-50 pb-2 cursor-move select-none"
+                      onMouseDown={(e) => {
+                        const rect = e.currentTarget.parentElement?.getBoundingClientRect();
+                        if (rect) {
+                          setDragOffset({
+                            x: e.clientX - rect.left,
+                            y: e.clientY - rect.top
+                          });
+                          setIsDraggingWatcher(true);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-2 pointer-events-none">
+                        <div className="bg-blue-100 p-1.5 rounded-lg">
+                          <ClipboardList size={18} className="text-blue-600" />
+                        </div>
+                        <span className="text-sm font-black text-blue-900 uppercase tracking-tight">Variable Watcher</span>
+                      </div>
+                      <button 
+                        onClick={() => setShowVariableWatcher(false)}
+                        className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                    <div className="space-y-2.5">
+                      {Object.keys(variableValues).length > 0 ? (
+                        Object.entries(variableValues).map(([name, value]) => (
+                          <div key={name} className="flex justify-between items-center gap-4 bg-slate-50 p-2 rounded-xl border border-slate-100 hover:border-blue-200 transition-colors group">
+                            <span className="text-xs font-bold text-slate-600 truncate max-w-[120px] group-hover:text-blue-700 transition-colors" title={name}>{name}</span>
+                            <span className="text-xs font-mono font-black text-blue-700 bg-white border border-blue-100 px-2.5 py-1 rounded-lg shadow-sm">
+                              {typeof value === 'boolean' ? (value ? 'true' : 'false') : 
+                               value === undefined ? '?' : 
+                               String(value)}
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-8 text-center space-y-3">
+                          <div className="bg-slate-100 p-3 rounded-full">
+                            <Zap size={24} className="text-slate-300" />
+                          </div>
+                          <div className="text-xs text-slate-400 font-medium leading-relaxed">
+                            No variables active yet.<br/>
+                            <span className="text-[10px] opacity-75">Run your code to see values update!</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="absolute inset-0 overflow-y-auto overflow-x-hidden p-6 flex flex-col items-center">
                   {/* Grid Background */}
                   <div 
@@ -1259,6 +1435,13 @@ export default function App() {
                         <RotateCcw size={16} />
                       </button>
                       <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                      <button
+                        onClick={() => setShowVariableWatcher(!showVariableWatcher)}
+                        className={`p-2 rounded-full transition-colors ml-1 ${showVariableWatcher ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200'}`}
+                        title={showVariableWatcher ? "Hide Variables" : "Show Variables"}
+                      >
+                        <ClipboardList size={20} />
+                      </button>
                       <button
                         onClick={() => setIsSimulationExpanded(!isSimulationExpanded)}
                         className="p-2 text-gray-500 hover:text-gray-800 hover:bg-gray-200 rounded-full transition-colors ml-1"
@@ -1294,6 +1477,7 @@ export default function App() {
                         getTemperature={getTemperatureForPort}
                         getHumidity={getHumidityForPort}
                       />
+
                       {droppedComponents.map(comp => (
                         <div key={comp.id} style={{ 
                           position: 'absolute', 
