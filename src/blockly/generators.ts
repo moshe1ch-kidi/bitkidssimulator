@@ -9,6 +9,41 @@ const register = (gen: any) => {
   
   const target = gen.forBlock || gen;
 
+  // Override scrub_ for this generator
+  const originalScrub = gen.scrub_;
+  gen.scrub_ = function(block: any, code: string, opt_thisOnly?: boolean) {
+    let nextCode = '';
+    if (!opt_thisOnly && block.nextConnection && block.nextConnection.targetBlock()) {
+      nextCode = gen.blockToCode(block.nextConnection.targetBlock()) as string;
+    }
+
+    // Inject checkStop() and updateVars() before every statement block (except hat blocks which define the function)
+    const isHatBlock = block.type === 'microbit_button_pressed' || block.type === 'event_when_green_flag_clicked';
+    const isStatementBlock = !block.outputConnection;
+    const checkStopCode = (!isHatBlock && isStatementBlock) ? 'checkStop();\n' : '';
+
+    // Variable tracking
+    let updateVarsCode = '';
+    if (!isHatBlock && isStatementBlock) {
+      const vars = block.workspace.getAllVariables().map((v: any) => v.name);
+      if (vars.length > 0) {
+        const varObject = `{${vars.map((v: string) => `${v}: typeof ${v} !== 'undefined' ? ${v} : undefined`).join(', ')}}`;
+        updateVarsCode = `updateVars(${varObject});\n`;
+      }
+    }
+
+    if (block.type === 'microbit_button_pressed') {
+      const button = block.getFieldValue('BUTTON');
+      const methodName = button === 'A+B' ? 'onButtonAB' : `onButton${button}`;
+      return `boardRef.current.${methodName}(async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
+    }
+    if (block.type === 'event_when_green_flag_clicked') {
+      return `boardRef.current.onGreenFlag(async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
+    }
+
+    return checkStopCode + code + updateVarsCode + nextCode;
+  };
+
   target['microbit_show_icon'] = function(block: any) {
     const icon = block.getFieldValue('ICON');
     return `boardRef.current.showIcon('${icon}');\n`;
@@ -197,31 +232,6 @@ const register = (gen: any) => {
 };
 
 register(javascriptGenerator);
-
-// Override scrub_ to handle hat blocks
-const originalScrub = javascriptGenerator.scrub_;
-javascriptGenerator.scrub_ = function(block: any, code: string, opt_thisOnly?: boolean) {
-  let nextCode = '';
-  if (!opt_thisOnly && block.nextConnection && block.nextConnection.targetBlock()) {
-    nextCode = javascriptGenerator.blockToCode(block.nextConnection.targetBlock()) as string;
-  }
-
-  // Inject checkStop() before every statement block (except hat blocks which define the function)
-  const isHatBlock = block.type === 'microbit_button_pressed' || block.type === 'event_when_green_flag_clicked';
-  const isStatementBlock = !block.outputConnection;
-  const checkStopCode = (!isHatBlock && isStatementBlock) ? 'checkStop();\n' : '';
-
-  if (block.type === 'microbit_button_pressed') {
-    const button = block.getFieldValue('BUTTON');
-    const methodName = button === 'A+B' ? 'onButtonAB' : `onButton${button}`;
-    return `boardRef.current.${methodName}(async () => {\ntry {\n${checkStopCode}${code}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
-  }
-  if (block.type === 'event_when_green_flag_clicked') {
-    return `boardRef.current.onGreenFlag(async () => {\ntry {\n${checkStopCode}${code}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
-  }
-
-  return checkStopCode + code + nextCode;
-};
 
 // Ensure Blockly.JavaScript is also registered if it's a different instance
 if ((Blockly as any).JavaScript && (Blockly as any).JavaScript !== javascriptGenerator) {
