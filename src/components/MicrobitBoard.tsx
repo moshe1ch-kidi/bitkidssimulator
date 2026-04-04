@@ -10,6 +10,8 @@ interface MicrobitBoardProps {
   getUltrasonicDistance?: (port: string) => Promise<number>;
   getColor?: (port: string) => Promise<string>;
   getLightLevel?: (port: string) => Promise<number>;
+  getTemperature?: (port: string) => Promise<number>;
+  getHumidity?: (port: string) => Promise<number>;
 }
 
 const fontMap: { [key: string]: number[] } = {
@@ -52,7 +54,7 @@ const fontMap: { [key: string]: number[] } = {
   ' ': []
 };
 
-export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorStates = {}, onServoChange, servoStates = {}, onPinChange, getUltrasonicDistance, getColor, getLightLevel }: MicrobitBoardProps, ref) => {
+export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorStates = {}, onServoChange, servoStates = {}, onPinChange, getUltrasonicDistance, getColor, getLightLevel, getTemperature, getHumidity }: MicrobitBoardProps, ref) => {
   const [leds, setLeds] = useState(Array(25).fill(false));
   const [ledColor, setLedColor] = useState('#3b82f6'); // Default blue-500
   const scrollInterval = useRef<NodeJS.Timeout | null>(null);
@@ -204,6 +206,12 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
         return await getLightLevel(port);
       }
       return 0;
+    },
+    getTemperature: async (port: string) => {
+      if (getTemperature) {
+        return await getTemperature(port);
+      }
+      return 25; // Default room temperature
     }
   }));
 

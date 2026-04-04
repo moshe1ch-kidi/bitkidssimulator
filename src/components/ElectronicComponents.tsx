@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { createPortal, flushSync } from 'react-dom';
 import { motion, useDragControls } from 'motion/react';
+import { Thermometer, Droplet } from 'lucide-react';
 
 export interface ElectronicComponentsProps {
   onComponentClick?: (id: string) => void;
@@ -165,7 +166,7 @@ const LightSensorLDRUI = ({ lightLevel = 0, onLightLevelChange }: { lightLevel?:
     <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
        <div 
          className="w-10 h-10 rounded-full border-2 border-[#fbbf24] shadow-inner flex flex-col items-center justify-center gap-[2px] overflow-hidden transition-colors duration-300"
-         style={{ backgroundColor: `rgb(252, 211, 77, ${0.3 + (lightLevel / 100) * 0.7})` }}
+         style={{ backgroundColor: `rgb(252, 211, 77, ${0.3 + (lightLevel / 1023) * 0.7})` }}
        >
           <div className="w-8 h-0.5 bg-[#b45309]"></div>
           <div className="w-8 h-0.5 bg-[#b45309]"></div>
@@ -184,7 +185,7 @@ const LightSensorLDRUI = ({ lightLevel = 0, onLightLevelChange }: { lightLevel?:
        <input 
          type="range" 
          min="0" 
-         max="100" 
+         max="1023" 
          value={lightLevel} 
          onChange={(e) => onLightLevelChange?.(parseInt(e.target.value))}
          className="w-full h-1.5 bg-purple-900 rounded-lg appearance-none cursor-pointer accent-white"
@@ -273,35 +274,115 @@ const ColorSensorUI = ({ color = 'None', onColorChange }: { color?: string, onCo
   );
 };
 
-const HumidityUI = () => (
-  <div className="relative w-24 h-20 bg-[#14b8a6] rounded-xl shadow-lg border-b-[12px] border-[#0f766e] flex flex-col items-center justify-start pt-1">
-    <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
-       <div className="w-8 h-8 bg-[#0284c7] rounded-sm border border-[#0369a1] shadow-sm flex flex-col justify-evenly items-center py-1">
-          <div className="w-5 h-[2px] bg-white opacity-60"></div>
-          <div className="w-5 h-[2px] bg-white opacity-60"></div>
-          <div className="w-5 h-[2px] bg-white opacity-60"></div>
-          <div className="w-5 h-[2px] bg-white opacity-60"></div>
-       </div>
-    </div>
-    <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-3">
-       <div className="w-3 h-3 rounded-full bg-[#134e4a] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
-       <div className="w-3 h-3 rounded-full bg-[#134e4a] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
-       <div className="w-3 h-3 rounded-full bg-[#134e4a] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
-    </div>
-  </div>
-);
+const DHT11UI = ({ 
+  mode = 'hum', 
+  value = 45, 
+  onModeChange, 
+  onValueChange 
+}: { 
+  mode?: 'temp' | 'hum', 
+  value?: number, 
+  onModeChange?: (mode: 'temp' | 'hum') => void, 
+  onValueChange?: (val: number) => void 
+}) => {
+  const isTemp = mode === 'temp';
+  
+  return (
+    <div className={`relative w-24 h-32 rounded-xl shadow-lg border-b-[12px] flex flex-col items-center justify-start pt-1 transition-colors duration-500 ${isTemp ? 'bg-[#f43f5e] border-[#be123c]' : 'bg-[#14b8a6] border-[#0f766e]'}`}>
+      <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
+         {/* DHT11 Blue Body with Grid Mesh (Small Squares) */}
+         <div className="w-10 h-10 bg-[#0ea5e9] rounded-sm border border-[#0284c7] shadow-sm p-1 grid grid-cols-4 grid-rows-4 gap-0.5">
+            {[...Array(16)].map((_, i) => (
+              <div key={i} className="bg-[#0c4a6e] opacity-40 rounded-[1px]"></div>
+            ))}
+         </div>
+         
+         {/* Mode Indicator Icon */}
+         <div className="absolute -top-1 -right-1 bg-white p-1 rounded-full shadow-sm border border-gray-200">
+           {isTemp ? <Thermometer size={10} className="text-red-500" /> : <Droplet size={10} className="text-blue-500" />}
+         </div>
+      </div>
 
-const TemperatureUI = () => (
-  <div className="relative w-24 h-20 bg-[#f43f5e] rounded-xl shadow-lg border-b-[12px] border-[#be123c] flex flex-col items-center justify-start pt-1">
-    <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
+      {/* Mode Selector Toggle */}
+      <div className="mt-12 w-full px-2 flex justify-center gap-1">
+        <button 
+          onClick={(e) => { e.stopPropagation(); onModeChange?.('temp'); }}
+          className={`px-1.5 py-0.5 rounded text-[8px] font-black transition-all ${isTemp ? 'bg-white text-red-600 shadow-sm' : 'bg-black/20 text-white/60 hover:bg-black/30'}`}
+        >
+          TEMP
+        </button>
+        <button 
+          onClick={(e) => { e.stopPropagation(); onModeChange?.('hum'); }}
+          className={`px-1.5 py-0.5 rounded text-[8px] font-black transition-all ${!isTemp ? 'bg-white text-teal-600 shadow-sm' : 'bg-black/20 text-white/60 hover:bg-black/30'}`}
+        >
+          HUM
+        </button>
+      </div>
+      
+      {/* Value Slider */}
+      <div className="mt-auto mb-2 px-2 w-full flex flex-col items-center gap-1">
+         <input 
+           type="range" 
+           min={isTemp ? -10 : 0} 
+           max={isTemp ? 60 : 100} 
+           value={value} 
+           onChange={(e) => onValueChange?.(parseInt(e.target.value))}
+           className={`w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-white ${isTemp ? 'bg-red-900' : 'bg-teal-900'}`}
+           onPointerDown={(e) => e.stopPropagation()}
+         />
+         <div className="flex justify-between w-full px-0.5">
+           <span className="text-[7px] font-bold text-white/80">{isTemp ? '-10°' : '0%'}</span>
+           <span className="text-[9px] font-black text-white drop-shadow-sm">{value}{isTemp ? '°C' : '%'}</span>
+           <span className="text-[7px] font-bold text-white/80">{isTemp ? '60°' : '100%'}</span>
+         </div>
+      </div>
+
+      <div className="text-[10px] font-black text-white tracking-widest uppercase mb-1 drop-shadow-sm">DHT11</div>
+
+      <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-3">
+         <div className={`w-3 h-3 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] ${isTemp ? 'bg-[#881337]' : 'bg-[#134e4a]'}`}></div>
+         <div className={`w-3 h-3 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] ${isTemp ? 'bg-[#881337]' : 'bg-[#134e4a]'}`}></div>
+         <div className={`w-3 h-3 rounded-full shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)] ${isTemp ? 'bg-[#881337]' : 'bg-[#134e4a]'}`}></div>
+      </div>
+    </div>
+  );
+};
+
+const TemperatureUI = ({ temperature = 25, onTemperatureChange }: { temperature?: number, onTemperatureChange?: (val: number) => void }) => (
+  <div className="relative w-24 h-28 bg-[#f43f5e] rounded-xl shadow-lg border-b-[12px] border-[#be123c] flex flex-col items-center justify-start pt-1">
+    <div className="absolute top-1 left-1 right-1 h-14 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
+       {/* NTC Thermistor Icon */}
        <div className="flex flex-col items-center mt-2">
-          <div className="w-4 h-5 bg-[#111] rounded-t-full rounded-b-sm shadow-md z-10 border border-[#333]"></div>
-          <div className="flex gap-1.5 -mt-1">
-             <div className="w-1 h-5 bg-gradient-to-b from-gray-400 to-gray-300 rounded-b-sm"></div>
-             <div className="w-1 h-5 bg-gradient-to-b from-gray-400 to-gray-300 rounded-b-sm"></div>
+          <div className="w-9 h-9 bg-[#222] rounded-full border-2 border-[#444] shadow-md flex flex-col items-center justify-center relative z-10">
+             <div className="text-[6px] text-white font-black leading-none">NTC</div>
+             <div className="text-[4px] text-gray-400 leading-none mt-0.5 uppercase font-bold">Thermistor</div>
+          </div>
+          <div className="flex gap-4 -mt-1">
+             <div className="w-0.5 h-8 bg-gray-400"></div>
+             <div className="w-0.5 h-8 bg-gray-400"></div>
           </div>
        </div>
+       
+       {/* Temperature Badge */}
+       <div className="absolute -top-1 -left-1 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded-full border border-red-400 shadow-md z-20">
+         {temperature}°
+       </div>
     </div>
+    
+    {/* Temperature Slider */}
+    <div className="mt-auto mb-2 px-2 w-full flex flex-col items-center gap-1">
+       <input 
+         type="range" 
+         min="-10" 
+         max="60" 
+         value={temperature} 
+         onChange={(e) => onTemperatureChange?.(parseInt(e.target.value))}
+         className="w-full h-2 bg-red-900 rounded-lg appearance-none cursor-pointer accent-white"
+         onPointerDown={(e) => e.stopPropagation()}
+       />
+       <div className="text-[10px] font-black text-white tracking-tight uppercase drop-shadow-sm">TEMPERATURE</div>
+    </div>
+
     <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-3">
        <div className="w-3 h-3 rounded-full bg-[#881337] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
        <div className="w-3 h-3 rounded-full bg-[#881337] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
@@ -380,12 +461,17 @@ export const DraggableComponent: React.FC<{
   ledColor?: string,
   onLedColorChange?: (color: string) => void,
   onLedOnChange?: (on: boolean) => void,
+  ledOn?: boolean,
   colorValue?: string,
   onColorValueChange?: (val: string) => void,
   lightLevel?: number,
   onLightLevelChange?: (val: number) => void,
+  temperature?: number,
+  onTemperatureChange?: (val: number) => void,
+  dht11Data?: { mode: 'temp' | 'hum', value: number },
+  onDht11Change?: (data: { mode: 'temp' | 'hum', value: number }) => void,
   onDelete?: () => void
-}> = ({ comp, onComponentClick, onDragStart, onDragEnd, isDropped, disableDrag, motorState, servoAngle, ultrasonicDistance, onUltrasonicChange, ledColor, onLedColorChange, ledOn, colorValue, onColorValueChange, lightLevel, onLightLevelChange, onDelete }) => {
+}> = ({ comp, onComponentClick, onDragStart, onDragEnd, isDropped, disableDrag, motorState, servoAngle, ultrasonicDistance, onUltrasonicChange, ledColor, onLedColorChange, ledOn, colorValue, onColorValueChange, lightLevel, onLightLevelChange, temperature, onTemperatureChange, dht11Data, onDht11Change, onDelete }) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const renderUI = () => {
@@ -397,8 +483,15 @@ export const DraggableComponent: React.FC<{
       case 'photosensitive': return <LightSensorLDRUI lightLevel={lightLevel} onLightLevelChange={onLightLevelChange} />;
       case 'potentiometer': return <PotentiometerUI />;
       case 'color': return <ColorSensorUI color={colorValue} onColorChange={onColorValueChange} />;
-      case 'humidity': return <HumidityUI />;
-      case 'temperature': return <TemperatureUI />;
+      case 'humidity': return (
+        <DHT11UI 
+          mode={dht11Data?.mode} 
+          value={dht11Data?.value} 
+          onModeChange={(mode) => onDht11Change?.({ mode, value: dht11Data?.value || (mode === 'temp' ? 25 : 45) })}
+          onValueChange={(value) => onDht11Change?.({ mode: dht11Data?.mode || 'hum', value })}
+        />
+      );
+      case 'temperature': return <TemperatureUI temperature={temperature} onTemperatureChange={onTemperatureChange} />;
       case 'geekservo': return <GeekServoUI motorState={motorState} />;
       case 'button': return <ButtonUI />;
       default: return null;
@@ -576,7 +669,7 @@ export const ElectronicComponents = ({ onComponentClick, onDropOnBoard, zoomLeve
     { id: 'comp-photo', name: 'Light Sensor LDR', type: 'photosensitive' },
     { id: 'comp-pot', name: 'Potentiometer', type: 'potentiometer' },
     { id: 'comp-color', name: 'Color Sensor', type: 'color' },
-    { id: 'comp-hum', name: 'Humidity', type: 'humidity' },
+    { id: 'comp-hum', name: 'DHT11 Sensor', type: 'humidity' },
     { id: 'comp-temp', name: 'Temperature', type: 'temperature' },
     { id: 'comp-button', name: 'Button', type: 'button' },
   ];
