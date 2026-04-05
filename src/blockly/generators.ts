@@ -101,10 +101,16 @@ const register = (gen: any) => {
     const port = block.getFieldValue('PORT');
     return [`await boardRef.current.getTemperature('${port}')`, Order.AWAIT];
   };
-
-  target['microbit_humidity_sensor'] = function(block: any) {
+  
+  target['microbit_soil_moisture'] = function(block: any) {
     const port = block.getFieldValue('PORT');
-    return [`await boardRef.current.getHumidity('${port}')`, Order.AWAIT];
+    return [`await boardRef.current.getSoilMoisture('${port}')`, Order.AWAIT];
+  };
+
+  target['microbit_ledgraph'] = function(block: any) {
+    const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
+    const max = javascriptGenerator.valueToCode(block, 'MAX', Order.ATOMIC) || '100';
+    return `boardRef.current.ledGraph(${value}, ${max});\n`;
   };
 
   target['microbit_dht11'] = function(block: any) {

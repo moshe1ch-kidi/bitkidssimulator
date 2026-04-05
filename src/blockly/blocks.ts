@@ -1,4 +1,5 @@
 import * as Blockly from 'blockly';
+import 'blockly/blocks';
 import { FieldColour } from '@blockly/field-colour';
 import { FieldSlider } from '@blockly/field-slider';
 
@@ -181,15 +182,6 @@ export const microbitBlocks = [
     colour: '#9966FF',
   },
   {
-    type: 'microbit_humidity_sensor',
-    message0: 'Humidity sensor %1 value',
-    args0: [
-      { type: 'field_dropdown', name: 'PORT', options: [['I1', 'I1'], ['I2', 'I2'], ['I3', 'I3'], ['I4', 'I4']] },
-    ],
-    output: 'Number',
-    colour: '#9966FF',
-  },
-  {
     type: 'microbit_dht11',
     message0: 'DHT11 %1 %2 value',
     args0: [
@@ -209,6 +201,26 @@ export const microbitBlocks = [
     ],
     output: 'Number',
     colour: '#9966FF',
+  },
+  {
+    type: 'microbit_soil_moisture',
+    message0: 'Soil Moisture sensor %1 value',
+    args0: [
+      { type: 'field_dropdown', name: 'PORT', options: [['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4']] },
+    ],
+    output: 'Number',
+    colour: '#9966FF',
+  },
+  {
+    type: 'microbit_ledgraph',
+    message0: 'show graph %1 max %2',
+    args0: [
+      { type: 'input_value', name: 'VALUE', check: 'Number' },
+      { type: 'input_value', name: 'MAX', check: 'Number' },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    colour: '#4C97FF',
   },
   {
     type: 'microbit_led_toggle',
