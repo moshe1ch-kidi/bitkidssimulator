@@ -12,6 +12,7 @@ interface MicrobitBoardProps {
   getLightLevel?: (port: string) => Promise<number>;
   getTemperature?: (port: string) => Promise<number>;
   getHumidity?: (port: string) => Promise<number>;
+  getSoilMoisture?: (port: string) => Promise<number>;
 }
 
 const fontMap: { [key: string]: number[] } = {
@@ -54,7 +55,7 @@ const fontMap: { [key: string]: number[] } = {
   ' ': []
 };
 
-export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorStates = {}, onServoChange, servoStates = {}, onPinChange, getUltrasonicDistance, getColor, getLightLevel, getTemperature, getHumidity }: MicrobitBoardProps, ref) => {
+export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorStates = {}, onServoChange, servoStates = {}, onPinChange, getUltrasonicDistance, getColor, getLightLevel, getTemperature, getHumidity, getSoilMoisture }: MicrobitBoardProps, ref) => {
   const [leds, setLeds] = useState(Array(25).fill(false));
   const [ledColor, setLedColor] = useState('#3b82f6'); // Default blue-500
   const scrollInterval = useRef<NodeJS.Timeout | null>(null);
@@ -212,6 +213,23 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
         return await getTemperature(port);
       }
       return 25; // Default room temperature
+    },
+    getSoilMoisture: async (port: string) => {
+      if (getSoilMoisture) {
+        return await getSoilMoisture(port);
+      }
+      return 0;
+    },
+    ledGraph: (value: number, max: number) => {
+      if (scrollInterval.current) clearInterval(scrollInterval.current);
+      const numLeds = Math.min(25, Math.max(0, Math.round((value / (max || 1)) * 25)));
+      const newLeds = Array(25).fill(false);
+      for (let i = 0; i < numLeds; i++) {
+        const row = 4 - Math.floor(i / 5);
+        const col = i % 5;
+        newLeds[row * 5 + col] = true;
+      }
+      setLeds(newLeds);
     }
   }));
 

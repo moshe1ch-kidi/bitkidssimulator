@@ -30,7 +30,7 @@ const UltrasonicUI = ({ distance = 100, onDistanceChange }: { distance?: number,
        </div>
        
        {/* Distance Badge */}
-       <div className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-blue-400 shadow-sm z-20">
+       <div className="absolute -top-2 -left-2 bg-blue-600 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-blue-400 shadow-sm z-20">
          {distance}cm
        </div>
     </div>
@@ -146,7 +146,7 @@ const ServoUI = ({ angle = 90 }: { angle?: number }) => (
        </motion.div>
        
        {/* Angle Badge on component */}
-       <div className="absolute top-1 right-1 bg-blue-600 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-blue-400 shadow-sm z-20">
+       <div className="absolute top-1 left-1 bg-blue-600 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-blue-400 shadow-sm z-20">
          {angle}°
        </div>
     </div>
@@ -202,6 +202,42 @@ const LightSensorLDRUI = ({ lightLevel = 0, onLightLevelChange }: { lightLevel?:
   </div>
 );
 
+const SoilMoistureUI = ({ moisture = 45, onMoistureChange }: { moisture?: number, onMoistureChange?: (val: number) => void }) => (
+  <div className="relative w-24 h-28 bg-[#2b82d9] rounded-xl shadow-lg border-b-[12px] border-[#1a5b9e] flex flex-col items-center justify-start pt-1">
+    <div className="absolute top-1 left-1 right-1 h-12 bg-white rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] border border-blue-100">
+       <div className="flex gap-4 items-end h-full pb-1">
+          <div className="w-3 h-10 bg-slate-300 rounded-t-full border-x-2 border-slate-400"></div>
+          <div className="w-3 h-10 bg-slate-300 rounded-t-full border-x-2 border-slate-400"></div>
+       </div>
+       
+       {/* Moisture Badge */}
+       <div className="absolute -top-2 -left-2 bg-cyan-600 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-cyan-400 shadow-sm z-20">
+         {moisture}%
+       </div>
+    </div>
+    
+    {/* Moisture Slider */}
+    <div className="mt-auto mb-3 px-2 w-full flex flex-col items-center gap-0.5">
+       <input 
+         type="range" 
+         min="0" 
+         max="100" 
+         value={moisture} 
+         onChange={(e) => onMoistureChange?.(parseInt(e.target.value))}
+         className="w-full h-1.5 bg-blue-900 rounded-lg appearance-none cursor-pointer accent-white"
+         onPointerDown={(e) => e.stopPropagation()}
+       />
+       <div className="text-[8px] font-black text-white tracking-widest uppercase drop-shadow-sm">SOIL MOISTURE</div>
+    </div>
+
+    <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-3">
+       <div className="w-3 h-3 rounded-full bg-[#113d6b] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
+       <div className="w-3 h-3 rounded-full bg-[#113d6b] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
+       <div className="w-3 h-3 rounded-full bg-[#113d6b] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
+    </div>
+  </div>
+);
+
 const PotentiometerUI = () => (
   <div className="relative w-24 h-20 bg-[#f97316] rounded-xl shadow-lg border-b-[12px] border-[#c2410c] flex flex-col items-center justify-start pt-1">
     <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
@@ -244,7 +280,7 @@ const ColorSensorUI = ({ color = 'None', onColorChange }: { color?: string, onCo
          </div>
          
          {/* Color Badge */}
-         <div className="absolute -top-1.5 -right-1.5 bg-cyan-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-cyan-400 shadow-sm z-20">
+         <div className="absolute -top-1.5 -left-1.5 bg-cyan-600 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full border border-cyan-400 shadow-sm z-20">
            {color}
          </div>
       </div>
@@ -470,8 +506,10 @@ export const DraggableComponent: React.FC<{
   onTemperatureChange?: (val: number) => void,
   dht11Data?: { mode: 'temp' | 'hum', value: number },
   onDht11Change?: (data: { mode: 'temp' | 'hum', value: number }) => void,
+  soilMoisture?: number,
+  onSoilMoistureChange?: (val: number) => void,
   onDelete?: () => void
-}> = ({ comp, onComponentClick, onDragStart, onDragEnd, isDropped, disableDrag, motorState, servoAngle, ultrasonicDistance, onUltrasonicChange, ledColor, onLedColorChange, ledOn, colorValue, onColorValueChange, lightLevel, onLightLevelChange, temperature, onTemperatureChange, dht11Data, onDht11Change, onDelete }) => {
+}> = ({ comp, onComponentClick, onDragStart, onDragEnd, isDropped, disableDrag, motorState, servoAngle, ultrasonicDistance, onUltrasonicChange, ledColor, onLedColorChange, ledOn, colorValue, onColorValueChange, lightLevel, onLightLevelChange, temperature, onTemperatureChange, dht11Data, onDht11Change, soilMoisture, onSoilMoistureChange, onDelete }) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const renderUI = () => {
@@ -492,6 +530,7 @@ export const DraggableComponent: React.FC<{
         />
       );
       case 'temperature': return <TemperatureUI temperature={temperature} onTemperatureChange={onTemperatureChange} />;
+      case 'soilmoisture': return <SoilMoistureUI moisture={soilMoisture} onMoistureChange={onSoilMoistureChange} />;
       case 'geekservo': return <GeekServoUI motorState={motorState} />;
       case 'button': return <ButtonUI />;
       default: return null;
@@ -670,6 +709,7 @@ export const ElectronicComponents = ({ onComponentClick, onDropOnBoard, zoomLeve
     { id: 'comp-pot', name: 'Potentiometer', type: 'potentiometer' },
     { id: 'comp-color', name: 'Color Sensor', type: 'color' },
     { id: 'comp-hum', name: 'DHT11 Sensor', type: 'humidity' },
+    { id: 'comp-soil', name: 'Soil Moisture', type: 'soilmoisture' },
     { id: 'comp-temp', name: 'Temperature', type: 'temperature' },
     { id: 'comp-button', name: 'Button', type: 'button' },
   ];
