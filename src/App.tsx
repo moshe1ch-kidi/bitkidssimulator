@@ -4,7 +4,7 @@ import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
-import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap } from 'lucide-react';
+import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, List, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap } from 'lucide-react';
 import { MicrobitBoard } from './components/MicrobitBoard';
 import { ElectronicComponents, DraggableComponent } from './components/ElectronicComponents';
 
@@ -244,7 +244,7 @@ export default function App() {
     callback: (value: string | null) => void;
   } | null>(null);
   const [promptInputValue, setPromptInputValue] = useState('');
-  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer'>('components');
+  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer' | 'planet_monitor'>('components');
 
   useEffect(() => {
     const checkMobile = () => {
@@ -301,12 +301,12 @@ export default function App() {
       components: ['Micro:bit', 'Light Sensor', 'Rainbow LED']
     },
     {
-      id: 'plant',
-      title: 'Plant Monitor',
-      description: 'Help your plants stay hydrated! If the Soil Moisture Sensor detects dry soil (value < 400), show a "Sad Face" icon on the Micro:bit screen.',
+      id: 'planet_monitor',
+      title: 'Planet Monitor',
+      description: 'Create a smart plant monitoring system. Measure soil moisture and display the status using LEDs and icons.',
       icon: <Droplets className="text-cyan-500" />,
-      difficulty: 'Easy',
-      components: ['Micro:bit', 'Soil Moisture Sensor']
+      difficulty: 'Medium',
+      components: ['Micro:bit', 'Soil Moisture Sensor', 'LEDs']
     },
     {
       id: 'thermostat',
@@ -362,6 +362,7 @@ export default function App() {
   const [lightLevels, setLightLevels] = useState<{ [compId: string]: number }>({});
   const [temperatures, setTemperatures] = useState<{ [compId: string]: number }>({});
   const [dht11Data, setDht11Data] = useState<{ [compId: string]: { mode: 'temp' | 'hum', value: number } }>({});
+  const [soilMoistures, setSoilMoistures] = useState<{ [compId: string]: number }>({});
 
   const getMotorStateForComponent = (compId: string) => {
     const wire = wires.find(w => 
@@ -455,6 +456,16 @@ export default function App() {
     return 0;
   };
 
+  const getSoilMoistureForPort = async (port: string) => {
+    const portId = `port-${port}`;
+    const wire = wires.find(w => w.from === portId || w.to === portId);
+    if (wire) {
+      const compId = wire.from === portId ? wire.to : wire.from;
+      return soilMoistures[compId] || 45;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     const handleResize = () => setResizeTrigger(prev => prev + 1);
     window.addEventListener('resize', handleResize);
@@ -512,6 +523,14 @@ export default function App() {
               contents: [
                 { kind: 'block', type: 'microbit_show_icon' },
                 { kind: 'block', type: 'microbit_show_text' },
+                {
+                  kind: 'block',
+                  type: 'microbit_ledgraph',
+                  inputs: {
+                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    MAX: { shadow: { type: 'math_number', fields: { NUM: 100 } } },
+                  },
+                },
                 { kind: 'block', type: 'microbit_set_led_color' },
                 { kind: 'block', type: 'microbit_led_toggle' },
                 { kind: 'block', type: 'microbit_set_pin' },
@@ -532,8 +551,8 @@ export default function App() {
                 { kind: 'block', type: 'microbit_color_sensor' },
                 { kind: 'block', type: 'microbit_light_sensor' },
                 { kind: 'block', type: 'microbit_temperature_sensor' },
-                { kind: 'block', type: 'microbit_humidity_sensor' },
                 { kind: 'block', type: 'microbit_dht11' },
+                { kind: 'block', type: 'microbit_soil_moisture' },
               ],
             },
             {
@@ -929,7 +948,7 @@ export default function App() {
                           </span>
                         ))}
                       </div>
-                      {(mission.id === 'nightlight' || mission.id === 'thermostat' || mission.id === 'visual_thermometer') && (
+                      {(mission.id === 'nightlight' || mission.id === 'thermostat' || mission.id === 'visual_thermometer' || mission.id === 'planet_monitor') && (
                         <button 
                           onClick={() => {
                             setHelpTab(mission.id as any);
@@ -1021,6 +1040,7 @@ export default function App() {
                     {helpTab === 'components' ? 'Component Guide & Connection Table' : 
                      helpTab === 'nightlight' ? 'Automatic Night Light - מדריך משימה' : 
                      helpTab === 'thermostat' ? 'Smart Fan - מדריך משימה' :
+                     helpTab === 'planet_monitor' ? 'Planet Monitor - Mission Guide' :
                      'Visual Thermometer - Mission Guide'}
                   </h2>
                   <div className="flex gap-4 mt-1">
@@ -1035,6 +1055,12 @@ export default function App() {
                       className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'nightlight' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                     >
                       Night Light Guide
+                    </button>
+                    <button 
+                      onClick={() => setHelpTab('planet_monitor')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'planet_monitor' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Planet Monitor
                     </button>
                     <button 
                       onClick={() => setHelpTab('thermostat')}
@@ -1182,6 +1208,128 @@ export default function App() {
                       <p className="text-blue-900 font-medium">
                         <span className="font-black">Why did we choose 300?</span> This is the "Threshold". At this value, the system decides to switch from "Day" mode to "Night" mode.
                       </p>
+                    </div>
+                  </section>
+                </div>
+              ) : helpTab === 'planet_monitor' ? (
+                <div className="max-w-4xl mx-auto space-y-10 text-left py-4" dir="ltr">
+                  <section className="bg-cyan-50 p-6 rounded-3xl border border-cyan-100">
+                    <h3 className="text-2xl font-black text-cyan-900 mb-4">Planet Monitor (Smart Plant Pot)</h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      Create a system that measures soil moisture levels using Micro:bit (BitKIDI), displays the status using control lights (LEDs), and allows real-time monitoring.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/SoilMoisturemodel.png" 
+                        alt="Soil Moisture Model" 
+                        className="rounded-2xl shadow-lg max-w-full h-auto border-4 border-white"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-cyan-500 pl-4">🔍 Technical Background: Soil Moisture Sensor</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      The sensor is an electronic component that measures the amount of water in the soil.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-cyan-700 mb-2">Structure</h4>
+                        <p className="text-sm text-slate-600">Consists of two electrodes ("forks") that are inserted into the soil.</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-cyan-700 mb-2">Operating Principle</h4>
+                        <p className="text-sm text-slate-600">Based on electrical resistance. Water conducts electricity; therefore, the wetter the soil, the lower the resistance and the more easily current passes.</p>
+                      </div>
+                    </div>
+                    <div className="bg-cyan-50 p-6 rounded-2xl border-l-4 border-cyan-500">
+                      <p className="text-cyan-900 font-medium">
+                        <span className="font-black">Values:</span> The Micro:bit receives values in the range of 0 (completely dry) to 1023 (very wet). These values can be converted to percentages (0-100%).
+                      </p>
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-cyan-500 pl-4">🛠️ Components List</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-cyan-600 font-bold">1</div>
+                        <span className="font-medium text-slate-700">Controller: BitKIDI (Micro:bit)</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-cyan-600 font-bold">2</div>
+                        <span className="font-medium text-slate-700">Sensor: Soil Moisture Sensor</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-cyan-600 font-bold">3</div>
+                        <span className="font-medium text-slate-700">Lights: 2 LEDs (Red and Green)</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-cyan-600 font-bold">4</div>
+                        <span className="font-medium text-slate-700">Cables: 3 RJ11 cables</span>
+                      </li>
+                    </ul>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-cyan-500 pl-4">🔌 Connection Diagram</h3>
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                      <table className="w-full text-left">
+                        <thead>
+                          <tr className="text-slate-400 text-xs uppercase">
+                            <th className="pb-4">Component</th>
+                            <th className="pb-4">Port</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-50">
+                          <tr>
+                            <td className="py-3 font-bold text-slate-900">Moisture Sensor</td>
+                            <td className="py-3 font-mono text-blue-600 font-bold">J1</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3 font-bold text-slate-900">Green LED</td>
+                            <td className="py-3 font-mono text-blue-600 font-bold">J2</td>
+                          </tr>
+                          <tr>
+                            <td className="py-3 font-bold text-slate-900">Red LED</td>
+                            <td className="py-3 font-mono text-blue-600 font-bold">J3</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/SoilMoisturesimulation.png" 
+                        alt="Connection Diagram" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-cyan-500 pl-4">💻 Code Logic (Algorithm)</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      The code is based on reading data from the sensor and making a decision based on a "Threshold" of 50% (analog value ~500).
+                    </p>
+                    <div className="bg-slate-900 text-white p-6 rounded-3xl space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-green-400 font-bold">Moist Soil (&gt; 50%):</span> Turn ON Green LED (J2), Turn OFF Red LED (J3), and show a "Happy" icon.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-red-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-red-400 font-bold">Dry Soil (&lt; 50%):</span> Turn OFF Green LED (J2), Turn ON Red LED (J3), and show a "Sad" icon or alert.</p>
+                      </div>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/SoilMoisturecode.png" 
+                        alt="Code Logic" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
                     </div>
                   </section>
                 </div>
@@ -1417,9 +1565,6 @@ export default function App() {
           <button onClick={loadProject} className="bg-white/20 hover:bg-white/30 text-white p-2 rounded-xl transition-all" title="Load Project">
             <FolderOpen size={24} />
           </button>
-          <button onClick={() => setShowMissionsModal(true)} className="bg-blue-500/40 hover:bg-blue-500/60 text-white p-2 rounded-xl transition-all border border-blue-300/30" title="Missions">
-            <ClipboardList size={24} />
-          </button>
           <button 
             onClick={() => {
               if (window.confirm("האם אתה בטוח שברצונך לנקות את הכל?")) {
@@ -1544,6 +1689,7 @@ export default function App() {
                       minHeight: '1200px'
                     }}
                   ></div>
+
                   <div className="w-full flex justify-between items-center z-20 mb-2 px-2 sticky top-0 bg-gray-50/90 backdrop-blur-sm py-2 rounded-lg shadow-sm">
                     <h2 className="text-lg font-semibold text-gray-800 tracking-wide">Simulation Board</h2>
                     <div className="flex items-center gap-1">
@@ -1562,6 +1708,13 @@ export default function App() {
                         onClick={() => setShowVariableWatcher(!showVariableWatcher)}
                         className={`p-2 rounded-full transition-colors ml-1 ${showVariableWatcher ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200'}`}
                         title={showVariableWatcher ? "Hide Variables" : "Show Variables"}
+                      >
+                        <List size={20} />
+                      </button>
+                      <button
+                        onClick={() => setShowMissionsModal(true)}
+                        className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded-full transition-colors ml-1"
+                        title="Missions"
                       >
                         <ClipboardList size={20} />
                       </button>
@@ -1599,6 +1752,7 @@ export default function App() {
                         getLightLevel={getLightLevelForPort}
                         getTemperature={getTemperatureForPort}
                         getHumidity={getHumidityForPort}
+                        getSoilMoisture={getSoilMoistureForPort}
                       />
 
                       {droppedComponents.map(comp => (
@@ -1636,6 +1790,10 @@ export default function App() {
                             temperature={temperatures[comp.id] || 25}
                             onTemperatureChange={(val) => {
                               setTemperatures(prev => ({ ...prev, [comp.id]: val }));
+                            }}
+                            soilMoisture={soilMoistures[comp.id] || 45}
+                            onSoilMoistureChange={(val) => {
+                              setSoilMoistures(prev => ({ ...prev, [comp.id]: val }));
                             }}
                             dht11Data={dht11Data[comp.id] || { mode: 'hum', value: 45 }}
                             onDht11Change={(data) => {
