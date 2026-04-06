@@ -65,7 +65,7 @@ const register = (gen: any) => {
 
   target['microbit_set_pin'] = function(block: any) {
     const pin = block.getFieldValue('PIN');
-    const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
+    const value = block.getFieldValue('VALUE');
     return `boardRef.current.setPin('${pin}', ${value});\n`;
   };
 

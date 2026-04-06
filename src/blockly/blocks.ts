@@ -116,7 +116,11 @@ export const microbitBlocks = [
           ['I1', 'I1'], ['I2', 'I2'], ['I3', 'I3'], ['I4', 'I4']
         ] 
       },
-      { type: 'input_value', name: 'VALUE', check: 'Number' },
+      {
+        type: 'field_dropdown',
+        name: 'VALUE',
+        options: [['ON', '1'], ['OFF', '0']]
+      },
     ],
     previousStatement: null,
     nextStatement: null,
@@ -224,7 +228,7 @@ export const microbitBlocks = [
   },
   {
     type: 'microbit_led_toggle',
-    message0: 'LED %1 toggle to %2',
+    message0: 'set pin %1 to %2',
     args0: [
       {
         type: 'field_dropdown',
