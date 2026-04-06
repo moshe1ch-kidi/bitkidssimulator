@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef, useRef } from 'react';
+ import React, { useState, useImperativeHandle, forwardRef, useRef } from 'react';
 
 interface MicrobitBoardProps {
   onPinClick: (pin: string) => void;
@@ -133,6 +133,9 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
       }
       if (onServoChange) {
         ['S1', 'S2', 'S3', 'S4'].forEach(port => onServoChange(port, 90));
+      }
+      if (onPinChange) {
+        ['J1', 'J2', 'J3', 'J4', 'I1', 'I2', 'I3', 'I4'].forEach(port => onPinChange(port, 0));
       }
       buttonACallbacks.current = [];
       buttonBCallbacks.current = [];
