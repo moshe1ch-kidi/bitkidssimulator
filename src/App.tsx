@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+ import React, { useState, useRef, useEffect } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
@@ -244,7 +244,7 @@ export default function App() {
     callback: (value: string | null) => void;
   } | null>(null);
   const [promptInputValue, setPromptInputValue] = useState('');
-  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer' | 'planet_monitor'>('components');
+  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer' | 'planet_monitor' | 'alarm'>('components');
 
   useEffect(() => {
     const checkMobile = () => {
@@ -286,8 +286,8 @@ export default function App() {
     },
     {
       id: 'alarm',
-      title: 'Distance Alarm',
-      description: 'Build a security system. If the Ultrasonic Sensor detects an object closer than 20cm, play a warning tone on the Buzzer.',
+      title: 'DISTANCE ALARM',
+      description: 'The Naughty Hedgehog: Building a "Smart Fence" to keep him safe! 🦔🚩',
       icon: <ShieldAlert className="text-red-500" />,
       difficulty: 'Medium',
       components: ['Micro:bit', 'Ultrasonic Sensor', 'Buzzer']
@@ -950,7 +950,7 @@ export default function App() {
                           </span>
                         ))}
                       </div>
-                      {(mission.id === 'nightlight' || mission.id === 'thermostat' || mission.id === 'visual_thermometer' || mission.id === 'planet_monitor') && (
+                      {(mission.id === 'nightlight' || mission.id === 'thermostat' || mission.id === 'visual_thermometer' || mission.id === 'planet_monitor' || mission.id === 'alarm') && (
                         <button 
                           onClick={() => {
                             setHelpTab(mission.id as any);
@@ -1043,6 +1043,7 @@ export default function App() {
                      helpTab === 'nightlight' ? 'Automatic Night Light - מדריך משימה' : 
                      helpTab === 'thermostat' ? 'Smart Fan - מדריך משימה' :
                      helpTab === 'planet_monitor' ? 'Planet Monitor - Mission Guide' :
+                     helpTab === 'alarm' ? 'Distance Alarm - מדריך משימה' :
                      'Visual Thermometer - Mission Guide'}
                   </h2>
                   <div className="flex gap-4 mt-1">
@@ -1075,6 +1076,12 @@ export default function App() {
                       className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'visual_thermometer' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                     >
                       Visual Thermometer
+                    </button>
+                    <button 
+                      onClick={() => setHelpTab('alarm')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'alarm' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Distance Alarm
                     </button>
                   </div>
                 </div>
@@ -1416,6 +1423,150 @@ export default function App() {
                     <p className="text-slate-600 leading-relaxed">
                       The Micro:bit reads values from 0 to 1023. The code converts these raw numbers into actual temperature degrees using mathematical formulas based on the thermistor's characteristics.
                     </p>
+                  </section>
+                </div>
+              ) : helpTab === 'alarm' ? (
+                <div className="max-w-4xl mx-auto space-y-10 text-left py-4" dir="ltr">
+                  <section className="bg-red-50 p-6 rounded-3xl border border-red-100">
+                    <h3 className="text-2xl font-black text-red-900 mb-4">The Naughty Hedgehog: Building a "Smart Fence" to keep him safe! 🦔🚩</h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      Hi friends! In our picture, we see a cute little hedgehog trying to leave his area on the Lego board. To make sure he stays safe and doesn't get lost in the house, we're building him a smart alert system.
+                      Instead of a burglar alarm, this time the system is like an "invisible fence" that keeps the hedgehog inside.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/ultrasonicmodel.png" 
+                        alt="System Model" 
+                        className="rounded-2xl shadow-lg max-w-full h-auto border-4 border-white"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-red-500 pl-4">How does the system keep the hedgehog safe? ⚙️</h3>
+                    <p className="text-slate-600 leading-relaxed">The system acts like a guard standing at the entrance and watching the way:</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-red-700 mb-2">The Eyes (Ultrasonic Sensor)</h4>
+                        <p className="text-sm text-slate-600">The sensor is installed right at the edge of the hedgehog's area. It sends invisible sound waves and "scans" the area in front of it.</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-red-700 mb-2">Detection</h4>
+                        <p className="text-sm text-slate-600">As long as the path is clear, everything is quiet. But as soon as the hedgehog approaches the exit (distance of less than 20 cm from the sensor), the sensor feels that something is "blocking" it.</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-red-700 mb-2">Reporting</h4>
+                        <p className="text-sm text-slate-600">The sensor runs to tell the brain (Micro:bit): "Hey! The hedgehog reached the edge! He's about to go out!".</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-red-700 mb-2">Warning</h4>
+                        <p className="text-sm text-slate-600">The Micro:bit immediately gives a command to the buzzer (Buzzer) to start beeping! 🔊 The beep tells us: "Pay attention, the hedgehog is trying to leave!".</p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-red-500 pl-4">How does the sensor work? 🔍</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      An ultrasonic sensor (Ultrasonic Sensor) is one of the most popular and impressive accessories that can be connected to the Micro:bit. It allows the board to "see" its environment by measuring distance from objects, just as bats or dolphins do.
+                    </p>
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                      <h4 className="font-bold text-slate-900">The sensor works on the principle of "Echo" (Sonar):</h4>
+                      <ul className="space-y-2 text-sm text-slate-600">
+                        <li><span className="font-bold text-red-600">Transmission:</span> The sensor sends a very high-frequency sound wave (ultrasonic), which is not audible to the human ear.</li>
+                        <li><span className="font-bold text-red-600">Impact:</span> The sound wave hits an object in front and returns back towards the sensor.</li>
+                        <li><span className="font-bold text-red-600">Calculation:</span> The sensor measures the time that passed from the moment of transmission to the moment of reception. Since the speed of sound is known, the Micro:bit can calculate the distance.</li>
+                      </ul>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/ultrasonicsensor.png" 
+                        alt="Ultrasonic Sensor" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-red-500 pl-4">Who participates in the system? 🛠️</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-red-600 font-bold">1</div>
+                        <span className="font-medium text-slate-700">Ultrasonic Sensor: Connected to port <span className="text-blue-600 font-bold">J1</span>.</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-red-600 font-bold">2</div>
+                        <span className="font-medium text-slate-700">Buzzer: Connected to port <span className="text-blue-600 font-bold">J3</span>.</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-red-600 font-bold">3</div>
+                        <span className="font-medium text-slate-700">LED Light: Connected to port <span className="text-blue-600 font-bold">J4</span>.</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-red-600 font-bold">4</div>
+                        <span className="font-medium text-slate-700">Micro:bit: The brain that manages everything.</span>
+                      </li>
+                    </ul>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/ultrasonicsimulation.png" 
+                        alt="Simulation Setup" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-red-500 pl-4">The Code 💻</h3>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/ultrasoniccode.png" 
+                        alt="Code" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-red-500 pl-4">Code Explanation 🧠</h3>
+                    <div className="bg-slate-900 text-white p-6 rounded-3xl space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-red-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-red-400 font-bold">"Forever" Loop:</span> The code checks the distance all the time without stopping, so we don't miss the hedgehog.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-blue-400 font-bold">Distance Check:</span> We use the "distance from ultrasonic sensor" block connected to J1.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-yellow-400 font-bold">Condition (If):</span> If the distance is less than 20 cm:</p>
+                      </div>
+                      <div className="flex items-start gap-3 ml-6">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                        <p>Turn ON port <span className="text-blue-300 font-bold">J4</span> (LED turns on).</p>
+                      </div>
+                      <div className="flex items-start gap-3 ml-6">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                        <p>Turn ON port <span className="text-blue-300 font-bold">J3</span> (Buzzer beeps).</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-green-400 font-bold">Else:</span> If the distance is greater than 20 cm (everything is fine):</p>
+                      </div>
+                      <div className="flex items-start gap-3 ml-6">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                        <p>Turn OFF port <span className="text-blue-300 font-bold">J4</span>.</p>
+                      </div>
+                      <div className="flex items-start gap-3 ml-6">
+                        <div className="w-1.5 h-1.5 bg-slate-400 rounded-full mt-2 shrink-0"></div>
+                        <p>Turn OFF port <span className="text-blue-300 font-bold">J3</span>.</p>
+                      </div>
+                    </div>
                   </section>
                 </div>
               ) : (
