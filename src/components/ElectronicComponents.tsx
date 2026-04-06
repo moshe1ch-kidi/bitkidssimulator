@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal, flushSync } from 'react-dom';
 import { motion, useDragControls } from 'motion/react';
 import { Thermometer, Droplet } from 'lucide-react';
@@ -110,20 +110,85 @@ const LedUI = ({ color = '#3b82f6', onColorChange, isOn = false }: { color?: str
   );
 };
 
-const BuzzerUI = () => (
-  <div className="relative w-24 h-20 bg-[#eab308] rounded-xl shadow-lg border-b-[12px] border-[#a16207] flex flex-col items-center justify-start pt-1">
-    <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
-       <div className="w-10 h-10 rounded-full bg-[#111] border-2 border-[#333] shadow-[0_4px_4px_rgba(0,0,0,0.2)] flex items-center justify-center relative">
-          <div className="w-2.5 h-2.5 rounded-full bg-[#000] shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"></div>
-       </div>
+const BuzzerUI = ({ isOn = false }: { isOn?: boolean }) => {
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const oscRef = useRef<OscillatorNode | null>(null);
+  const gainRef = useRef<GainNode | null>(null);
+
+  useEffect(() => {
+    if (isOn) {
+      if (!audioCtxRef.current) {
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 tone
+      
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.01);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start();
+      
+      oscRef.current = osc;
+      gainRef.current = gain;
+    } else {
+      if (oscRef.current && gainRef.current && audioCtxRef.current) {
+        const ctx = audioCtxRef.current;
+        const gain = gainRef.current;
+        const osc = oscRef.current;
+        
+        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.01);
+        setTimeout(() => {
+          osc.stop();
+          osc.disconnect();
+          gain.disconnect();
+        }, 20);
+        
+        oscRef.current = null;
+        gainRef.current = null;
+      }
+    }
+
+    return () => {
+      if (oscRef.current) {
+        oscRef.current.stop();
+        oscRef.current.disconnect();
+      }
+      if (gainRef.current) {
+        gainRef.current.disconnect();
+      }
+    };
+  }, [isOn]);
+
+  return (
+    <div className="relative w-24 h-20 bg-[#eab308] rounded-xl shadow-lg border-b-[12px] border-[#a16207] flex flex-col items-center justify-start pt-1">
+      <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
+         <div className={`w-10 h-10 rounded-full bg-[#111] border-2 border-[#333] shadow-[0_4px_4px_rgba(0,0,0,0.2)] flex items-center justify-center relative ${isOn ? 'animate-pulse' : ''}`}>
+            <div className="w-2.5 h-2.5 rounded-full bg-[#000] shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"></div>
+            {isOn && (
+              <div className="absolute -inset-2 border-2 border-yellow-400 rounded-full animate-ping opacity-50"></div>
+            )}
+         </div>
+      </div>
+      <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-3">
+         <div className="w-3 h-3 rounded-full bg-[#713f12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
+         <div className="w-3 h-3 rounded-full bg-[#713f12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
+         <div className="w-3 h-3 rounded-full bg-[#713f12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
+      </div>
     </div>
-    <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-3">
-       <div className="w-3 h-3 rounded-full bg-[#713f12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
-       <div className="w-3 h-3 rounded-full bg-[#713f12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
-       <div className="w-3 h-3 rounded-full bg-[#713f12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
-    </div>
-  </div>
-);
+  );
+};
 
 const ServoUI = ({ angle = 90 }: { angle?: number }) => (
   <div className="relative w-24 h-24 bg-[#3b82f6] rounded-xl shadow-lg border-b-[12px] border-[#1d4ed8] flex flex-col items-center justify-start pt-2">
@@ -516,7 +581,7 @@ export const DraggableComponent: React.FC<{
     switch (comp.type) {
       case 'ultrasonic': return <UltrasonicUI distance={ultrasonicDistance} onDistanceChange={onUltrasonicChange} />;
       case 'led': return <LedUI color={ledColor} onColorChange={onLedColorChange} isOn={ledOn} />;
-      case 'buzzer': return <BuzzerUI />;
+      case 'buzzer': return <BuzzerUI isOn={ledOn} />;
       case 'servo': return <ServoUI angle={servoAngle} />;
       case 'photosensitive': return <LightSensorLDRUI lightLevel={lightLevel} onLightLevelChange={onLightLevelChange} />;
       case 'potentiometer': return <PotentiometerUI />;
