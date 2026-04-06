@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+ import React, { useState, useRef, useEffect } from 'react';
 import { createPortal, flushSync } from 'react-dom';
 import { motion, useDragControls } from 'motion/react';
-import { Thermometer, Droplet } from 'lucide-react';
+import { Thermometer, Droplet, Volume2 } from 'lucide-react';
 
 export interface ElectronicComponentsProps {
   onComponentClick?: (id: string) => void;
@@ -111,6 +111,7 @@ const LedUI = ({ color = '#3b82f6', onColorChange, isOn = false }: { color?: str
 };
 
 const BuzzerUI = ({ isOn = false }: { isOn?: boolean }) => {
+  const [volume, setVolume] = useState(0.1);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const oscRef = useRef<OscillatorNode | null>(null);
   const gainRef = useRef<GainNode | null>(null);
@@ -133,7 +134,7 @@ const BuzzerUI = ({ isOn = false }: { isOn?: boolean }) => {
       osc.frequency.setValueAtTime(880, ctx.currentTime); // A5 tone
       
       gain.gain.setValueAtTime(0, ctx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.01);
+      gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.01);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -150,9 +151,11 @@ const BuzzerUI = ({ isOn = false }: { isOn?: boolean }) => {
         
         gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.01);
         setTimeout(() => {
-          osc.stop();
-          osc.disconnect();
-          gain.disconnect();
+          try {
+            osc.stop();
+            osc.disconnect();
+            gain.disconnect();
+          } catch (e) {}
         }, 20);
         
         oscRef.current = null;
@@ -162,8 +165,10 @@ const BuzzerUI = ({ isOn = false }: { isOn?: boolean }) => {
 
     return () => {
       if (oscRef.current) {
-        oscRef.current.stop();
-        oscRef.current.disconnect();
+        try {
+          oscRef.current.stop();
+          oscRef.current.disconnect();
+        } catch (e) {}
       }
       if (gainRef.current) {
         gainRef.current.disconnect();
@@ -171,16 +176,50 @@ const BuzzerUI = ({ isOn = false }: { isOn?: boolean }) => {
     };
   }, [isOn]);
 
+  // Update volume in real-time
+  useEffect(() => {
+    if (gainRef.current && audioCtxRef.current) {
+      gainRef.current.gain.setTargetAtTime(volume, audioCtxRef.current.currentTime, 0.01);
+    }
+  }, [volume]);
+
   return (
-    <div className="relative w-24 h-20 bg-[#eab308] rounded-xl shadow-lg border-b-[12px] border-[#a16207] flex flex-col items-center justify-start pt-1">
+    <div className="relative w-24 h-24 bg-[#eab308] rounded-xl shadow-lg border-b-[12px] border-[#a16207] flex flex-col items-center justify-start pt-1">
       <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
          <div className={`w-10 h-10 rounded-full bg-[#111] border-2 border-[#333] shadow-[0_4px_4px_rgba(0,0,0,0.2)] flex items-center justify-center relative ${isOn ? 'animate-pulse' : ''}`}>
             <div className="w-2.5 h-2.5 rounded-full bg-[#000] shadow-[inset_0_2px_4px_rgba(0,0,0,0.8)]"></div>
             {isOn && (
-              <div className="absolute -inset-2 border-2 border-yellow-400 rounded-full animate-ping opacity-50"></div>
+              <div className="pointer-events-none">
+                <div className="absolute -inset-2 border-2 border-yellow-400 rounded-full animate-ping opacity-50"></div>
+                <div className="absolute -inset-4 border border-yellow-300 rounded-full animate-ping opacity-30" style={{ animationDelay: '0.2s' }}></div>
+                <div className="absolute -inset-6 border border-yellow-200 rounded-full animate-ping opacity-10" style={{ animationDelay: '0.4s' }}></div>
+              </div>
             )}
          </div>
       </div>
+      
+      {/* Volume Slider */}
+      <div className="mt-auto mb-3 px-2 w-full flex flex-col items-center gap-0.5 relative z-30">
+         <div className="flex items-center justify-between w-full px-1 pointer-events-none">
+            <Volume2 className="w-3 h-3 text-yellow-900 opacity-70" />
+            <span className="text-[8px] font-bold text-yellow-900 opacity-70">{Math.round(volume * 200)}%</span>
+         </div>
+         <input 
+           type="range" 
+           min="0" 
+           max="0.5" 
+           step="0.01" 
+           value={volume} 
+           onChange={(e) => {
+             e.stopPropagation();
+             setVolume(parseFloat(e.target.value));
+           }}
+           onPointerDown={(e) => e.stopPropagation()}
+           onMouseDown={(e) => e.stopPropagation()}
+           className="w-full h-1 bg-yellow-700 rounded-lg appearance-none cursor-pointer accent-yellow-900 relative z-40"
+         />
+      </div>
+
       <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-3">
          <div className="w-3 h-3 rounded-full bg-[#713f12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
          <div className="w-3 h-3 rounded-full bg-[#713f12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
