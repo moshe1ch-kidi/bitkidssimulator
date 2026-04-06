@@ -532,7 +532,6 @@ export default function App() {
                   },
                 },
                 { kind: 'block', type: 'microbit_set_led_color' },
-                { kind: 'block', type: 'microbit_led_toggle' },
                 { kind: 'block', type: 'microbit_set_pin' },
                 { kind: 'block', type: 'microbit_set_motor' },
                 { kind: 'block', type: 'microbit_set_servo' },
@@ -754,6 +753,9 @@ export default function App() {
   const stopCode = () => {
     executionIdRef.current += 1;
     boardRef.current?.clear();
+    setPinStates({});
+    setMotorStates({});
+    setServoStates({ 'S1': 90, 'S2': 90, 'S3': 90, 'S4': 90 });
   };
 
   const handleNodeClick = (id: string) => {
