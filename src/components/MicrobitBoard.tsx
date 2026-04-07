@@ -1,4 +1,4 @@
- import React, { useState, useImperativeHandle, forwardRef, useRef } from 'react';
+import React, { useState, useImperativeHandle, forwardRef, useRef } from 'react';
 
 interface MicrobitBoardProps {
   onPinClick: (pin: string) => void;
@@ -63,6 +63,7 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
   const buttonBCallbacks = useRef<(() => void)[]>([]);
   const buttonABCallbacks = useRef<(() => void)[]>([]);
   const greenFlagCallbacks = useRef<(() => void)[]>([]);
+  const broadcastCallbacks = useRef<{ [key: string]: (() => void)[] }>({});
 
   useImperativeHandle(ref, () => ({
     showIcon: (icon: string) => {
@@ -141,6 +142,7 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
       buttonBCallbacks.current = [];
       buttonABCallbacks.current = [];
       greenFlagCallbacks.current = [];
+      broadcastCallbacks.current = {};
     },
     onButtonA: (callback: () => void) => {
       buttonACallbacks.current.push(callback);
@@ -233,6 +235,19 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
         newLeds[row * 5 + col] = true;
       }
       setLeds(newLeds);
+    },
+    broadcast: (shape: string, color: string) => {
+      const key = `${shape}_${color}`;
+      if (broadcastCallbacks.current[key]) {
+        broadcastCallbacks.current[key].forEach(cb => cb());
+      }
+    },
+    onBroadcast: (shape: string, color: string, callback: () => void) => {
+      const key = `${shape}_${color}`;
+      if (!broadcastCallbacks.current[key]) {
+        broadcastCallbacks.current[key] = [];
+      }
+      broadcastCallbacks.current[key].push(callback);
     }
   }));
 

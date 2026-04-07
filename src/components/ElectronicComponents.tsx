@@ -1,4 +1,4 @@
- import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal, flushSync } from 'react-dom';
 import { motion, useDragControls } from 'motion/react';
 import { Thermometer, Droplet, Volume2 } from 'lucide-react';
