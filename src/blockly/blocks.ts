@@ -112,8 +112,7 @@ export const microbitBlocks = [
         type: 'field_dropdown', 
         name: 'PIN', 
         options: [
-          ['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4'],
-          ['I1', 'I1'], ['I2', 'I2'], ['I3', 'I3'], ['I4', 'I4']
+          ['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4']
         ] 
       },
       {
@@ -221,28 +220,6 @@ export const microbitBlocks = [
     args0: [
       { type: 'input_value', name: 'VALUE', check: 'Number' },
       { type: 'input_value', name: 'MAX', check: 'Number' },
-    ],
-    previousStatement: null,
-    nextStatement: null,
-    colour: '#4C97FF',
-  },
-  {
-    type: 'microbit_led_toggle',
-    message0: 'set pin %1 to %2',
-    args0: [
-      {
-        type: 'field_dropdown',
-        name: 'PORT',
-        options: [
-          ['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4'],
-          ['I1', 'I1'], ['I2', 'I2'], ['I3', 'I3'], ['I4', 'I4']
-        ]
-      },
-      {
-        type: 'field_dropdown',
-        name: 'STATE',
-        options: [['ON', 'ON'], ['OFF', 'OFF']]
-      }
     ],
     previousStatement: null,
     nextStatement: null,
@@ -477,6 +454,19 @@ export const microbitBlocks = [
     inputsInline: false,
     output: 'Boolean',
     colour: '#59C059'
+  },
+  {
+    type: 'text',
+    message0: '" %1 "',
+    args0: [
+      {
+        type: 'field_input',
+        name: 'TEXT',
+        text: '',
+      },
+    ],
+    output: 'String',
+    colour: '#59C059',
   },
 ];
 

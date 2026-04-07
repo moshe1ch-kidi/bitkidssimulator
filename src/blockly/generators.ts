@@ -120,13 +120,6 @@ const register = (gen: any) => {
     return [`await boardRef.current.${method}('${port}')`, Order.AWAIT];
   };
 
-  target['microbit_led_toggle'] = function(block: any) {
-    const port = block.getFieldValue('PORT');
-    const state = block.getFieldValue('STATE');
-    const value = state === 'ON' ? 1 : 0;
-    return `boardRef.current.setPin('${port}', ${value});\n`;
-  };
-
   target['microbit_play_tone'] = function(block: any) {
     const tone = javascriptGenerator.valueToCode(block, 'TONE', Order.ATOMIC) || '440';
     return `boardRef.current.playTone(${tone});\n`;
@@ -234,6 +227,11 @@ const register = (gen: any) => {
   target['operator_not'] = function(block: any) {
     const val = javascriptGenerator.valueToCode(block, 'BOOL', Order.LOGICAL_NOT) || 'false';
     return [`!${val}`, Order.LOGICAL_NOT];
+  };
+
+  target['text'] = function(block: any) {
+    const text = block.getFieldValue('TEXT');
+    return [`'${text}'`, Order.ATOMIC];
   };
 };
 
