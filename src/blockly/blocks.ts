@@ -34,6 +34,20 @@ const createIconDropdownOption = (name: string, key: string): [any, string] => {
   return [{ src: dataUri, width: 24, height: 24, alt: name }, key];
 };
 
+const SHAPE_OPTIONS = [
+  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>', width: 20, height: 20, alt: 'Star' }, 'STAR'],
+  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>', width: 20, height: 20, alt: 'Heart' }, 'HEART'],
+  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>', width: 20, height: 20, alt: 'Circle' }, 'CIRCLE'],
+  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>', width: 20, height: 20, alt: 'Square' }, 'SQUARE'],
+];
+
+const COLOR_OPTIONS = [
+  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="red"/></svg>', width: 20, height: 20, alt: 'Red' }, 'RED'],
+  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="green"/></svg>', width: 20, height: 20, alt: 'Green' }, 'GREEN'],
+  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="blue"/></svg>', width: 20, height: 20, alt: 'Blue' }, 'BLUE'],
+  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="yellow"/></svg>', width: 20, height: 20, alt: 'Yellow' }, 'YELLOW'],
+];
+
 export const microbitBlocks = [
   {
     type: 'microbit_show_icon',
@@ -246,6 +260,28 @@ export const microbitBlocks = [
         height: 29,
         alt: 'Green Flag'
       }
+    ],
+    nextStatement: null,
+    colour: '#FFBF00',
+    hat: 'cap',
+  },
+  {
+    type: 'event_broadcast',
+    message0: 'broadcast message %1 %2',
+    args0: [
+      { type: 'field_dropdown', name: 'SHAPE', options: SHAPE_OPTIONS },
+      { type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    colour: '#FFBF00',
+  },
+  {
+    type: 'event_when_received',
+    message0: 'when message %1 %2 received',
+    args0: [
+      { type: 'field_dropdown', name: 'SHAPE', options: SHAPE_OPTIONS },
+      { type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS },
     ],
     nextStatement: null,
     colour: '#FFBF00',

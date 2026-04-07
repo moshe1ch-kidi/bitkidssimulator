@@ -18,7 +18,13 @@ const register = (gen: any) => {
     }
 
     // Inject checkStop() and updateVars() before every statement block (except hat blocks which define the function)
-    const isHatBlock = block.type === 'microbit_button_pressed' || block.type === 'event_when_green_flag_clicked';
+    const isHatBlock = block.type === 'microbit_button_pressed' || block.type === 'event_when_green_flag_clicked' || block.type === 'event_when_received';
+    
+    // Scratch-like behavior: ignore top-level blocks that are not hat blocks
+    if (!block.getParent() && !isHatBlock) {
+      return '';
+    }
+
     const isStatementBlock = !block.outputConnection;
     const checkStopCode = (!isHatBlock && isStatementBlock) ? 'checkStop();\n' : '';
 
@@ -39,6 +45,11 @@ const register = (gen: any) => {
     }
     if (block.type === 'event_when_green_flag_clicked') {
       return `boardRef.current.onGreenFlag(async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
+    }
+    if (block.type === 'event_when_received') {
+      const shape = block.getFieldValue('SHAPE');
+      const color = block.getFieldValue('COLOR');
+      return `boardRef.current.onBroadcast('${shape}', '${color}', async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
     }
 
     return checkStopCode + code + updateVarsCode + nextCode;
@@ -126,6 +137,16 @@ const register = (gen: any) => {
   };
 
   target['event_when_green_flag_clicked'] = function(block: any) {
+    return ''; // Handled by scrub_
+  };
+
+  target['event_broadcast'] = function(block: any) {
+    const shape = block.getFieldValue('SHAPE');
+    const color = block.getFieldValue('COLOR');
+    return `boardRef.current.broadcast('${shape}', '${color}');\n`;
+  };
+
+  target['event_when_received'] = function(block: any) {
     return ''; // Handled by scrub_
   };
 
