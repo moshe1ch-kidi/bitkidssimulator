@@ -1,4 +1,4 @@
- import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
@@ -590,6 +590,7 @@ export default function App() {
               },
               contents: [
                 { kind: 'block', type: 'math_number' },
+                { kind: 'block', type: 'text' },
                 { kind: 'block', type: 'logic_boolean' },
                 {
                   kind: 'block',
