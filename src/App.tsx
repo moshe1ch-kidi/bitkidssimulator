@@ -4,7 +4,8 @@ import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
-import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, List, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap } from 'lucide-react';
+import { pythonGenerator } from './blockly/python_generators';
+import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, List, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap, Code } from 'lucide-react';
 import { MicrobitBoard } from './components/MicrobitBoard';
 import { ElectronicComponents, DraggableComponent } from './components/ElectronicComponents';
 
@@ -245,6 +246,8 @@ export default function App() {
   } | null>(null);
   const [promptInputValue, setPromptInputValue] = useState('');
   const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer' | 'planet_monitor' | 'alarm'>('components');
+  const [showPythonModal, setShowPythonModal] = useState(false);
+  const [pythonCode, setPythonCode] = useState('');
 
   useEffect(() => {
     const checkMobile = () => {
@@ -511,6 +514,8 @@ export default function App() {
               contents: [
                 { kind: 'block', type: 'event_when_green_flag_clicked' },
                 { kind: 'block', type: 'microbit_button_pressed' },
+                { kind: 'block', type: 'event_broadcast' },
+                { kind: 'block', type: 'event_when_received' },
               ],
             },
             {
@@ -757,6 +762,14 @@ export default function App() {
     setPinStates({});
     setMotorStates({});
     setServoStates({ 'S1': 90, 'S2': 90, 'S3': 90, 'S4': 90 });
+  };
+
+  const translateToPython = () => {
+    if (workspace.current) {
+      const code = pythonGenerator.workspaceToCode(workspace.current);
+      setPythonCode(code);
+      setShowPythonModal(true);
+    }
   };
 
   const handleNodeClick = (id: string) => {
@@ -1029,6 +1042,58 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Python Code Modal */}
+      <AnimatePresence>
+        {showPythonModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[10000] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[80vh]"
+            >
+              <div className="bg-blue-600 p-6 text-white flex justify-between items-center">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/20 p-2 rounded-xl">
+                    <Code size={24} />
+                  </div>
+                  <h2 className="text-2xl font-bold">Python Code</h2>
+                </div>
+                <button 
+                  onClick={() => setShowPythonModal(false)}
+                  className="hover:bg-white/20 p-2 rounded-full transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              
+              <div className="p-6 overflow-y-auto bg-slate-900 flex-1">
+                <pre className="text-blue-400 font-mono text-sm leading-relaxed text-left" dir="ltr">
+                  {pythonCode || "# No code to display"}
+                </pre>
+              </div>
+
+              <div className="p-4 bg-slate-100 border-t flex justify-end gap-3">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(pythonCode);
+                  }}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors shadow-lg"
+                >
+                  Copy Code
+                </button>
+                <button
+                  onClick={() => setShowPythonModal(false)}
+                  className="px-6 py-2 bg-slate-300 text-slate-700 rounded-xl font-bold hover:bg-slate-400 transition-colors"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {showHelpModal && (
         <div className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -1707,6 +1772,9 @@ export default function App() {
           </button>
           <button onClick={stopCode} className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-xl shadow-lg border-b-4 border-red-700 active:border-b-0 active:translate-y-1 transition-all" title="Stop Code">
             <Square size={24} fill="currentColor" />
+          </button>
+          <button onClick={translateToPython} className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-xl shadow-lg border-b-4 border-blue-700 active:border-b-0 active:translate-y-1 transition-all" title="Translate to Python">
+            <Code size={24} />
           </button>
         </div>
 
