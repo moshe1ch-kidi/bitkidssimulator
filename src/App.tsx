@@ -539,6 +539,7 @@ export default function App() {
                 { kind: 'block', type: 'microbit_set_led_color' },
                 { kind: 'block', type: 'microbit_set_pin' },
                 { kind: 'block', type: 'microbit_set_motor' },
+                { kind: 'block', type: 'microbit_stop_motor' },
                 { kind: 'block', type: 'microbit_set_servo' },
                 { kind: 'block', type: 'microbit_play_tone' },
               ],
@@ -748,10 +749,15 @@ export default function App() {
         setVariableValues({}); // Reset variables on start
         const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
         // eslint-disable-next-line no-new-func
-        new AsyncFunction('boardRef', 'checkStop', 'updateVars', code)(boardRef, checkStop, updateVars);
+        const result = new AsyncFunction('boardRef', 'checkStop', 'updateVars', code)(boardRef, checkStop, updateVars);
+        if (result instanceof Promise) {
+          result.catch((e: any) => {
+            if (e?.message !== 'Execution stopped') console.error(e);
+          });
+        }
         boardRef.current?.triggerGreenFlag();
-      } catch (e) {
-        console.error(e);
+      } catch (e: any) {
+        if (e?.message !== 'Execution stopped') console.error(e);
       }
     }
   };
@@ -825,9 +831,25 @@ export default function App() {
       // Rule: GeekServo can connect to S1-S4 OR M1-M4
       const isServoComp = to.includes('comp-servo');
       const isGeekServoComp = to.includes('comp-geekservo');
+      const isColorComp = to.includes('comp-color');
       const isSPort = from.includes('port-S');
       const isMPort = from.includes('port-M');
+      const isIPort = from.includes('port-I');
       
+      if (isColorComp && !isIPort) {
+        setConnectionError("Color Sensor must connect to I1, I2, I3, or I4 (I2C ports).");
+        setTimeout(() => setConnectionError(null), 3000);
+        setDrawingWireFrom(null);
+        return;
+      }
+
+      if (!isColorComp && isIPort) {
+        setConnectionError("I1-I4 ports are reserved for I2C components (like Color Sensor).");
+        setTimeout(() => setConnectionError(null), 3000);
+        setDrawingWireFrom(null);
+        return;
+      }
+
       if (isServoComp && !isSPort) {
         setConnectionError("Servo motors can only connect to S1, S2, S3, or S4.");
         setTimeout(() => setConnectionError(null), 3000);
