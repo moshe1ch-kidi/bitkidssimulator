@@ -41,15 +41,15 @@ const register = (gen: any) => {
     if (block.type === 'microbit_button_pressed') {
       const button = block.getFieldValue('BUTTON');
       const methodName = button === 'A+B' ? 'onButtonAB' : `onButton${button}`;
-      return `boardRef.current.${methodName}(async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
+      return `boardRef.current.${methodName}(async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e?.message !== 'Execution stopped') console.error(e); }\n});\n`;
     }
     if (block.type === 'event_when_green_flag_clicked') {
-      return `boardRef.current.onGreenFlag(async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
+      return `boardRef.current.onGreenFlag(async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e?.message !== 'Execution stopped') console.error(e); }\n});\n`;
     }
     if (block.type === 'event_when_received') {
       const shape = block.getFieldValue('SHAPE');
       const color = block.getFieldValue('COLOR');
-      return `boardRef.current.onBroadcast('${shape}', '${color}', async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e.message !== 'Execution stopped') console.error(e); }\n});\n`;
+      return `boardRef.current.onBroadcast('${shape}', '${color}', async () => {\ntry {\n${checkStopCode}${code}${updateVarsCode}${nextCode}} catch (e) { if (e?.message !== 'Execution stopped') console.error(e); }\n});\n`;
     }
 
     return checkStopCode + code + updateVarsCode + nextCode;
@@ -85,6 +85,11 @@ const register = (gen: any) => {
     const direction = block.getFieldValue('DIRECTION');
     const speed = block.getFieldValue('SPEED');
     return `boardRef.current.setMotor('${port}', '${direction}', ${speed});\n`;
+  };
+
+  target['microbit_stop_motor'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return `boardRef.current.setMotor('${port}', 'FD', 0);\n`;
   };
 
   target['microbit_set_servo'] = function(block: any) {

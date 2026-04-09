@@ -70,6 +70,11 @@ const registerPython = (gen: any) => {
     return `microbit.set_motor('${port}', '${direction}', ${speed})\n`;
   };
 
+  target['microbit_stop_motor'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return `microbit.set_motor('${port}', 'FORWARD', 0)\n`;
+  };
+
   target['microbit_set_servo'] = function(block: any) {
     const port = block.getFieldValue('PORT');
     const angle = block.getFieldValue('ANGLE');
