@@ -676,6 +676,15 @@ export default function App() {
                 row: 'blocklyTreeRowCustom variables-category'
               },
             },
+            {
+              kind: 'category',
+              name: 'My Blocks',
+              colour: '#FF6680',
+              custom: 'MY_BLOCKS_CUSTOM',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom myblocks-category'
+              }
+            },
           ],
         } as any,
         grid: { spacing: 20, length: 3, colour: '#ccc', snap: true },
@@ -697,6 +706,70 @@ export default function App() {
         trashcan: true,
         renderer: 'zelos',
         theme: Blockly.Themes.Zelos,
+      });
+
+      // Register the custom category callback for My Blocks
+      workspace.current.registerToolboxCategoryCallback('MY_BLOCKS_CUSTOM', (ws: any) => {
+        const xmlList = [];
+        
+        try {
+          if (!ws || (typeof ws.isDisposed === 'function' && ws.isDisposed()) || typeof ws.getAllBlocks !== 'function') {
+            return xmlList;
+          }
+
+          // 1. Add the "Make a Block" button
+          const button = document.createElement('button');
+          button.setAttribute('text', 'Make a Block');
+          button.setAttribute('callbackKey', 'MAKE_A_BLOCK');
+          xmlList.push(button);
+          
+          // 2. Add all existing procedure call blocks
+          if (Blockly.Procedures && typeof Blockly.Procedures.allProcedures === 'function') {
+            const procedures = Blockly.Procedures.allProcedures(ws);
+            if (procedures && procedures[0]) {
+              for (let i = 0; i < procedures[0].length; i++) {
+                const name = procedures[0][i][0];
+                const callBlock = document.createElement('block');
+                callBlock.setAttribute('type', 'procedures_callnoreturn');
+                const mutation = document.createElement('mutation');
+                mutation.setAttribute('name', name);
+                callBlock.appendChild(mutation);
+                xmlList.push(callBlock);
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error in MY_BLOCKS_CUSTOM callback:', e);
+        }
+        
+        return xmlList;
+      });
+
+      // Register the button callback
+      workspace.current.registerButtonCallback('MAKE_A_BLOCK', () => {
+        const ws = workspace.current;
+        if (ws && (typeof ws.isDisposed !== 'function' || !ws.isDisposed())) {
+          try {
+            // Find a legal name manually to avoid potential internal getAllBlocks issues
+            let name = 'my block';
+            let n = 1;
+            const existingNames = Blockly.Procedures.allProcedures(ws)[0].map(p => p[0]);
+            while (existingNames.includes(name)) {
+              name = 'my block' + (n++);
+            }
+
+            const block = ws.newBlock('procedures_defnoreturn');
+            block.setFieldValue(name, 'NAME');
+            block.initSvg();
+            block.render();
+            // Position it nicely
+            const metrics = ws.getMetrics();
+            block.moveBy(metrics.viewLeft + 50, metrics.viewTop + 50);
+            ws.centerOnBlock(block.id);
+          } catch (e) {
+            console.error('Error creating procedure:', e);
+          }
+        }
       });
     }
 
