@@ -18,7 +18,10 @@ const register = (gen: any) => {
     }
 
     // Inject checkStop() and updateVars() before every statement block (except hat blocks which define the function)
-    const isHatBlock = block.type === 'microbit_button_pressed' || block.type === 'event_when_green_flag_clicked' || block.type === 'event_when_received';
+    const isHatBlock = block.type === 'microbit_button_pressed' || 
+                       block.type === 'event_when_green_flag_clicked' || 
+                       block.type === 'event_when_received' ||
+                       block.type === 'procedures_defnoreturn';
     
     // Scratch-like behavior: ignore top-level blocks that are not hat blocks
     if (!block.getParent() && !isHatBlock) {
@@ -53,6 +56,17 @@ const register = (gen: any) => {
     }
 
     return checkStopCode + code + updateVarsCode + nextCode;
+  };
+
+  target['procedures_defnoreturn'] = function(block: any) {
+    const funcName = javascriptGenerator.getProcedureName(block.getFieldValue('NAME'));
+    const branch = javascriptGenerator.statementToCode(block, 'STACK');
+    return `async function ${funcName}() {\n${branch}}\n`;
+  };
+
+  target['procedures_callnoreturn'] = function(block: any) {
+    const funcName = javascriptGenerator.getProcedureName(block.getFieldValue('NAME'));
+    return `await ${funcName}();\n`;
   };
 
   target['microbit_show_icon'] = function(block: any) {

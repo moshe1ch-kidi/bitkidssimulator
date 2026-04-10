@@ -12,7 +12,10 @@ const registerPython = (gen: any) => {
       nextCode = gen.blockToCode(block.nextConnection.targetBlock()) as string;
     }
 
-    const isHatBlock = block.type === 'microbit_button_pressed' || block.type === 'event_when_green_flag_clicked' || block.type === 'event_when_received';
+    const isHatBlock = block.type === 'microbit_button_pressed' || 
+                       block.type === 'event_when_green_flag_clicked' || 
+                       block.type === 'event_when_received' ||
+                       block.type === 'procedures_defnoreturn';
     
     // Scratch-like behavior: ignore top-level blocks that are not hat blocks
     if (!block.getParent() && !isHatBlock) {
