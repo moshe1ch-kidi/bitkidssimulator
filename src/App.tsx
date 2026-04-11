@@ -366,6 +366,7 @@ export default function App() {
   const [temperatures, setTemperatures] = useState<{ [compId: string]: number }>({});
   const [dht11Data, setDht11Data] = useState<{ [compId: string]: { mode: 'temp' | 'hum', value: number } }>({});
   const [soilMoistures, setSoilMoistures] = useState<{ [compId: string]: number }>({});
+  const [tm1637States, setTm1637States] = useState<{ [key: string]: string | number }>({});
 
   const getMotorStateForComponent = (compId: string) => {
     const wire = wires.find(w => 
@@ -389,6 +390,19 @@ export default function App() {
       const portId = wire.from.startsWith('port-S') ? wire.from : wire.to;
       const portName = portId.replace('port-', '');
       return servoStates[portName];
+    }
+    return undefined;
+  };
+
+  const getTM1637ValueForComponent = (compId: string) => {
+    const wire = wires.find(w => 
+      (w.from === compId && w.to.startsWith('port-J')) || 
+      (w.to === compId && w.from.startsWith('port-J'))
+    );
+    if (wire) {
+      const portId = wire.from.startsWith('port-J') ? wire.from : wire.to;
+      const portName = portId.replace('port-', '');
+      return tm1637States[portName];
     }
     return undefined;
   };
@@ -538,6 +552,13 @@ export default function App() {
                 },
                 { kind: 'block', type: 'microbit_set_led_color' },
                 { kind: 'block', type: 'microbit_set_pin' },
+                {
+                  kind: 'block',
+                  type: 'microbit_tm1637_show_number',
+                  inputs: {
+                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
                 { kind: 'block', type: 'microbit_set_motor' },
                 { kind: 'block', type: 'microbit_stop_motor' },
                 { kind: 'block', type: 'microbit_set_servo' },
@@ -2064,6 +2085,10 @@ export default function App() {
                         onPinChange={(port, value) => {
                           setPinStates(prev => ({ ...prev, [port]: value }));
                         }}
+                        tm1637States={tm1637States}
+                        onTM1637Change={(port, value) => {
+                          setTm1637States(prev => ({ ...prev, [port]: value }));
+                        }}
                         getUltrasonicDistance={getUltrasonicDistanceForPort}
                         getColor={getColorForPort}
                         getLightLevel={getLightLevelForPort}
@@ -2087,6 +2112,7 @@ export default function App() {
                             isDropped={true} 
                             motorState={getMotorStateForComponent(comp.id)}
                             servoAngle={getServoAngleForComponent(comp.id)}
+                            tm1637Value={getTM1637ValueForComponent(comp.id)}
                             ultrasonicDistance={ultrasonicDistances[comp.id]}
                             onUltrasonicChange={(val) => {
                               setUltrasonicDistances(prev => ({ ...prev, [comp.id]: val }));

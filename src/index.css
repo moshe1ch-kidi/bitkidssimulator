@@ -4,19 +4,24 @@
 .blocklyScrollbarVertical, 
 .blocklyScrollbarHorizontal,
 .blocklyScrollbarBackground,
-.blocklyScrollbarHandle {
+.blocklyScrollbarHandle,
+.blocklyFlyoutScrollbar {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
 }
 
-/* Hide toolbox scrollbar */
-.blocklyToolboxDiv {
-  scrollbar-width: none !important;
+/* Hide toolbox and flyout scrollbars while keeping functionality */
+.blocklyToolboxDiv,
+.blocklyFlyout {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* IE/Edge */
 }
-.blocklyToolboxDiv::-webkit-scrollbar {
-  display: none !important;
+
+.blocklyToolboxDiv::-webkit-scrollbar,
+.blocklyFlyout::-webkit-scrollbar {
+  display: none !important; /* Chrome/Safari */
 }
 
 /* Generic no-scrollbar class */
