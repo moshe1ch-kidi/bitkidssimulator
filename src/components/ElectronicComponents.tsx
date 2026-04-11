@@ -265,6 +265,41 @@ const ServoUI = ({ angle = 90 }: { angle?: number }) => (
   </div>
 );
 
+const FourDigitDisplayUI = ({ value = "0000" }: { value?: string | number }) => {
+  const displayValue = String(value).padStart(4, ' ').slice(-4);
+  
+  return (
+    <div className="relative w-32 h-20 bg-[#222] rounded-xl shadow-lg border-b-[12px] border-[#111] flex flex-col items-center justify-center p-2">
+      <div className="w-full h-12 bg-[#000] rounded-md border border-[#333] flex items-center justify-center gap-1 px-2 shadow-[inset_0_0_10px_rgba(255,0,0,0.2)]">
+        {displayValue.split('').map((char, i) => (
+          <div key={i} className="relative w-5 h-8 flex items-center justify-center">
+            {/* Background segments (dim) */}
+            <div className="absolute inset-0 opacity-10 text-[#ff0000] font-mono text-3xl select-none">8</div>
+            {/* Active character */}
+            <div className="absolute inset-0 text-[#ff0000] font-mono text-3xl select-none drop-shadow-[0_0_5px_rgba(255,0,0,0.8)] flex items-center justify-center">
+              {char === ' ' ? '' : char}
+            </div>
+          </div>
+        ))}
+        {/* Colon for clock mode (optional) */}
+        <div className="flex flex-col gap-1.5 opacity-30">
+          <div className="w-1 h-1 bg-red-600 rounded-full"></div>
+          <div className="w-1 h-1 bg-red-600 rounded-full"></div>
+        </div>
+      </div>
+      <div className="mt-1 text-[8px] font-black text-gray-500 tracking-widest uppercase">4-DIGIT DISPLAY</div>
+      
+      {/* Connection Pins */}
+      <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-2">
+         <div className="w-2.5 h-2.5 rounded-full bg-[#333] shadow-inner"></div>
+         <div className="w-2.5 h-2.5 rounded-full bg-[#333] shadow-inner"></div>
+         <div className="w-2.5 h-2.5 rounded-full bg-[#333] shadow-inner"></div>
+         <div className="w-2.5 h-2.5 rounded-full bg-[#333] shadow-inner"></div>
+      </div>
+    </div>
+  );
+};
+
 const LightSensorLDRUI = ({ lightLevel = 0, onLightLevelChange }: { lightLevel?: number, onLightLevelChange?: (val: number) => void }) => (
   <div className="relative w-24 h-24 bg-[#8b5cf6] rounded-xl shadow-lg border-b-[12px] border-[#6d28d9] flex flex-col items-center justify-start pt-1">
     <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
@@ -596,6 +631,7 @@ export const DraggableComponent: React.FC<{
   disableDrag?: boolean,
   motorState?: { direction: string, speed: number },
   servoAngle?: number,
+  tm1637Value?: string | number,
   ultrasonicDistance?: number,
   onUltrasonicChange?: (val: number) => void,
   ledColor?: string,
@@ -613,7 +649,7 @@ export const DraggableComponent: React.FC<{
   soilMoisture?: number,
   onSoilMoistureChange?: (val: number) => void,
   onDelete?: () => void
-}> = ({ comp, onComponentClick, onDragStart, onDragEnd, isDropped, disableDrag, motorState, servoAngle, ultrasonicDistance, onUltrasonicChange, ledColor, onLedColorChange, ledOn, colorValue, onColorValueChange, lightLevel, onLightLevelChange, temperature, onTemperatureChange, dht11Data, onDht11Change, soilMoisture, onSoilMoistureChange, onDelete }) => {
+}> = ({ comp, onComponentClick, onDragStart, onDragEnd, isDropped, disableDrag, motorState, servoAngle, tm1637Value, ultrasonicDistance, onUltrasonicChange, ledColor, onLedColorChange, ledOn, colorValue, onColorValueChange, lightLevel, onLightLevelChange, temperature, onTemperatureChange, dht11Data, onDht11Change, soilMoisture, onSoilMoistureChange, onDelete }) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const renderUI = () => {
@@ -622,6 +658,7 @@ export const DraggableComponent: React.FC<{
       case 'led': return <LedUI color={ledColor} onColorChange={onLedColorChange} isOn={ledOn} />;
       case 'buzzer': return <BuzzerUI isOn={ledOn} />;
       case 'servo': return <ServoUI angle={servoAngle} />;
+      case 'tm1637': return <FourDigitDisplayUI value={tm1637Value} />;
       case 'photosensitive': return <LightSensorLDRUI lightLevel={lightLevel} onLightLevelChange={onLightLevelChange} />;
       case 'potentiometer': return <PotentiometerUI />;
       case 'color': return <ColorSensorUI color={colorValue} onColorChange={onColorValueChange} />;
@@ -814,6 +851,7 @@ export const ElectronicComponents = ({ onComponentClick, onDropOnBoard, zoomLeve
     { id: 'comp-color', name: 'Color Sensor', type: 'color' },
     { id: 'comp-hum', name: 'DHT11 Sensor', type: 'humidity' },
     { id: 'comp-soil', name: 'Soil Moisture', type: 'soilmoisture' },
+    { id: 'comp-tm1637', name: '4-Digit Display', type: 'tm1637' },
     { id: 'comp-temp', name: 'Temperature', type: 'temperature' },
     { id: 'comp-button', name: 'Button', type: 'button' },
   ];

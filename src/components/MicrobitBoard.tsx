@@ -13,6 +13,8 @@ interface MicrobitBoardProps {
   getTemperature?: (port: string) => Promise<number>;
   getHumidity?: (port: string) => Promise<number>;
   getSoilMoisture?: (port: string) => Promise<number>;
+  onTM1637Change?: (port: string, value: string | number) => void;
+  tm1637States?: { [key: string]: string | number };
 }
 
 const fontMap: { [key: string]: number[] } = {
@@ -55,7 +57,7 @@ const fontMap: { [key: string]: number[] } = {
   ' ': []
 };
 
-export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorStates = {}, onServoChange, servoStates = {}, onPinChange, getUltrasonicDistance, getColor, getLightLevel, getTemperature, getHumidity, getSoilMoisture }: MicrobitBoardProps, ref) => {
+export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorStates = {}, onServoChange, servoStates = {}, onPinChange, getUltrasonicDistance, getColor, getLightLevel, getTemperature, getHumidity, getSoilMoisture, onTM1637Change, tm1637States = {} }: MicrobitBoardProps, ref) => {
   const [leds, setLeds] = useState(Array(25).fill(false));
   const [ledColor, setLedColor] = useState('#3b82f6'); // Default blue-500
   const scrollInterval = useRef<NodeJS.Timeout | null>(null);
@@ -138,6 +140,9 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
       if (onPinChange) {
         ['J1', 'J2', 'J3', 'J4', 'I1', 'I2', 'I3', 'I4'].forEach(port => onPinChange(port, 0));
       }
+      if (onTM1637Change) {
+        ['J1', 'J2', 'J3', 'J4'].forEach(port => onTM1637Change(port, ''));
+      }
       buttonACallbacks.current = [];
       buttonBCallbacks.current = [];
       buttonABCallbacks.current = [];
@@ -173,6 +178,10 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
     setPin: (port: string, value: number) => {
       if (onPinChange) onPinChange(port, value);
       console.log(`Pin ${port} set to ${value}`);
+    },
+    setTM1637: (port: string, value: string | number) => {
+      if (onTM1637Change) onTM1637Change(port, value);
+      console.log(`TM1637 ${port} set to ${value}`);
     },
     playTone: (frequency: number) => {
       try {
@@ -218,6 +227,12 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
         return await getTemperature(port);
       }
       return 25; // Default room temperature
+    },
+    getHumidity: async (port: string) => {
+      if (getHumidity) {
+        return await getHumidity(port);
+      }
+      return 0;
     },
     getSoilMoisture: async (port: string) => {
       if (getSoilMoisture) {
