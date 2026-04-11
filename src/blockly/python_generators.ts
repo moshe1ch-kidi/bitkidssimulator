@@ -66,6 +66,12 @@ const registerPython = (gen: any) => {
     return `microbit.set_pin('${pin}', ${value})\n`;
   };
 
+  target['microbit_tm1637_show_number'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    const value = pythonGenerator.valueToCode(block, 'VALUE', Order.NONE) || '0';
+    return `microbit.tm1637_show_number('${port}', ${value})\n`;
+  };
+
   target['microbit_set_motor'] = function(block: any) {
     const port = block.getFieldValue('PORT');
     const direction = block.getFieldValue('DIRECTION');

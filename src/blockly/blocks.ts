@@ -140,6 +140,17 @@ export const microbitBlocks = [
     colour: '#4C97FF',
   },
   {
+    type: 'microbit_tm1637_show_number',
+    message0: '4-digit display %1 show number %2',
+    args0: [
+      { type: 'field_dropdown', name: 'PORT', options: [['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4']] },
+      { type: 'input_value', name: 'VALUE', check: 'Number' },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    colour: '#4C97FF',
+  },
+  {
     type: 'microbit_set_motor',
     message0: 'set motor %1 %2 speed %3',
     args0: [
