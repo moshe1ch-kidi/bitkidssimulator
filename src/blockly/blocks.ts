@@ -156,7 +156,7 @@ export const microbitBlocks = [
     args0: [
       { type: 'field_dropdown', name: 'PORT', options: [['M1', 'M1'], ['M2', 'M2'], ['M3', 'M3'], ['M4', 'M4']] },
       { type: 'field_dropdown', name: 'DIRECTION', options: [['FD', 'FORWARD'], ['BK', 'BACKWARD']] },
-      { type: 'field_number', name: 'SPEED', value: 50, min: 0, max: 100 },
+      { type: 'input_value', name: 'SPEED', check: 'Number' },
     ],
     previousStatement: null,
     nextStatement: null,
@@ -177,7 +177,7 @@ export const microbitBlocks = [
     message0: 'Servo %1 angle %2',
     args0: [
       { type: 'field_dropdown', name: 'PORT', options: [['S1', 'S1'], ['S2', 'S2'], ['S3', 'S3'], ['S4', 'S4']] },
-      { type: 'field_slider', name: 'ANGLE', value: 90, min: 0, max: 180 },
+      { type: 'input_value', name: 'ANGLE', check: 'Number' },
     ],
     previousStatement: null,
     nextStatement: null,

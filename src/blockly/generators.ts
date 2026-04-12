@@ -103,7 +103,7 @@ const register = (gen: any) => {
   target['microbit_set_motor'] = function(block: any) {
     const port = block.getFieldValue('PORT');
     const direction = block.getFieldValue('DIRECTION');
-    const speed = block.getFieldValue('SPEED');
+    const speed = javascriptGenerator.valueToCode(block, 'SPEED', Order.ATOMIC) || '0';
     return `boardRef.current.setMotor('${port}', '${direction}', ${speed});\n`;
   };
 
@@ -114,7 +114,7 @@ const register = (gen: any) => {
 
   target['microbit_set_servo'] = function(block: any) {
     const port = block.getFieldValue('PORT');
-    const angle = block.getFieldValue('ANGLE');
+    const angle = javascriptGenerator.valueToCode(block, 'ANGLE', Order.ATOMIC) || '90';
     return `boardRef.current.setServo('${port}', ${angle});\n`;
   };
 

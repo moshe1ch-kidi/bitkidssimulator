@@ -75,7 +75,7 @@ const registerPython = (gen: any) => {
   target['microbit_set_motor'] = function(block: any) {
     const port = block.getFieldValue('PORT');
     const direction = block.getFieldValue('DIRECTION');
-    const speed = block.getFieldValue('SPEED');
+    const speed = pythonGenerator.valueToCode(block, 'SPEED', Order.NONE) || '0';
     return `microbit.set_motor('${port}', '${direction}', ${speed})\n`;
   };
 
@@ -86,7 +86,7 @@ const registerPython = (gen: any) => {
 
   target['microbit_set_servo'] = function(block: any) {
     const port = block.getFieldValue('PORT');
-    const angle = block.getFieldValue('ANGLE');
+    const angle = pythonGenerator.valueToCode(block, 'ANGLE', Order.NONE) || '90';
     return `microbit.set_servo('${port}', ${angle})\n`;
   };
 
