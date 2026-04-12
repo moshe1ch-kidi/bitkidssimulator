@@ -377,14 +377,38 @@ const SoilMoistureUI = ({ moisture = 45, onMoistureChange }: { moisture?: number
   </div>
 );
 
-const PotentiometerUI = () => (
-  <div className="relative w-24 h-20 bg-[#f97316] rounded-xl shadow-lg border-b-[12px] border-[#c2410c] flex flex-col items-center justify-start pt-1">
+const PotentiometerUI = ({ value = 0, onValueChange }: { value?: number, onValueChange?: (val: number) => void }) => (
+  <div className="relative w-24 h-24 bg-[#f97316] rounded-xl shadow-lg border-b-[12px] border-[#c2410c] flex flex-col items-center justify-start pt-1">
     <div className="absolute top-1 left-1 right-1 h-12 bg-[#f0f0f0] rounded-lg flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.1)] border border-gray-200">
-       <div className="w-10 h-10 rounded-full bg-[#333] border-2 border-[#111] shadow-[0_4px_4px_rgba(0,0,0,0.3),inset_0_0_4px_rgba(255,255,255,0.2)] flex items-center justify-center relative transform -rotate-45">
+       <motion.div 
+         className="w-10 h-10 rounded-full bg-[#333] border-2 border-[#111] shadow-[0_4px_4px_rgba(0,0,0,0.3),inset_0_0_4px_rgba(255,255,255,0.2)] flex items-center justify-center relative"
+         animate={{ rotate: (value / 100) * 270 - 135 }}
+         transition={{ type: 'spring', stiffness: 200, damping: 25 }}
+       >
           <div className="absolute top-1 w-1.5 h-3 bg-white rounded-full shadow-sm"></div>
           <div className="absolute inset-1 rounded-full border-[3px] border-dashed border-[#555] opacity-50 pointer-events-none"></div>
+       </motion.div>
+       
+       {/* Value Badge */}
+       <div className="absolute -top-2 -left-2 bg-orange-600 text-white text-[10px] font-mono px-1.5 py-0.5 rounded-full border border-orange-400 shadow-sm z-20">
+         {value}
        </div>
     </div>
+
+    {/* Potentiometer Slider */}
+    <div className="mt-auto mb-3 px-2 w-full flex flex-col items-center gap-0.5">
+       <input 
+         type="range" 
+         min="0" 
+         max="100" 
+         value={value} 
+         onChange={(e) => onValueChange?.(parseInt(e.target.value))}
+         className="w-full h-1.5 bg-orange-900 rounded-lg appearance-none cursor-pointer accent-white"
+         onPointerDown={(e) => e.stopPropagation()}
+       />
+       <div className="text-[8px] font-black text-white tracking-widest uppercase drop-shadow-sm">POTENTIOMETER</div>
+    </div>
+
     <div className="absolute bottom-[-8px] left-0 right-0 flex justify-center gap-3">
        <div className="w-3 h-3 rounded-full bg-[#7c2d12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
        <div className="w-3 h-3 rounded-full bg-[#7c2d12] shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]"></div>
@@ -648,8 +672,10 @@ export const DraggableComponent: React.FC<{
   onDht11Change?: (data: { mode: 'temp' | 'hum', value: number }) => void,
   soilMoisture?: number,
   onSoilMoistureChange?: (val: number) => void,
+  potentiometerValue?: number,
+  onPotentiometerChange?: (val: number) => void,
   onDelete?: () => void
-}> = ({ comp, onComponentClick, onDragStart, onDragEnd, isDropped, disableDrag, motorState, servoAngle, tm1637Value, ultrasonicDistance, onUltrasonicChange, ledColor, onLedColorChange, ledOn, colorValue, onColorValueChange, lightLevel, onLightLevelChange, temperature, onTemperatureChange, dht11Data, onDht11Change, soilMoisture, onSoilMoistureChange, onDelete }) => {
+}> = ({ comp, onComponentClick, onDragStart, onDragEnd, isDropped, disableDrag, motorState, servoAngle, tm1637Value, ultrasonicDistance, onUltrasonicChange, ledColor, onLedColorChange, ledOn, colorValue, onColorValueChange, lightLevel, onLightLevelChange, temperature, onTemperatureChange, dht11Data, onDht11Change, soilMoisture, onSoilMoistureChange, potentiometerValue, onPotentiometerChange, onDelete }) => {
   const [isDragging, setIsDragging] = useState(false);
 
   const renderUI = () => {
@@ -660,7 +686,7 @@ export const DraggableComponent: React.FC<{
       case 'servo': return <ServoUI angle={servoAngle} />;
       case 'tm1637': return <FourDigitDisplayUI value={tm1637Value} />;
       case 'photosensitive': return <LightSensorLDRUI lightLevel={lightLevel} onLightLevelChange={onLightLevelChange} />;
-      case 'potentiometer': return <PotentiometerUI />;
+      case 'potentiometer': return <PotentiometerUI value={potentiometerValue} onValueChange={onPotentiometerChange} />;
       case 'color': return <ColorSensorUI color={colorValue} onColorChange={onColorValueChange} />;
       case 'humidity': return (
         <DHT11UI 

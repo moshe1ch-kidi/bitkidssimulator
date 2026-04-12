@@ -13,6 +13,7 @@ interface MicrobitBoardProps {
   getTemperature?: (port: string) => Promise<number>;
   getHumidity?: (port: string) => Promise<number>;
   getSoilMoisture?: (port: string) => Promise<number>;
+  getPotentiometer?: (port: string) => Promise<number>;
   onTM1637Change?: (port: string, value: string | number) => void;
   tm1637States?: { [key: string]: string | number };
 }
@@ -57,7 +58,7 @@ const fontMap: { [key: string]: number[] } = {
   ' ': []
 };
 
-export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorStates = {}, onServoChange, servoStates = {}, onPinChange, getUltrasonicDistance, getColor, getLightLevel, getTemperature, getHumidity, getSoilMoisture, onTM1637Change, tm1637States = {} }: MicrobitBoardProps, ref) => {
+export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorStates = {}, onServoChange, servoStates = {}, onPinChange, getUltrasonicDistance, getColor, getLightLevel, getTemperature, getHumidity, getSoilMoisture, getPotentiometer, onTM1637Change, tm1637States = {} }: MicrobitBoardProps, ref) => {
   const [leds, setLeds] = useState(Array(25).fill(false));
   const [ledColor, setLedColor] = useState('#3b82f6'); // Default blue-500
   const scrollInterval = useRef<NodeJS.Timeout | null>(null);
@@ -237,6 +238,12 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
     getSoilMoisture: async (port: string) => {
       if (getSoilMoisture) {
         return await getSoilMoisture(port);
+      }
+      return 0;
+    },
+    getPotentiometer: async (port: string) => {
+      if (getPotentiometer) {
+        return await getPotentiometer(port);
       }
       return 0;
     },
