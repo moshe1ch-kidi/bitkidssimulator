@@ -366,6 +366,7 @@ export default function App() {
   const [temperatures, setTemperatures] = useState<{ [compId: string]: number }>({});
   const [dht11Data, setDht11Data] = useState<{ [compId: string]: { mode: 'temp' | 'hum', value: number } }>({});
   const [soilMoistures, setSoilMoistures] = useState<{ [compId: string]: number }>({});
+  const [potentiometerValues, setPotentiometerValues] = useState<{ [compId: string]: number }>({});
   const [tm1637States, setTm1637States] = useState<{ [key: string]: string | number }>({});
 
   const getMotorStateForComponent = (compId: string) => {
@@ -483,6 +484,16 @@ export default function App() {
     return 0;
   };
 
+  const getPotentiometerForPort = async (port: string) => {
+    const portId = `port-${port}`;
+    const wire = wires.find(w => w.from === portId || w.to === portId);
+    if (wire) {
+      const compId = wire.from === portId ? wire.to : wire.from;
+      return potentiometerValues[compId] || 0;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     const handleResize = () => setResizeTrigger(prev => prev + 1);
     window.addEventListener('resize', handleResize);
@@ -579,6 +590,7 @@ export default function App() {
                 { kind: 'block', type: 'microbit_temperature_sensor' },
                 { kind: 'block', type: 'microbit_dht11' },
                 { kind: 'block', type: 'microbit_soil_moisture' },
+                { kind: 'block', type: 'microbit_potentiometer' },
               ],
             },
             {
@@ -2095,6 +2107,7 @@ export default function App() {
                         getTemperature={getTemperatureForPort}
                         getHumidity={getHumidityForPort}
                         getSoilMoisture={getSoilMoistureForPort}
+                        getPotentiometer={getPotentiometerForPort}
                       />
 
                       {droppedComponents.map(comp => (
@@ -2137,6 +2150,10 @@ export default function App() {
                             soilMoisture={soilMoistures[comp.id] || 45}
                             onSoilMoistureChange={(val) => {
                               setSoilMoistures(prev => ({ ...prev, [comp.id]: val }));
+                            }}
+                            potentiometerValue={potentiometerValues[comp.id] || 0}
+                            onPotentiometerChange={(val) => {
+                              setPotentiometerValues(prev => ({ ...prev, [comp.id]: val }));
                             }}
                             dht11Data={dht11Data[comp.id] || { mode: 'hum', value: 45 }}
                             onDht11Change={(data) => {
