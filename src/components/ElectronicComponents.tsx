@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal, flushSync } from 'react-dom';
-import { motion, useDragControls } from 'motion/react';
+import { motion, useDragControls, useAnimationFrame } from 'motion/react';
 import { Thermometer, Droplet, Volume2 } from 'lucide-react';
 
 export interface ElectronicComponentsProps {
@@ -592,11 +592,30 @@ const TemperatureUI = ({ temperature = 25, onTemperatureChange }: { temperature?
 
 const GeekServoUI = ({ motorState }: { motorState?: { direction: string, speed: number } }) => {
   const isActive = motorState && motorState.speed > 0;
+  const speed = motorState?.speed || 0;
+  const direction = motorState?.direction || 'FORWARD';
+  const rotationRef = useRef(0);
+  const dialRef = useRef<HTMLDivElement>(null);
+
+  useAnimationFrame((time, delta) => {
+    if (isActive && dialRef.current) {
+      // speed 100 = 720 degrees per second (2 RPS)
+      const degPerMs = (speed / 100) * 0.72;
+      const change = direction === 'BACKWARD' ? -degPerMs * delta : degPerMs * delta;
+      rotationRef.current = (rotationRef.current + change) % 360;
+      dialRef.current.style.transform = `rotate(${rotationRef.current}deg)`;
+    }
+  });
   
   return (
     <div className="relative w-20 h-28 bg-[#f8fafc] rounded-md shadow-md border-2 border-gray-300 flex flex-col items-center justify-start overflow-hidden">
       {/* Blue band */}
-      <div className="absolute right-0 top-0 bottom-0 w-8 bg-[#0ea5e9] border-l border-gray-300"></div>
+      <div className="absolute right-0 top-0 bottom-0 w-8 bg-[#0ea5e9] border-l border-gray-300 flex flex-col items-center justify-center">
+         {/* Speed indicator on the body (blue band) */}
+         <div className="text-[10px] font-bold text-white bg-blue-900/40 px-1 py-0.5 rounded rotate-90 whitespace-nowrap pointer-events-none">
+           {Math.round(speed)}%
+         </div>
+      </div>
       {/* Top blue connector */}
       <div className="absolute top-0 right-0 w-8 h-6 bg-[#0284c7] flex justify-evenly items-center px-1 border-b border-[#0369a1]">
          <div className="w-2 h-2 rounded-full bg-[#082f49] shadow-inner"></div>
@@ -608,14 +627,10 @@ const GeekServoUI = ({ motorState }: { motorState?: { direction: string, speed: 
          <div className="w-2 h-2 rounded-full bg-[#082f49] shadow-inner"></div>
       </div>
       {/* White Dial */}
-      <motion.div 
+      <div 
+        ref={dialRef}
         className="absolute top-4 left-1 w-12 h-12 bg-white rounded-full border-2 border-gray-300 shadow-sm flex items-center justify-center z-10"
-        animate={isActive ? { rotate: motorState.direction === 'BACKWARD' ? -360 : 360 } : { rotate: 0 }}
-        transition={isActive ? { 
-          duration: Math.max(0.1, 2 - (motorState.speed / 50)), 
-          repeat: Infinity, 
-          ease: "linear" 
-        } : { duration: 0.5 }}
+        style={{ transform: `rotate(${rotationRef.current}deg)` }}
       >
          {/* Cross hole */}
          <div className="relative w-3 h-3">
@@ -630,7 +645,7 @@ const GeekServoUI = ({ motorState }: { motorState?: { direction: string, speed: 
          
          {/* Direction Arrow Indicator */}
          <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-3 bg-red-500 rounded-full shadow-[0_0_5px_rgba(239,68,68,0.5)]"></div>
-      </motion.div>
+      </div>
       
       {/* Active Glow behind dial */}
       {isActive && (
