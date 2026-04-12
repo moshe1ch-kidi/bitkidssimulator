@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
@@ -369,6 +369,38 @@ export default function App() {
   const [potentiometerValues, setPotentiometerValues] = useState<{ [compId: string]: number }>({});
   const [tm1637States, setTm1637States] = useState<{ [key: string]: string | number }>({});
 
+  // Use a ref to store the latest state for the simulation loop to avoid closure issues
+  const latestStateRef = useRef({
+    wires,
+    ultrasonicDistances,
+    colorSensorValues,
+    lightLevels,
+    temperatures,
+    dht11Data,
+    soilMoistures,
+    potentiometerValues,
+    pinStates,
+    motorStates,
+    servoStates,
+    tm1637States
+  });
+
+  // Update the ref synchronously during render to ensure it's always up to date
+  latestStateRef.current = {
+    wires,
+    ultrasonicDistances,
+    colorSensorValues,
+    lightLevels,
+    temperatures,
+    dht11Data,
+    soilMoistures,
+    potentiometerValues,
+    pinStates,
+    motorStates,
+    servoStates,
+    tm1637States
+  };
+
   const getMotorStateForComponent = (compId: string) => {
     const wire = wires.find(w => 
       (w.from === compId && w.to.startsWith('port-M')) || 
@@ -421,78 +453,78 @@ export default function App() {
     return false;
   };
 
-  const getUltrasonicDistanceForPort = async (port: string) => {
+  const getUltrasonicDistanceForPort = useCallback(async (port: string) => {
     const portId = `port-${port}`;
-    const wire = wires.find(w => w.from === portId || w.to === portId);
+    const wire = latestStateRef.current.wires.find(w => w.from === portId || w.to === portId);
     if (wire) {
       const compId = wire.from === portId ? wire.to : wire.from;
-      return ultrasonicDistances[compId] || 100;
+      return latestStateRef.current.ultrasonicDistances[compId] || 100;
     }
     return 0;
-  };
+  }, []);
   
-  const getColorForPort = async (port: string) => {
+  const getColorForPort = useCallback(async (port: string) => {
     const portId = `port-${port}`;
-    const wire = wires.find(w => w.from === portId || w.to === portId);
+    const wire = latestStateRef.current.wires.find(w => w.from === portId || w.to === portId);
     if (wire) {
       const compId = wire.from === portId ? wire.to : wire.from;
-      return colorSensorValues[compId] || 'None';
+      return latestStateRef.current.colorSensorValues[compId] || 'None';
     }
     return 'None';
-  };
+  }, []);
 
-  const getLightLevelForPort = async (port: string) => {
+  const getLightLevelForPort = useCallback(async (port: string) => {
     const portId = `port-${port}`;
-    const wire = wires.find(w => w.from === portId || w.to === portId);
+    const wire = latestStateRef.current.wires.find(w => w.from === portId || w.to === portId);
     if (wire) {
       const compId = wire.from === portId ? wire.to : wire.from;
-      return lightLevels[compId] || 0;
+      return latestStateRef.current.lightLevels[compId] || 0;
     }
     return 0;
-  };
+  }, []);
 
-  const getTemperatureForPort = async (port: string) => {
+  const getTemperatureForPort = useCallback(async (port: string) => {
     const portId = `port-${port}`;
-    const wire = wires.find(w => w.from === portId || w.to === portId);
+    const wire = latestStateRef.current.wires.find(w => w.from === portId || w.to === portId);
     if (wire) {
       const compId = wire.from === portId ? wire.to : wire.from;
-      if (temperatures[compId] !== undefined) return temperatures[compId];
-      const dhtData = dht11Data[compId];
+      if (latestStateRef.current.temperatures[compId] !== undefined) return latestStateRef.current.temperatures[compId];
+      const dhtData = latestStateRef.current.dht11Data[compId];
       if (dhtData && dhtData.mode === 'temp') return dhtData.value;
     }
     return 25;
-  };
+  }, []);
 
-  const getHumidityForPort = async (port: string) => {
+  const getHumidityForPort = useCallback(async (port: string) => {
     const portId = `port-${port}`;
-    const wire = wires.find(w => w.from === portId || w.to === portId);
+    const wire = latestStateRef.current.wires.find(w => w.from === portId || w.to === portId);
     if (wire) {
       const compId = wire.from === portId ? wire.to : wire.from;
-      const dhtData = dht11Data[compId];
+      const dhtData = latestStateRef.current.dht11Data[compId];
       if (dhtData && dhtData.mode === 'hum') return dhtData.value;
     }
     return 0;
-  };
+  }, []);
 
-  const getSoilMoistureForPort = async (port: string) => {
+  const getSoilMoistureForPort = useCallback(async (port: string) => {
     const portId = `port-${port}`;
-    const wire = wires.find(w => w.from === portId || w.to === portId);
+    const wire = latestStateRef.current.wires.find(w => w.from === portId || w.to === portId);
     if (wire) {
       const compId = wire.from === portId ? wire.to : wire.from;
-      return soilMoistures[compId] || 45;
+      return latestStateRef.current.soilMoistures[compId] || 45;
     }
     return 0;
-  };
+  }, []);
 
-  const getPotentiometerForPort = async (port: string) => {
+  const getPotentiometerForPort = useCallback(async (port: string) => {
     const portId = `port-${port}`;
-    const wire = wires.find(w => w.from === portId || w.to === portId);
+    const wire = latestStateRef.current.wires.find(w => w.from === portId || w.to === portId);
     if (wire) {
       const compId = wire.from === portId ? wire.to : wire.from;
-      return potentiometerValues[compId] || 0;
+      return latestStateRef.current.potentiometerValues[compId] || 0;
     }
     return 0;
-  };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => setResizeTrigger(prev => prev + 1);
@@ -562,7 +594,13 @@ export default function App() {
                   },
                 },
                 { kind: 'block', type: 'microbit_set_led_color' },
-                { kind: 'block', type: 'microbit_set_pin' },
+                {
+                  kind: 'block',
+                  type: 'microbit_set_pin',
+                  inputs: {
+                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+                  },
+                },
                 {
                   kind: 'block',
                   type: 'microbit_tm1637_show_number',
@@ -2100,18 +2138,32 @@ export default function App() {
                         onPinClick={handleNodeClick} 
                         motorStates={motorStates}
                         onMotorChange={(port, direction, speed) => {
-                          setMotorStates(prev => ({ ...prev, [port]: { direction, speed } }));
+                          setMotorStates(prev => {
+                            const current = prev[port];
+                            // Use loose equality for speed to handle potential string/number mismatches
+                            if (current && current.direction === direction && Number(current.speed) === Number(speed)) return prev;
+                            return { ...prev, [port]: { direction, speed: Number(speed) } };
+                          });
                         }}
                         servoStates={servoStates}
                         onServoChange={(port, angle) => {
-                          setServoStates(prev => ({ ...prev, [port]: angle }));
+                          setServoStates(prev => {
+                            if (prev[port] === angle) return prev;
+                            return { ...prev, [port]: angle };
+                          });
                         }}
                         onPinChange={(port, value) => {
-                          setPinStates(prev => ({ ...prev, [port]: value }));
+                          setPinStates(prev => {
+                            if (prev[port] === value) return prev;
+                            return { ...prev, [port]: value };
+                          });
                         }}
                         tm1637States={tm1637States}
                         onTM1637Change={(port, value) => {
-                          setTm1637States(prev => ({ ...prev, [port]: value }));
+                          setTm1637States(prev => {
+                            if (prev[port] === value) return prev;
+                            return { ...prev, [port]: value };
+                          });
                         }}
                         getUltrasonicDistance={getUltrasonicDistanceForPort}
                         getColor={getColorForPort}
