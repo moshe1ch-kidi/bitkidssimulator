@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef, useRef } from 'react';
+import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } from 'react';
 
 interface MicrobitBoardProps {
   onPinClick: (pin: string) => void;
@@ -68,6 +68,20 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
   const greenFlagCallbacks = useRef<(() => void)[]>([]);
   const broadcastCallbacks = useRef<{ [key: string]: (() => void)[] }>({});
 
+  // Use a ref to store the latest props to avoid useImperativeHandle re-running on every render
+  const propsRef = useRef({ 
+    onMotorChange, onServoChange, onPinChange, onTM1637Change, 
+    getUltrasonicDistance, getColor, getLightLevel, getTemperature, 
+    getHumidity, getSoilMoisture, getPotentiometer 
+  });
+
+  // Update the ref synchronously during render to ensure it's always up to date
+  propsRef.current = { 
+    onMotorChange, onServoChange, onPinChange, onTM1637Change, 
+    getUltrasonicDistance, getColor, getLightLevel, getTemperature, 
+    getHumidity, getSoilMoisture, getPotentiometer 
+  };
+
   useImperativeHandle(ref, () => ({
     showIcon: (icon: string) => {
       if (scrollInterval.current) clearInterval(scrollInterval.current);
@@ -132,17 +146,17 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
     clear: () => {
       if (scrollInterval.current) clearInterval(scrollInterval.current);
       setLeds(Array(25).fill(false));
-      if (onMotorChange) {
-        ['M1', 'M2', 'M3', 'M4'].forEach(port => onMotorChange(port, 'FD', 0));
+      if (propsRef.current.onMotorChange) {
+        ['M1', 'M2', 'M3', 'M4'].forEach(port => propsRef.current.onMotorChange!(port, 'FD', 0));
       }
-      if (onServoChange) {
-        ['S1', 'S2', 'S3', 'S4'].forEach(port => onServoChange(port, 90));
+      if (propsRef.current.onServoChange) {
+        ['S1', 'S2', 'S3', 'S4'].forEach(port => propsRef.current.onServoChange!(port, 90));
       }
-      if (onPinChange) {
-        ['J1', 'J2', 'J3', 'J4', 'I1', 'I2', 'I3', 'I4'].forEach(port => onPinChange(port, 0));
+      if (propsRef.current.onPinChange) {
+        ['J1', 'J2', 'J3', 'J4', 'I1', 'I2', 'I3', 'I4'].forEach(port => propsRef.current.onPinChange!(port, 0));
       }
-      if (onTM1637Change) {
-        ['J1', 'J2', 'J3', 'J4'].forEach(port => onTM1637Change(port, ''));
+      if (propsRef.current.onTM1637Change) {
+        ['J1', 'J2', 'J3', 'J4'].forEach(port => propsRef.current.onTM1637Change!(port, ''));
       }
       buttonACallbacks.current = [];
       buttonBCallbacks.current = [];
@@ -169,19 +183,19 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
       setLedColor(color);
     },
     setMotor: (port: string, direction: string, speed: number) => {
-      if (onMotorChange) onMotorChange(port, direction, speed);
+      if (propsRef.current.onMotorChange) propsRef.current.onMotorChange(port, direction, speed);
       console.log(`Motor ${port} set to ${direction} at speed ${speed}%`);
     },
     setServo: (port: string, angle: number) => {
-      if (onServoChange) onServoChange(port, angle);
+      if (propsRef.current.onServoChange) propsRef.current.onServoChange(port, angle);
       console.log(`Servo ${port} set to ${angle} degrees`);
     },
     setPin: (port: string, value: number) => {
-      if (onPinChange) onPinChange(port, value);
+      if (propsRef.current.onPinChange) propsRef.current.onPinChange(port, value);
       console.log(`Pin ${port} set to ${value}`);
     },
     setTM1637: (port: string, value: string | number) => {
-      if (onTM1637Change) onTM1637Change(port, value);
+      if (propsRef.current.onTM1637Change) propsRef.current.onTM1637Change(port, value);
       console.log(`TM1637 ${port} set to ${value}`);
     },
     playTone: (frequency: number) => {
@@ -206,44 +220,44 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
       }
     },
     getUltrasonicDistance: async (port: string) => {
-      if (getUltrasonicDistance) {
-        return await getUltrasonicDistance(port);
+      if (propsRef.current.getUltrasonicDistance) {
+        return await propsRef.current.getUltrasonicDistance(port);
       }
       return 0;
     },
     getColor: async (port: string) => {
-      if (getColor) {
-        return await getColor(port);
+      if (propsRef.current.getColor) {
+        return await propsRef.current.getColor(port);
       }
       return 'None';
     },
     getLightLevel: async (port: string) => {
-      if (getLightLevel) {
-        return await getLightLevel(port);
+      if (propsRef.current.getLightLevel) {
+        return await propsRef.current.getLightLevel(port);
       }
       return 0;
     },
     getTemperature: async (port: string) => {
-      if (getTemperature) {
-        return await getTemperature(port);
+      if (propsRef.current.getTemperature) {
+        return await propsRef.current.getTemperature(port);
       }
       return 25; // Default room temperature
     },
     getHumidity: async (port: string) => {
-      if (getHumidity) {
-        return await getHumidity(port);
+      if (propsRef.current.getHumidity) {
+        return await propsRef.current.getHumidity(port);
       }
       return 0;
     },
     getSoilMoisture: async (port: string) => {
-      if (getSoilMoisture) {
-        return await getSoilMoisture(port);
+      if (propsRef.current.getSoilMoisture) {
+        return await propsRef.current.getSoilMoisture(port);
       }
       return 0;
     },
     getPotentiometer: async (port: string) => {
-      if (getPotentiometer) {
-        return await getPotentiometer(port);
+      if (propsRef.current.getPotentiometer) {
+        return await propsRef.current.getPotentiometer(port);
       }
       return 0;
     },
@@ -271,7 +285,7 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
       }
       broadcastCallbacks.current[key].push(callback);
     }
-  }));
+  }), []);
 
   return (
     <div className="flex items-center justify-center px-12 pb-12 pt-24">
