@@ -62,7 +62,7 @@ const registerPython = (gen: any) => {
 
   target['microbit_set_pin'] = function(block: any) {
     const pin = block.getFieldValue('PIN');
-    const value = block.getFieldValue('VALUE');
+    const value = pythonGenerator.valueToCode(block, 'VALUE', Order.NONE) || '0';
     return `microbit.set_pin('${pin}', ${value})\n`;
   };
 

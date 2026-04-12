@@ -129,11 +129,7 @@ export const microbitBlocks = [
           ['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4']
         ] 
       },
-      {
-        type: 'field_dropdown',
-        name: 'VALUE',
-        options: [['ON', '1'], ['OFF', '0']]
-      },
+      { type: 'input_value', name: 'VALUE', check: 'Number' },
     ],
     previousStatement: null,
     nextStatement: null,
