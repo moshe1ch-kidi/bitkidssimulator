@@ -250,6 +250,15 @@ export const microbitBlocks = [
     colour: '#9966FF',
   },
   {
+    type: 'microbit_potentiometer',
+    message0: 'Potentiometer %1 value',
+    args0: [
+      { type: 'field_dropdown', name: 'PORT', options: [['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4']] },
+    ],
+    output: 'Number',
+    colour: '#9966FF',
+  },
+  {
     type: 'microbit_ledgraph',
     message0: 'show graph %1 max %2',
     args0: [

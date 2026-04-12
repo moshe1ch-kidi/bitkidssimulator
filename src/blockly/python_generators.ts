@@ -115,6 +115,11 @@ const registerPython = (gen: any) => {
     return [`microbit.get_soil_moisture('${port}')`, Order.FUNCTION_CALL];
   };
 
+  target['microbit_potentiometer'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return [`microbit.get_potentiometer('${port}')`, Order.FUNCTION_CALL];
+  };
+
   target['microbit_ledgraph'] = function(block: any) {
     const value = pythonGenerator.valueToCode(block, 'VALUE', Order.NONE) || '0';
     const max = pythonGenerator.valueToCode(block, 'MAX', Order.NONE) || '100';

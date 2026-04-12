@@ -143,6 +143,11 @@ const register = (gen: any) => {
     return [`await boardRef.current.getSoilMoisture('${port}')`, Order.AWAIT];
   };
 
+  target['microbit_potentiometer'] = function(block: any) {
+    const port = block.getFieldValue('PORT');
+    return [`await boardRef.current.getPotentiometer('${port}')`, Order.AWAIT];
+  };
+
   target['microbit_ledgraph'] = function(block: any) {
     const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
     const max = javascriptGenerator.valueToCode(block, 'MAX', Order.ATOMIC) || '100';
