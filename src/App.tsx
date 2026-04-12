@@ -570,9 +570,21 @@ export default function App() {
                     VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
                   },
                 },
-                { kind: 'block', type: 'microbit_set_motor' },
+                {
+                  kind: 'block',
+                  type: 'microbit_set_motor',
+                  inputs: {
+                    SPEED: { shadow: { type: 'math_number', fields: { NUM: 50 } } },
+                  },
+                },
                 { kind: 'block', type: 'microbit_stop_motor' },
-                { kind: 'block', type: 'microbit_set_servo' },
+                {
+                  kind: 'block',
+                  type: 'microbit_set_servo',
+                  inputs: {
+                    ANGLE: { shadow: { type: 'math_number', fields: { NUM: 90 } } },
+                  },
+                },
                 { kind: 'block', type: 'microbit_play_tone' },
               ],
             },
