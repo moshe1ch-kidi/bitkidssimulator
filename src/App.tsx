@@ -280,6 +280,14 @@ export default function App() {
 
   const missions = [
     {
+      id: 'fan_speed',
+      title: 'Variable Speed Fan',
+      description: 'In this project, we will learn how to control the rotation speed of a motor (fan) using a component called a potentiometer.',
+      icon: <RotateCcw className="text-blue-500" />,
+      difficulty: 'Medium',
+      components: ['Micro:bit', 'Potentiometer', 'DC Motor']
+    },
+    {
       id: 'lamp',
       title: 'Table Lamp',
       description: 'Create a smart table lamp. When the external button (Crash Sensor) is pressed, the LED should turn on. When released, it should turn off.',
@@ -1142,7 +1150,7 @@ export default function App() {
                           </span>
                         ))}
                       </div>
-                      {(mission.id === 'nightlight' || mission.id === 'thermostat' || mission.id === 'visual_thermometer' || mission.id === 'planet_monitor' || mission.id === 'alarm') && (
+                      {(mission.id === 'nightlight' || mission.id === 'thermostat' || mission.id === 'visual_thermometer' || mission.id === 'planet_monitor' || mission.id === 'alarm' || mission.id === 'fan_speed') && (
                         <button 
                           onClick={() => {
                             setHelpTab(mission.id as any);
@@ -1287,6 +1295,7 @@ export default function App() {
                      helpTab === 'nightlight' ? 'Automatic Night Light - מדריך משימה' : 
                      helpTab === 'thermostat' ? 'Smart Fan - מדריך משימה' :
                      helpTab === 'planet_monitor' ? 'Planet Monitor - Mission Guide' :
+                     helpTab === 'fan_speed' ? 'Variable Speed Fan - Mission Guide' :
                      helpTab === 'alarm' ? 'Distance Alarm - מדריך משימה' :
                      'Visual Thermometer - Mission Guide'}
                   </h2>
@@ -1320,6 +1329,12 @@ export default function App() {
                       className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'visual_thermometer' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                     >
                       Visual Thermometer
+                    </button>
+                    <button 
+                      onClick={() => setHelpTab('fan_speed')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'fan_speed' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Variable Fan
                     </button>
                     <button 
                       onClick={() => setHelpTab('alarm')}
@@ -1667,6 +1682,115 @@ export default function App() {
                     <p className="text-slate-600 leading-relaxed">
                       The Micro:bit reads values from 0 to 1023. The code converts these raw numbers into actual temperature degrees using mathematical formulas based on the thermistor's characteristics.
                     </p>
+                  </section>
+                </div>
+              ) : helpTab === 'fan_speed' ? (
+                <div className="space-y-12 pb-12 text-left" dir="ltr">
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">Variable Speed Fan 🌬️</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      In this project, we will learn how to control the rotation speed of a motor (fan) using a component called a potentiometer. The combination of the two allows us to create a convenient interface where turning a physical knob changes the wind intensity.
+                    </p>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/vendpotz.png" 
+                        alt="Fan Model" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">What is a Potentiometer? 🎚️</h3>
+                    <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-4">
+                      <p className="text-slate-600">
+                        A potentiometer is an electronic component used as a variable resistor. Unlike a regular resistor that has a fixed value, the resistance of a potentiometer can be changed by turning a dial or moving a handle.
+                      </p>
+                      <p className="text-slate-600">
+                        <strong>How does it work?</strong> Imagine a water faucet: as you open the faucet more, more water flows. The potentiometer works similarly with electric current. When we turn the knob, we change the length of the path the electricity has to travel within the component, thereby changing the amount of current or voltage that passes through.
+                      </p>
+                      <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                        <h4 className="font-bold text-blue-700 mb-2">Common Uses:</h4>
+                        <p className="text-sm text-slate-600">Volume knobs on radios, light dimmers, and controllers for various electrical appliances.</p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">Component List 🛠️</h3>
+                    <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold">1</div>
+                        <span className="font-medium text-slate-700">Micro:bit Microcontroller</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold">2</div>
+                        <span className="font-medium text-slate-700">Potentiometer (J1)</span>
+                      </li>
+                      <li className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-blue-600 font-bold">3</div>
+                        <span className="font-medium text-slate-700">DC Motor (M3)</span>
+                      </li>
+                    </ul>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/ventpotz.png" 
+                        alt="Simulator Connections" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">How does the code work? 🧠</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-blue-700 mb-2">1. Reading Value</h4>
+                        <p className="text-sm text-slate-600">The microcontroller reads the state of the potentiometer. In our simulator, the value is already converted to a range of 0-100.</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-blue-700 mb-2">2. Mapping</h4>
+                        <p className="text-sm text-slate-600">We use the value we received directly as the motor's speed intensity.</p>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <h4 className="font-bold text-blue-700 mb-2">3. Output (PWM)</h4>
+                        <p className="text-sm text-slate-600">The microcontroller sends a command to the motor to rotate at the selected speed in real-time.</p>
+                      </div>
+                    </div>
+                    <div className="bg-yellow-50 p-4 rounded-2xl border border-yellow-100">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Important Tip:</strong> Remember that the potentiometer is connected to an Analog Input, as it provides a continuous range of values rather than just "on" or "off".
+                      </p>
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-blue-500 pl-4">The Code 💻</h3>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/ventcode.png" 
+                        alt="Mission Code" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="bg-slate-900 text-white p-6 rounded-3xl space-y-4">
+                      <h4 className="font-bold text-blue-400">Code Explanation:</h4>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-blue-400 font-bold">"Forever" Loop (while True):</span> The code checks the potentiometer state constantly, so every small movement of the knob will have an immediate effect.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-green-400 font-bold">Reading the Potentiometer:</span> The command <code>get_potentiometer('J1')</code> returns the current position of the dial.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-orange-400 font-bold">Activating the Motor:</span> The command <code>set_motor('M3', 'FORWARD', ...)</code> takes the value we read and runs the motor at that intensity.</p>
+                      </div>
+                    </div>
                   </section>
                 </div>
               ) : helpTab === 'alarm' ? (
