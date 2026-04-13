@@ -1,4 +1,4 @@
-@import "tailwindcss";
+ @import "tailwindcss";
 
 /* Hide Blockly scrollbars */
 .blocklyScrollbarVertical, 
@@ -64,6 +64,12 @@
   color: transparent !important;
   /* הבטחה שהשורה עצמה בשכבה גבוהה */
   z-index: 10001 !important;
+  line-height: 0 !important;
+}
+
+/* הסתרה מוחלטת של כל האלמנטים הפנימיים המקוריים של Blockly כדי שלא יפריעו למרכוז */
+.blocklyTreeRowCustom > * {
+  display: none !important;
 }
 
 /* הסתרה מוחלטת של שמות הקטגוריות המקוריים של Blockly */
