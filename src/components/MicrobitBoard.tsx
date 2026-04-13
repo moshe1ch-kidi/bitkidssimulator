@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } from 'react';
+ import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } from 'react';
 
 interface MicrobitBoardProps {
   onPinClick: (pin: string) => void;
@@ -325,9 +325,9 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
           {/* Left Ports (I1-I4 / IIC) */}
         <div className="absolute -left-6 top-6 bottom-6 flex flex-col justify-between w-10 z-0">
           {['I1', 'I2', 'I3', 'I4'].map((port) => (
-            <div key={port} className="relative w-full h-12 bg-[#495057] rounded-l-lg flex flex-col items-center justify-center shadow-inner border-y border-l border-gray-600">
+            <div key={port} className="relative w-full h-12 bg-blue-100 rounded-l-lg flex flex-col items-center justify-center shadow-inner border-y border-l border-blue-200">
               <div className="w-4 h-1 bg-blue-500 rounded-full mb-1 shadow-[0_0_4px_rgba(59,130,246,0.8)]"></div>
-              <span className="text-gray-300 text-[9px] font-bold">{port}</span>
+              <span className="text-blue-800 text-[11px] font-black tracking-tight">{port}</span>
               {/* Drag Connection Node */}
               <div
                 id={`port-${port}`}
@@ -344,12 +344,12 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
         {/* Right Ports (J1-J4) */}
         <div className="absolute -right-6 top-6 bottom-6 flex flex-col justify-between w-10 z-0">
           {['J1', 'J2', 'J3', 'J4'].map((port) => (
-            <div key={port} className="relative w-full h-12 bg-[#495057] rounded-r-lg flex flex-col items-center justify-center shadow-inner border-y border-r border-gray-600">
-              <span className="text-gray-300 text-[9px] font-bold mb-1">{port}</span>
+            <div key={port} className="relative w-full h-12 bg-red-100 rounded-r-lg flex flex-col items-center justify-center shadow-inner border-y border-r border-red-200">
+              <span className="text-red-800 text-[11px] font-black tracking-tight mb-1">{port}</span>
               <div className="flex flex-col gap-0.5 items-center">
                 <div className="w-4 h-1 bg-red-500 rounded-full shadow-[0_0_4px_rgba(239,68,68,0.8)]"></div>
                 {(port === 'J1' || port === 'J2') && (
-                  <div className="w-4 h-1 bg-yellow-400 rounded-full shadow-[0_0_4px_rgba(250,204,21,0.8)]"></div>
+                  <div className="w-5 h-1.5 bg-yellow-400 rounded-full shadow-[0_0_8px_rgba(250,204,21,1)]"></div>
                 )}
               </div>
               {/* Drag Connection Node */}
@@ -403,7 +403,7 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
             {['S1', 'S2', 'S3', 'S4'].map(port => (
               <div key={port} className="flex flex-col items-center">
                 <div className="flex flex-col items-center mb-1">
-                  <span className="text-gray-400 text-[10px] font-bold">{port}</span>
+                  <span className="text-gray-500 text-[11px] font-black tracking-tight">{port}</span>
                 </div>
                 <div className="relative w-6 bg-[#111] rounded-lg flex flex-col gap-[1px] p-[2px] shadow-inner border border-gray-600">
                   {/* Top Pin (Signal) */}
@@ -453,8 +453,8 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
                 const motor = motorStates[port];
                 const isActive = motor && motor.speed > 0;
                 return (
-                  <div key={port} className="relative w-12 h-10 bg-[#495057] rounded-lg flex flex-col items-center justify-center shadow-inner border border-gray-600">
-                    <span className="text-gray-300 text-[9px] font-bold mb-1">{port}</span>
+                  <div key={port} className="relative w-12 h-10 bg-green-50 rounded-lg flex flex-col items-center justify-center shadow-inner border border-green-200">
+                    <span className="text-green-800 text-[11px] font-black tracking-tight mb-1">{port}</span>
                     <div 
                       className={`w-4 h-1 rounded-full transition-all duration-300 ${
                         isActive ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]' : 'bg-green-900 shadow-none'
