@@ -94,6 +94,12 @@ const register = (gen: any) => {
     return `boardRef.current.setPin('${pin}', ${value});\n`;
   };
 
+  target['microbit_led_pin'] = function(block: any) {
+    const pin = block.getFieldValue('PIN');
+    const state = block.getFieldValue('STATE');
+    return `boardRef.current.setPin('${pin}', ${state});\n`;
+  };
+
   target['microbit_tm1637_show_number'] = function(block: any) {
     const port = block.getFieldValue('PORT');
     const value = javascriptGenerator.valueToCode(block, 'VALUE', Order.ATOMIC) || '0';
