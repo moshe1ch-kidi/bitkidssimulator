@@ -602,6 +602,7 @@ export default function App() {
                   },
                 },
                 { kind: 'block', type: 'microbit_set_led_color' },
+                { kind: 'block', type: 'microbit_led_pin' },
                 {
                   kind: 'block',
                   type: 'microbit_set_pin',
