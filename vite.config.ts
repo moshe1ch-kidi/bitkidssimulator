@@ -12,6 +12,19 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
+      // פלאגין קטן שמתקן את השגיאה של החבילה הבעייתית בזמן אמת
+      {
+        name: 'fix-blockly-bitmap-import',
+        transform(code, id) {
+          if (id.includes('@blockly/field-bitmap')) {
+            // משנה את הייבוא הבעייתי לייבוא שתואם ל-Blockly 12
+            return code.replace(
+              "import Blockly from 'blockly/core';",
+              "import * as Blockly from 'blockly';"
+            );
+          }
+        }
+      }
     ],
 
     define: {
@@ -21,29 +34,14 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        // התיקון הקריטי: אנחנו מפנים את blockly/core לחבילה הראשית
         'blockly/core': 'blockly',
       },
-    },
-
-    // הגדרות נוספות כדי לעזור ל-Vite להתמודד עם ספריות ישנות (Legacy)
-    optimizeDeps: {
-      include: ['blockly', '@blockly/field-bitmap'],
     },
 
     build: {
       outDir: 'dist',
       commonjsOptions: {
-        // מאפשר לערבב שיטות ייבוא שונות (ESM ו-CommonJS)
         transformMixedEsModules: true,
-      },
-      rollupOptions: {
-        // כאן אנחנו מגדירים ל-Rollup איך להתייחס ל-Blockly
-        output: {
-          manualChunks: {
-            blockly: ['blockly'],
-          },
-        },
       },
     },
 
