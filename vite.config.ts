@@ -12,22 +12,17 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       {
-        name: 'blockly-set-locale-fix',
-        enforce: 'post', // רץ אחרי שכל המודולים נטענו
+        name: 'blockly-v12-compatibility-patch',
         transform(code, id) {
-          // אנחנו מחפשים את הקובץ של השדה הבעייתי
-          if (id.includes('@blockly/field-bitmap')) {
-            // התיקון: אנחנו מחליפים את הקריאה ל-setLocale בבדיקה בטוחה
-            // במקום r.setLocale(n) זה יהפוך למשהו שלא קורס
+          // בודק אם הקוד שייך לאחד השדות הבעייתיים
+          if (id.includes('@blockly/field-bitmap') || id.includes('@blockly/field-colour') || id.includes('@blockly/field-slider')) {
+            // אנחנו מזריקים בדיקה בטוחה: אם הפונקציה חסרה, אל תקרוס.
+            // בגרסה 12, Blockly עבר לשימוש ב-Namespaces בצורה שונה.
             return {
-              code: code.replace(
-                /\.setLocale\(/g, 
-                '?.setLocale?.('
-              ),
+              code: code.replace(/\.setLocale\(/g, '?.setLocale?.('),
               map: null
             };
           }
-          return null;
         }
       }
     ],
@@ -37,6 +32,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        // איחוד מוחלט של כל הייבואים לגרסה 12 המרכזית
         'blockly/core': 'blockly',
       },
     },
@@ -45,13 +41,6 @@ export default defineConfig(({ mode }) => {
       commonjsOptions: {
         transformMixedEsModules: true,
       },
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            blockly_vendor: ['blockly', '@blockly/field-bitmap']
-          }
-        }
-      }
     }
   };
 });
