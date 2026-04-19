@@ -74,6 +74,13 @@ const register = (gen: any) => {
     return `boardRef.current.showIcon('${icon}');\n`;
   };
 
+  target['microbit_show_leds'] = function(block: any) {
+    const leds = block.getFieldValue('LEDS');
+    // Flatten the 2D array and convert to boolean
+    const flatLeds = leds.flat().map((v: number) => v === 1);
+    return `boardRef.current.setLeds(${JSON.stringify(flatLeds)});\n`;
+  };
+
   target['microbit_show_text'] = function(block: any) {
     const text = block.getFieldValue('TEXT');
     return `boardRef.current.showText('${text}');\n`;
@@ -219,6 +226,11 @@ const register = (gen: any) => {
     const branch0 = javascriptGenerator.statementToCode(block, 'DO0');
     const branch1 = javascriptGenerator.statementToCode(block, 'ELSE');
     return `if (${condition}) {\n${branch0}} else {\n${branch1}}\n`;
+  };
+
+  target['logic_boolean'] = function(block: any) {
+    const code = (block.getFieldValue('BOOL') === 'TRUE') ? 'true' : 'false';
+    return [code, Order.ATOMIC];
   };
 
   target['operator_add'] = function(block: any) {

@@ -46,6 +46,12 @@ const registerPython = (gen: any) => {
     return `microbit.show_icon('${icon}')\n`;
   };
 
+  target['microbit_show_leds'] = function(block: any) {
+    const leds = block.getFieldValue('LEDS');
+    const ledsStr = JSON.stringify(leds);
+    return `microbit.show_leds(${ledsStr})\n`;
+  };
+
   target['microbit_show_text'] = function(block: any) {
     const text = block.getFieldValue('TEXT');
     return `microbit.show_text('${text}')\n`;
@@ -190,6 +196,11 @@ const registerPython = (gen: any) => {
     const branch0 = pythonGenerator.statementToCode(block, 'DO0');
     const branch1 = pythonGenerator.statementToCode(block, 'ELSE');
     return `if ${condition}:\n${branch0 || '  pass'}\nelse:\n${branch1 || '  pass'}\n`;
+  };
+
+  target['logic_boolean'] = function(block: any) {
+    const code = (block.getFieldValue('BOOL') === 'TRUE') ? 'True' : 'False';
+    return [code, Order.ATOMIC];
   };
 
   target['operator_add'] = function(block: any) {

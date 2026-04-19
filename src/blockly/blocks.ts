@@ -2,9 +2,11 @@ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import { FieldColour } from '@blockly/field-colour';
 import { FieldSlider } from '@blockly/field-slider';
+import { FieldBitmap } from '@blockly/field-bitmap';
 
 Blockly.fieldRegistry.register('field_colour', FieldColour);
 Blockly.fieldRegistry.register('field_slider', FieldSlider);
+Blockly.fieldRegistry.register('field_bitmap', FieldBitmap);
 
 const ICONS: { [key: string]: number[] } = {
   'HEART': [1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 22],
@@ -66,6 +68,28 @@ export const microbitBlocks = [
           createIconDropdownOption('Arrow West', 'ARROW_W'),
           createIconDropdownOption('Arrow North West', 'ARROW_NW'),
         ],
+      },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    colour: '#4C97FF',
+  },
+  {
+    type: 'microbit_show_leds',
+    message0: 'show LEDs %1',
+    args0: [
+      {
+        type: 'field_bitmap',
+        name: 'LEDS',
+        value: [
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0],
+        ],
+        width: 5,
+        height: 5,
       },
     ],
     previousStatement: null,
@@ -417,6 +441,22 @@ export const microbitBlocks = [
     colour: '#FFAB19',
   },
   {
+    type: 'logic_boolean',
+    message0: '%1',
+    args0: [
+      {
+        type: 'field_dropdown',
+        name: 'BOOL',
+        options: [
+          ['true', 'TRUE'],
+          ['false', 'FALSE']
+        ]
+      }
+    ],
+    output: 'Boolean',
+    colour: '#59C059'
+  },
+  {
     type: 'operator_add',
     message0: '%1 + %2',
     args0: [
@@ -532,7 +572,7 @@ export const microbitBlocks = [
     args0: [
       { type: 'input_value', name: 'BOOL', check: 'Boolean' }
     ],
-    inputsInline: false,
+    inputsInline: true,
     output: 'Boolean',
     colour: '#59C059'
   },
