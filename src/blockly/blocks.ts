@@ -1,12 +1,18 @@
- import * as Blockly from 'blockly';
+import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import { FieldColour } from '@blockly/field-colour';
 import { FieldSlider } from '@blockly/field-slider';
 import { FieldBitmap } from '@blockly/field-bitmap';
 
-// Shim for setLocale to prevent crash in some environments (like field-bitmap in prod)
-if (!(Blockly as any).setLocale) {
-  (Blockly as any).setLocale = () => {};
+// Double check shim in case this file is loaded in a way that bypasses main.tsx (e.g. testing)
+const B = (Blockly as any);
+if (!B.setLocale) {
+  B.setLocale = () => {};
+}
+
+// Global injection to help external fields find the right instance
+if (typeof window !== 'undefined') {
+  (window as any).Blockly = Blockly;
 }
 
 try {
