@@ -1,4 +1,4 @@
- import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
@@ -11,16 +11,23 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
-      // הפלאגין הזה "מתלבש" על הקובץ של בלוקלי ומתקן אותו מבפנים
       {
-        name: 'fix-blockly-core-issue',
+        name: 'blockly-set-locale-fix',
+        enforce: 'post', // רץ אחרי שכל המודולים נטענו
         transform(code, id) {
-          if (id.includes('blockly/core') || id.endsWith('blockly/index.js')) {
+          // אנחנו מחפשים את הקובץ של השדה הבעייתי
+          if (id.includes('@blockly/field-bitmap')) {
+            // התיקון: אנחנו מחליפים את הקריאה ל-setLocale בבדיקה בטוחה
+            // במקום r.setLocale(n) זה יהפוך למשהו שלא קורס
             return {
-              code: code + `\nif (!exports.setLocale) { exports.setLocale = function() {}; }\nif (typeof window !== 'undefined') { window.Blockly = exports; }`,
+              code: code.replace(
+                /\.setLocale\(/g, 
+                '?.setLocale?.('
+              ),
               map: null
             };
           }
+          return null;
         }
       }
     ],
@@ -30,18 +37,16 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        // הכרחי: כל ייבוא של ליבת בלוקלי יופנה לאותו מקום
         'blockly/core': 'blockly',
       },
     },
     build: {
       outDir: 'dist',
       commonjsOptions: {
-        transformMixedEsModules: true, // קריטי לטיפול בספריות ישנות כמו bitmap
+        transformMixedEsModules: true,
       },
       rollupOptions: {
         output: {
-          // מונע מ-Vite לפצל את בלוקלי ליותר מדי קבצים קטנים
           manualChunks: {
             blockly_vendor: ['blockly', '@blockly/field-bitmap']
           }
