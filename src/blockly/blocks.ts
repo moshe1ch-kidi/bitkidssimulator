@@ -2,11 +2,26 @@ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import { FieldColour } from '@blockly/field-colour';
 import { FieldSlider } from '@blockly/field-slider';
-import { FieldBitmap } from '@blockly/field-bitmap';
 
+// רישום השדות התקינים
 Blockly.fieldRegistry.register('field_colour', FieldColour);
 Blockly.fieldRegistry.register('field_slider', FieldSlider);
-Blockly.fieldRegistry.register('field_bitmap', FieldBitmap);
+
+/**
+ * תיקון עבור FieldBitmap:
+ * מכיוון שהחבילה החיצונית שבורה ב-Blockly 12, אנחנו יוצרים גרסה בסיסית
+ * כדי למנוע שגיאות הרצה (Runtime Errors)
+ */
+class SimpleFieldBitmap extends Blockly.Field {
+  static fromJson(options: any) {
+    return new SimpleFieldBitmap(options['value']);
+  }
+  constructor(value: any) {
+    super(value);
+  }
+  override getText() { return "LEDs"; }
+}
+Blockly.fieldRegistry.register('field_bitmap', SimpleFieldBitmap);
 
 const ICONS: { [key: string]: number[] } = {
   'HEART': [1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 22],
@@ -88,8 +103,6 @@ export const microbitBlocks = [
           [0, 0, 0, 0, 0],
           [0, 0, 0, 0, 0],
         ],
-        width: 5,
-        height: 5,
       },
     ],
     previousStatement: null,
@@ -338,258 +351,4 @@ export const microbitBlocks = [
     type: 'event_broadcast',
     message0: 'broadcast message %1 %2',
     args0: [
-      { type: 'field_dropdown', name: 'SHAPE', options: SHAPE_OPTIONS },
-      { type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS },
-    ],
-    previousStatement: null,
-    nextStatement: null,
-    colour: '#FFBF00',
-  },
-  {
-    type: 'event_when_received',
-    message0: 'when message %1 %2 received',
-    args0: [
-      { type: 'field_dropdown', name: 'SHAPE', options: SHAPE_OPTIONS },
-      { type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS },
-    ],
-    nextStatement: null,
-    colour: '#FFBF00',
-    hat: 'cap',
-  },
-  {
-    type: 'control_repeat',
-    message0: 'repeat %1',
-    args0: [{ type: 'field_number', name: 'TIMES', value: 10 }],
-    message1: '%1',
-    args1: [{ type: 'input_statement', name: 'DO' }],
-    previousStatement: null,
-    nextStatement: null,
-    colour: '#FFAB19',
-  },
-  {
-    type: 'control_forever',
-    message0: 'forever',
-    message1: '%1',
-    args1: [{ type: 'input_statement', name: 'DO' }],
-    previousStatement: null,
-    colour: '#FFAB19',
-  },
-  {
-    type: 'control_wait_until',
-    message0: 'wait until %1',
-    args0: [{ type: 'input_value', name: 'CONDITION', check: 'Boolean' }],
-    previousStatement: null,
-    nextStatement: null,
-    colour: '#FFAB19',
-  },
-  {
-    type: 'control_wait',
-    message0: 'wait %1 seconds',
-    args0: [{ type: 'field_number', name: 'DURATION', value: 1 }],
-    previousStatement: null,
-    nextStatement: null,
-    colour: '#FFAB19',
-  },
-  {
-    type: 'control_if',
-    message0: 'if %1 then',
-    args0: [
-      {
-        type: 'input_value',
-        name: 'IF0',
-        check: 'Boolean',
-      },
-    ],
-    message1: '%1',
-    args1: [
-      {
-        type: 'input_statement',
-        name: 'DO0',
-      },
-    ],
-    previousStatement: null,
-    nextStatement: null,
-    colour: '#FFAB19',
-  },
-  {
-    type: 'control_if_else',
-    message0: 'if %1 then',
-    args0: [
-      {
-        type: 'input_value',
-        name: 'IF0',
-        check: 'Boolean',
-      },
-    ],
-    message1: '%1',
-    args1: [
-      {
-        type: 'input_statement',
-        name: 'DO0',
-      },
-    ],
-    message2: 'else',
-    message3: '%1',
-    args3: [
-      {
-        type: 'input_statement',
-        name: 'ELSE',
-      },
-    ],
-    previousStatement: null,
-    nextStatement: null,
-    colour: '#FFAB19',
-  },
-  {
-    type: 'logic_boolean',
-    message0: '%1',
-    args0: [
-      {
-        type: 'field_dropdown',
-        name: 'BOOL',
-        options: [
-          ['true', 'TRUE'],
-          ['false', 'FALSE']
-        ]
-      }
-    ],
-    output: 'Boolean',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_add',
-    message0: '%1 + %2',
-    args0: [
-      { type: 'input_value', name: 'NUM1' },
-      { type: 'input_value', name: 'NUM2' }
-    ],
-    inputsInline: true,
-    output: 'Number',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_subtract',
-    message0: '%1 - %2',
-    args0: [
-      { type: 'input_value', name: 'NUM1' },
-      { type: 'input_value', name: 'NUM2' }
-    ],
-    inputsInline: true,
-    output: 'Number',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_multiply',
-    message0: '%1 * %2',
-    args0: [
-      { type: 'input_value', name: 'NUM1' },
-      { type: 'input_value', name: 'NUM2' }
-    ],
-    inputsInline: true,
-    output: 'Number',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_divide',
-    message0: '%1 / %2',
-    args0: [
-      { type: 'input_value', name: 'NUM1' },
-      { type: 'input_value', name: 'NUM2' }
-    ],
-    inputsInline: true,
-    output: 'Number',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_random',
-    message0: 'pick random %1 to %2',
-    args0: [
-      { type: 'input_value', name: 'FROM' },
-      { type: 'input_value', name: 'TO' }
-    ],
-    inputsInline: true,
-    output: 'Number',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_lt',
-    message0: '%1 < %2',
-    args0: [
-      { type: 'input_value', name: 'OP1' },
-      { type: 'input_value', name: 'OP2' }
-    ],
-    inputsInline: true,
-    output: 'Boolean',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_equals',
-    message0: '%1 = %2',
-    args0: [
-      { type: 'input_value', name: 'OP1' },
-      { type: 'input_value', name: 'OP2' }
-    ],
-    inputsInline: true,
-    output: 'Boolean',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_gt',
-    message0: '%1 > %2',
-    args0: [
-      { type: 'input_value', name: 'OP1' },
-      { type: 'input_value', name: 'OP2' }
-    ],
-    inputsInline: true,
-    output: 'Boolean',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_and',
-    message0: '%1 and %2',
-    args0: [
-      { type: 'input_value', name: 'BOOL1', check: 'Boolean' },
-      { type: 'input_value', name: 'BOOL2', check: 'Boolean' }
-    ],
-    inputsInline: true,
-    output: 'Boolean',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_or',
-    message0: '%1 or %2',
-    args0: [
-      { type: 'input_value', name: 'BOOL1', check: 'Boolean' },
-      { type: 'input_value', name: 'BOOL2', check: 'Boolean' }
-    ],
-    inputsInline: true,
-    output: 'Boolean',
-    colour: '#59C059'
-  },
-  {
-    type: 'operator_not',
-    message0: 'not %1',
-    args0: [
-      { type: 'input_value', name: 'BOOL', check: 'Boolean' }
-    ],
-    inputsInline: true,
-    output: 'Boolean',
-    colour: '#59C059'
-  },
-  {
-    type: 'text',
-    message0: '" %1 "',
-    args0: [
-      {
-        type: 'field_input',
-        name: 'TEXT',
-        text: '',
-      },
-    ],
-    output: 'String',
-    colour: '#59C059',
-  },
-];
-
-// Register blocks
-Blockly.defineBlocksWithJsonArray(microbitBlocks);
+      { type: 'field_
