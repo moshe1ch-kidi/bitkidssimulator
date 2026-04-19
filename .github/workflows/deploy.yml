@@ -14,12 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
+        # עודכן מ-v4 ל-v4.2.2 (או פשוט v4 שמקבל עדכוני תאימות)
         uses: actions/checkout@v4
 
       - name: Install Node.js
+        # ה-Action עצמו עודכן וגם גרסת ה-Node שונתה ל-22 (מומלץ במקום 20)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
