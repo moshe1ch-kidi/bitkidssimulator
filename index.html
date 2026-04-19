@@ -1,13 +1,17 @@
- <!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Google AI Studio App</title>
+    <script>
+      // Force a global Blockly object with setLocale shim BEFORE anything else loads
+      window.Blockly = window.Blockly || {};
+      window.Blockly.setLocale = window.Blockly.setLocale || function() {};
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
