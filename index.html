@@ -1,13 +1,25 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Google AI Studio App</title>
+    <title>BitKids Simulator</title>
+    
+    <script>
+      (function() {
+        window.Blockly = window.Blockly || {};
+        if (!window.Blockly.setLocale) {
+          window.Blockly.setLocale = function() {
+            console.log('Global Blockly shim: setLocale initialized to prevent crash.');
+          };
+        }
+      })();
+    </script>
+
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
