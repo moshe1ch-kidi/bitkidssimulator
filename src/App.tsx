@@ -5,7 +5,7 @@ import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
 import { pythonGenerator } from './blockly/python_generators';
-import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, List, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap, Code } from 'lucide-react';
+import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, List, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap, Code, ShieldCheck } from 'lucide-react';
 import { MicrobitBoard } from './components/MicrobitBoard';
 import { ElectronicComponents, DraggableComponent } from './components/ElectronicComponents';
 
@@ -245,7 +245,7 @@ export default function App() {
     callback: (value: string | null) => void;
   } | null>(null);
   const [promptInputValue, setPromptInputValue] = useState('');
-  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer' | 'planet_monitor' | 'alarm'>('components');
+  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer' | 'planet_monitor' | 'alarm' | 'fan_speed' | 'security_gate'>('components');
   const [showPythonModal, setShowPythonModal] = useState(false);
   const [pythonCode, setPythonCode] = useState('');
 
@@ -279,6 +279,14 @@ export default function App() {
   ];
 
   const missions = [
+    {
+      id: 'security_gate',
+      title: 'Security Gate',
+      description: 'Build an automated security gate that opens when a car approaches and stays open until it passes safely.',
+      icon: <ShieldCheck className="text-emerald-500" />,
+      difficulty: 'Hard',
+      components: ['Micro:bit', '2x Ultrasonic Sensor', 'Servo Motor', '2x LED']
+    },
     {
       id: 'fan_speed',
       title: 'Variable Speed Fan',
@@ -592,6 +600,7 @@ export default function App() {
               },
               contents: [
                 { kind: 'block', type: 'microbit_show_icon' },
+                { kind: 'block', type: 'microbit_show_leds' },
                 { kind: 'block', type: 'microbit_show_text' },
                 {
                   kind: 'block',
@@ -687,9 +696,36 @@ export default function App() {
                 row: 'blocklyTreeRowCustom operators-category'
               },
               contents: [
+                { kind: 'block', type: 'logic_boolean' },
+                { kind: 'block', type: 'operator_not' },
+                { kind: 'block', type: 'operator_and' },
+                { kind: 'block', type: 'operator_or' },
+                {
+                  kind: 'block',
+                  type: 'operator_lt',
+                  inputs: {
+                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'operator_equals',
+                  inputs: {
+                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'operator_gt',
+                  inputs: {
+                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
                 { kind: 'block', type: 'math_number' },
                 { kind: 'block', type: 'text' },
-                { kind: 'block', type: 'logic_boolean' },
                 {
                   kind: 'block',
                   type: 'operator_add',
@@ -730,33 +766,6 @@ export default function App() {
                     TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
                   },
                 },
-                {
-                  kind: 'block',
-                  type: 'operator_lt',
-                  inputs: {
-                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'operator_equals',
-                  inputs: {
-                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'operator_gt',
-                  inputs: {
-                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                { kind: 'block', type: 'operator_and' },
-                { kind: 'block', type: 'operator_or' },
-                { kind: 'block', type: 'operator_not' },
               ],
             },
             {
@@ -1151,7 +1160,7 @@ export default function App() {
                           </span>
                         ))}
                       </div>
-                      {(mission.id === 'nightlight' || mission.id === 'thermostat' || mission.id === 'visual_thermometer' || mission.id === 'planet_monitor' || mission.id === 'alarm' || mission.id === 'fan_speed') && (
+                      {mission.id !== 'lamp' && (
                         <button 
                           onClick={() => {
                             setHelpTab(mission.id as any);
@@ -1298,6 +1307,7 @@ export default function App() {
                      helpTab === 'planet_monitor' ? 'Planet Monitor - Mission Guide' :
                      helpTab === 'fan_speed' ? 'Variable Speed Fan - Mission Guide' :
                      helpTab === 'alarm' ? 'Distance Alarm - מדריך משימה' :
+                     helpTab === 'security_gate' ? 'Security Gate - Mission Guide' :
                      'Visual Thermometer - Mission Guide'}
                   </h2>
                   <div className="flex gap-4 mt-1">
@@ -1342,6 +1352,12 @@ export default function App() {
                       className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'alarm' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                     >
                       Distance Alarm
+                    </button>
+                    <button 
+                      onClick={() => setHelpTab('security_gate')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'security_gate' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Security Gate
                     </button>
                   </div>
                 </div>
@@ -1683,6 +1699,134 @@ export default function App() {
                     <p className="text-slate-600 leading-relaxed">
                       The Micro:bit reads values from 0 to 1023. The code converts these raw numbers into actual temperature degrees using mathematical formulas based on the thermistor's characteristics.
                     </p>
+                  </section>
+                </div>
+              ) : helpTab === 'security_gate' ? (
+                <div className="space-y-12 pb-12 text-left" dir="ltr">
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-emerald-500 pl-4">Security Gate 🛡️</h3>
+                    <p className="text-slate-600 leading-relaxed">
+                      This model presents a classic automation system based on sensor feedback (Input) and motor response (Output). The system operates in a closed loop to allow safe entry for the car.
+                    </p>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/gatemodel.png" 
+                        alt="Security Gate Model" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-emerald-500 pl-4">How the Gate Works ⚙️</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-3">
+                        <h4 className="font-bold text-emerald-700">1. Detection (Input)</h4>
+                        <p className="text-sm text-slate-600">
+                          The ultrasonic sensor at the top works like a bat: it sends high-frequency sound waves. It calculates distance based on the time it takes for waves to return.
+                        </p>
+                      </div>
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-3">
+                        <h4 className="font-bold text-emerald-700">2. Decision (Logic)</h4>
+                        <p className="text-sm text-slate-600">
+                          The controller runs code checking if distance is less than 200 cm. If an object is detected, it triggers the opening sequence.
+                        </p>
+                      </div>
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-3">
+                        <h4 className="font-bold text-emerald-700">3. Activation (Output)</h4>
+                        <p className="text-sm text-slate-600">
+                          When a car is detected, current is sent to the motor. Gears convert the motor's speed into torque to lift the red gate arm.
+                        </p>
+                      </div>
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 space-y-3">
+                        <h4 className="font-bold text-emerald-700">4. Safety Closing</h4>
+                        <p className="text-sm text-slate-600">
+                          After the car passes, the system waits for the sensors to clear before lowering the arm safely to prevent hitting the vehicle.
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-emerald-500 pl-4">Component Connections 🛠️</h3>
+                    <div className="overflow-hidden rounded-2xl border border-slate-200">
+                      <table className="w-full text-sm text-left">
+                        <thead className="bg-slate-50 text-slate-700 font-bold">
+                          <tr>
+                            <th className="px-4 py-3">Component</th>
+                            <th className="px-4 py-3">Port</th>
+                            <th className="px-4 py-3">Role</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                          <tr>
+                            <td className="px-4 py-3 font-medium">Ultrasonic 1</td>
+                            <td className="px-4 py-3 text-blue-600 font-bold">J1</td>
+                            <td className="px-4 py-3 text-slate-600">Detects entry/exit distance</td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3 font-medium">Ultrasonic 2</td>
+                            <td className="px-4 py-3 text-blue-600 font-bold">J2</td>
+                            <td className="px-4 py-3 text-slate-600">Detects entry/exit distance</td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3 font-medium">Green LED</td>
+                            <td className="px-4 py-3 text-blue-600 font-bold">J3</td>
+                            <td className="px-4 py-3 text-slate-600">ON when gate is OPEN</td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3 font-medium">Red LED</td>
+                            <td className="px-4 py-3 text-blue-600 font-bold">J4</td>
+                            <td className="px-4 py-3 text-slate-600">ON when gate is CLOSED</td>
+                          </tr>
+                          <tr>
+                            <td className="px-4 py-3 font-medium">Servo Motor</td>
+                            <td className="px-4 py-3 text-blue-600 font-bold">S1</td>
+                            <td className="px-4 py-3 text-slate-600">Gate Arm (90° Closed, 270° Open)</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/gatesim.png" 
+                        alt="Simulator Connections" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-emerald-500 pl-4">The Code 💻</h3>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/refs/heads/main/src/help/gatecode.png" 
+                        alt="Mission Code" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                    <div className="bg-slate-900 text-white p-6 rounded-3xl space-y-4">
+                      <h4 className="font-bold text-emerald-400">Code Logic Analysis:</h4>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-emerald-400 font-bold">Initial State:</span> The code starts by setting the Red LED to ON, Green LED to OFF, and the Servo to 90 degrees (Closed).</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-blue-400 font-bold">Detection (OR):</span> The condition <code>200 &gt; distance</code> checks if EITHER sensor J1 or J2 detects an object. This allows detection from both sides.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-yellow-400 font-bold">Opening:</span> Once detected, the LEDs swap states and the Servo moves to 270 degrees (Open).</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-red-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-red-400 font-bold">Safety Wait:</span> The <code>while not</code> loop acts as a barrier, keeping the gate open until BOTH sensors confirm the car has passed (distance &gt; 200).</p>
+                      </div>
+                    </div>
                   </section>
                 </div>
               ) : helpTab === 'fan_speed' ? (
