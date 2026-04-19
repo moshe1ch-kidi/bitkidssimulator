@@ -1,4 +1,4 @@
- import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } from 'react';
+import React, { useState, useImperativeHandle, forwardRef, useRef, useEffect } from 'react';
 
 interface MicrobitBoardProps {
   onPinClick: (pin: string) => void;
@@ -101,6 +101,10 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
       const activeIndices = icons[icon] || [];
       activeIndices.forEach(i => newLeds[i] = true);
       setLeds(newLeds);
+    },
+    setLeds: (ledArray: boolean[]) => {
+      if (scrollInterval.current) clearInterval(scrollInterval.current);
+      setLeds(ledArray);
     },
     showText: (text: string) => {
       if (scrollInterval.current) clearInterval(scrollInterval.current);
