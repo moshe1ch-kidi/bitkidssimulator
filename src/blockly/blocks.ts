@@ -1,12 +1,31 @@
-import * as Blockly from 'blockly';
+ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import { FieldColour } from '@blockly/field-colour';
 import { FieldSlider } from '@blockly/field-slider';
 import { FieldBitmap } from '@blockly/field-bitmap';
 
-Blockly.fieldRegistry.register('field_colour', FieldColour);
-Blockly.fieldRegistry.register('field_slider', FieldSlider);
-Blockly.fieldRegistry.register('field_bitmap', FieldBitmap);
+// Shim for setLocale to prevent crash in some environments (like field-bitmap in prod)
+if (!(Blockly as any).setLocale) {
+  (Blockly as any).setLocale = () => {};
+}
+
+try {
+  Blockly.fieldRegistry.register('field_colour', FieldColour);
+} catch (e) {
+  console.warn('field_colour already registered');
+}
+
+try {
+  Blockly.fieldRegistry.register('field_slider', FieldSlider);
+} catch (e) {
+  console.warn('field_slider already registered');
+}
+
+try {
+  Blockly.fieldRegistry.register('field_bitmap', FieldBitmap);
+} catch (e) {
+  console.warn('field_bitmap already registered');
+}
 
 const ICONS: { [key: string]: number[] } = {
   'HEART': [1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 22],
