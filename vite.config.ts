@@ -1,4 +1,4 @@
-import tailwindcss from '@tailwindcss/vite';
+ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
@@ -11,22 +11,13 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       tailwindcss(),
-      // פלאגין "הזרקה אגרסיבית" - זה הפתרון הסופי לשגיאת ה-setLocale
+      // הפלאגין הזה "מתלבש" על הקובץ של בלוקלי ומתקן אותו מבפנים
       {
-        name: 'force-blockly-shim',
-        enforce: 'pre', // גורם לזה לרוץ לפני הכל
+        name: 'fix-blockly-core-issue',
         transform(code, id) {
-          // אם אנחנו בתוך חבילה של בלוקלי או ה-bitmap
-          if (id.includes('blockly') || id.includes('field-bitmap')) {
-            // מזריק הזרקה גלובלית לתוך הקוד עצמו
+          if (id.includes('blockly/core') || id.endsWith('blockly/index.js')) {
             return {
-              code: `
-                if (typeof window !== 'undefined') {
-                  window.Blockly = window.Blockly || {};
-                  window.Blockly.setLocale = window.Blockly.setLocale || function() {};
-                }
-                ${code}
-              `,
+              code: code + `\nif (!exports.setLocale) { exports.setLocale = function() {}; }\nif (typeof window !== 'undefined') { window.Blockly = exports; }`,
               map: null
             };
           }
@@ -39,14 +30,23 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        'blockly/core': 'blockly', // איחוד מודולים
+        // הכרחי: כל ייבוא של ליבת בלוקלי יופנה לאותו מקום
+        'blockly/core': 'blockly',
       },
     },
     build: {
       outDir: 'dist',
       commonjsOptions: {
-        transformMixedEsModules: true,
+        transformMixedEsModules: true, // קריטי לטיפול בספריות ישנות כמו bitmap
       },
-    },
+      rollupOptions: {
+        output: {
+          // מונע מ-Vite לפצל את בלוקלי ליותר מדי קבצים קטנים
+          manualChunks: {
+            blockly_vendor: ['blockly', '@blockly/field-bitmap']
+          }
+        }
+      }
+    }
   };
 });
