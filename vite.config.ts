@@ -22,6 +22,8 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        // פותר את השגיאה: [vite]: Rollup failed to resolve import "blockly/core"
+        'blockly/core': 'blockly',
       },
     },
 
