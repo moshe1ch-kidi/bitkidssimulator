@@ -596,7 +596,7 @@ export default function App() {
               name: 'Microbit',
               colour: '#4C97FF',
               cssConfig: {
-                row: 'blocklyTreeRowCustom microbit-category'
+                row: 'blocklyTreeRowCustom mbit-custom-row'
               },
               contents: [
                 { kind: 'block', type: 'microbit_show_icon' },
