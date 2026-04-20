@@ -1424,7 +1424,7 @@ export default function App() {
                   <section className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
                     <h3 className="text-2xl font-black text-blue-900 mb-4">Automatic Night Light</h3>
                     <p className="text-lg text-slate-700 leading-relaxed">
-                      To create an automatic night light with the Micro:bit system, we need to build logic that constantly checks the ambient light level and responds accordingly.
+                      To create an automatic night light with the Microbit system, we need to build logic that constantly checks the ambient light level and responds accordingly.
                     </p>
                     <div className="mt-6 flex justify-center">
                       <img 
@@ -1522,7 +1522,7 @@ export default function App() {
                   <section className="bg-cyan-50 p-6 rounded-3xl border border-cyan-100">
                     <h3 className="text-2xl font-black text-cyan-900 mb-4">Planet Monitor (Smart Plant Pot)</h3>
                     <p className="text-lg text-slate-700 leading-relaxed">
-                      Create a system that measures soil moisture levels using Micro:bit (BitKIDI), displays the status using control lights (LEDs), and allows real-time monitoring.
+                      Create a system that measures soil moisture levels using Microbit (BitKIDI), displays the status using control lights (LEDs), and allows real-time monitoring.
                     </p>
                     <div className="mt-6 flex justify-center">
                       <img 
@@ -2426,7 +2426,7 @@ export default function App() {
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden">
                <img src="https://img.icons8.com/color/48/000000/panda.png" alt="Panda" className="w-6 h-6" referrerPolicy="no-referrer" />
             </div>
-            <span className="text-sm font-bold text-gray-600">Scripts for Micro:bit</span>
+            <span className="text-sm font-bold text-gray-600">Scripts for Microbit</span>
           </div>
           <div ref={blocklyDiv} className="h-[calc(100%-48px)] w-full"></div>
         </div>
