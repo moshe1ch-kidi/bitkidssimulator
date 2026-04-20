@@ -4,17 +4,6 @@ import { FieldColour } from '@blockly/field-colour';
 import { FieldSlider } from '@blockly/field-slider';
 import { FieldBitmap } from '@blockly/field-bitmap';
 
-// Double check shim in case this file is loaded in a way that bypasses main.tsx (e.g. testing)
-const B = (Blockly as any);
-if (!B.setLocale) {
-  B.setLocale = () => {};
-}
-
-// Global injection to help external fields find the right instance
-if (typeof window !== 'undefined') {
-  (window as any).Blockly = Blockly;
-}
-
 try {
   Blockly.fieldRegistry.register('field_colour', FieldColour);
 } catch (e) {
@@ -613,6 +602,17 @@ export const microbitBlocks = [
     ],
     output: 'String',
     colour: '#59C059',
+  },
+  {
+    type: 'microbit_blink_led',
+    message0: 'Blink LED %1 %2 times',
+    args0: [
+      { type: 'field_dropdown', name: 'PIN', options: [['J1', 'J1'], ['J2', 'J2'], ['J3', 'J3'], ['J4', 'J4']] },
+      { type: 'field_number', name: 'TIMES', value: 3 },
+    ],
+    previousStatement: null,
+    nextStatement: null,
+    colour: '#4C97FF',
   },
 ];
 

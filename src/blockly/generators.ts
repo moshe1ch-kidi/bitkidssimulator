@@ -174,6 +174,12 @@ const register = (gen: any) => {
     return [`await boardRef.current.${method}('${port}')`, Order.AWAIT];
   };
 
+  target['microbit_blink_led'] = function(block: any) {
+    const pin = block.getFieldValue('PIN');
+    const times = block.getFieldValue('TIMES');
+    return `for (let i = 0; i < ${times}; i++) {\n  boardRef.current.setPin('${pin}', 1);\n  await new Promise(resolve => setTimeout(resolve, 300));\n  boardRef.current.setPin('${pin}', 0);\n  await new Promise(resolve => setTimeout(resolve, 300));\n}\n`;
+  };
+
   target['microbit_play_tone'] = function(block: any) {
     const tone = javascriptGenerator.valueToCode(block, 'TONE', Order.ATOMIC) || '440';
     return `boardRef.current.playTone(${tone});\n`;
