@@ -120,7 +120,7 @@
 
 /* הגדרת השמות באנגלית לכל קטגוריה */
 .events-category:hover::after { content: 'Events' !important; }
-.microbit-category:hover::after { content: 'Micro:bit' !important; }
+.microbit-category:hover::after { content: 'Microbit' !important; }
 .sensors-category:hover::after { content: 'Sensors' !important; }
 .sound-category:hover::after { content: 'Sound' !important; }
 .control-category:hover::after { content: 'Control' !important; }
