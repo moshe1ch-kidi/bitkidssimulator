@@ -1,4 +1,4 @@
-import * as Blockly from 'blockly';
+ import * as Blockly from 'blockly';
 import 'blockly/blocks';
 import { FieldColour } from '@blockly/field-colour';
 import { FieldSlider } from '@blockly/field-slider';
@@ -46,22 +46,24 @@ const createIconDropdownOption = (name: string, key: string): [any, string] => {
     rects += `<rect x="${x}" y="${y}" width="4" height="4" fill="${fill}" rx="0.5" />`;
   }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">${rects}</svg>`;
-  const dataUri = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  // Base64 is more robust in production builds
+  const base64Svg = btoa(svg);
+  const dataUri = `data:image/svg+xml;base64,${base64Svg}`;
   return [{ src: dataUri, width: 24, height: 24, alt: name }, key];
 };
 
 const SHAPE_OPTIONS = [
-  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>', width: 20, height: 20, alt: 'Star' }, 'STAR'],
-  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>', width: 20, height: 20, alt: 'Heart' }, 'HEART'],
-  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>', width: 20, height: 20, alt: 'Circle' }, 'CIRCLE'],
-  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>', width: 20, height: 20, alt: 'Square' }, 'SQUARE'],
+  [{ src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>'), width: 20, height: 20, alt: 'Star' }, 'STAR'],
+  [{ src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>'), width: 20, height: 20, alt: 'Heart' }, 'HEART'],
+  [{ src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg>'), width: 20, height: 20, alt: 'Circle' }, 'CIRCLE'],
+  [{ src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>'), width: 20, height: 20, alt: 'Square' }, 'SQUARE'],
 ];
 
 const COLOR_OPTIONS = [
-  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="red"/></svg>', width: 20, height: 20, alt: 'Red' }, 'RED'],
-  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="green"/></svg>', width: 20, height: 20, alt: 'Green' }, 'GREEN'],
-  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="blue"/></svg>', width: 20, height: 20, alt: 'Blue' }, 'BLUE'],
-  [{ src: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="yellow"/></svg>', width: 20, height: 20, alt: 'Yellow' }, 'YELLOW'],
+  [{ src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="red"/></svg>'), width: 20, height: 20, alt: 'Red' }, 'RED'],
+  [{ src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="green"/></svg>'), width: 20, height: 20, alt: 'Green' }, 'GREEN'],
+  [{ src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="blue"/></svg>'), width: 20, height: 20, alt: 'Blue' }, 'BLUE'],
+  [{ src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="yellow"/></svg>'), width: 20, height: 20, alt: 'Yellow' }, 'YELLOW'],
 ];
 
 export const microbitBlocks = [
@@ -616,5 +618,33 @@ export const microbitBlocks = [
   },
 ];
 
-// Register blocks
-Blockly.defineBlocksWithJsonArray(microbitBlocks);
+// Register blocks individually with error catching to prevent one failure from breaking the whole category
+microbitBlocks.forEach(block => {
+  try {
+    Blockly.defineBlocksWithJsonArray([block]);
+  } catch (e) {
+    console.error(`Failed to register block: ${block.type}`, e);
+  }
+});
+
+// Ensure math_number is available even if tree-shaking removed it from blockly/blocks
+if (!Blockly.Blocks['math_number']) {
+  Blockly.Blocks['math_number'] = {
+    init: function() {
+      this.jsonInit({
+        "type": "math_number",
+        "message0": "%1",
+        "args0": [{
+          "type": "field_number",
+          "name": "NUM",
+          "value": 0
+        }],
+        "output": "Number",
+        "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
+        "colour": "%{BKY_MATH_HUE}",
+        "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
+        "extensions": ["parent_tooltip_when_inline"]
+      });
+    }
+  };
+}
