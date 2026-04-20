@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
@@ -593,7 +593,7 @@ export default function App() {
             },
             {
               kind: 'category',
-              name: 'Micro:bit',
+              name: 'Microbit',
               colour: '#4C97FF',
               cssConfig: {
                 row: 'blocklyTreeRowCustom microbit-category'
