@@ -1,6 +1,7 @@
  import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
+import 'blockly/blocks';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
@@ -585,6 +586,18 @@ export default function App() {
             <block type="microbit_show_text"></block>
             <block type="microbit_show_icon"></block>
             <block type="microbit_show_leds"></block>
+            <block type="microbit_ledgraph">
+              <value name="VALUE">
+                <shadow type="math_number">
+                  <field name="NUM">0</field>
+                </shadow>
+              </value>
+              <value name="MAX">
+                <shadow type="math_number">
+                  <field name="NUM">100</field>
+                </shadow>
+              </value>
+            </block>
             <block type="microbit_set_led_color"></block>
             <block type="microbit_led_pin"></block>
             <block type="microbit_blink_led"></block>
