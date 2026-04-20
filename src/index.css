@@ -135,7 +135,6 @@
 
 /* Fix for flyout positioning in production */
 .blocklyFlyout {
-  z-index: 50 !important;
 }
 
 /* Category Square and Icon */
