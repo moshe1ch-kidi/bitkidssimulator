@@ -285,7 +285,7 @@ export default function App() {
       description: 'Advance your engineering skills by building a fully automated safety crossing. In this mission, you will use dual ultrasonic sensors to detect approaching vehicles. Program the gate to lift automatically when a car is detected and, most importantly, to stay open until the second sensor confirms the vehicle has passed safely before lowering the gate.',
       icon: <ShieldCheck className="text-emerald-500" />,
       difficulty: 'Hard',
-      components: ['Micro:bit', '2x Ultrasonic Sensor', 'Servo Motor', '2x LED']
+      components: ['Microbit', '2x Ultrasonic Sensor', 'Servo Motor', '2x LED']
     },
     {
       id: 'fan_speed',
@@ -293,15 +293,15 @@ export default function App() {
       description: 'Learn how to build a manual control system. Use a potentiometer to adjust the rotation speed of a DC motor in real-time, simulating a professional variable speed fan control dial.',
       icon: <RotateCcw className="text-blue-500" />,
       difficulty: 'Medium',
-      components: ['Micro:bit', 'Potentiometer', 'DC Motor']
+      components: ['Microbit', 'Potentiometer', 'DC Motor']
     },
     {
       id: 'lamp',
       title: 'Table Lamp',
-      description: 'Master the fundamentals of digital logic and user interaction. In this starter mission, you will build a smart desk lamp. You will program the Micro:bit to detect when a crash sensor (button) is pressed, creating a reliable toggle system that controls an LED, forming the building block for all interactive electronics.',
+      description: 'Master the fundamentals of digital logic and user interaction. In this starter mission, you will build a smart desk lamp. You will program the Microbit to detect when a crash sensor (button) is pressed, creating a reliable toggle system that controls an LED, forming the building block for all interactive electronics.',
       icon: <Lightbulb className="text-yellow-500" />,
       difficulty: 'Easy',
-      components: ['Micro:bit', 'Crash Sensor', 'LED']
+      components: ['Microbit', 'Crash Sensor', 'LED']
     },
     {
       id: 'alarm',
@@ -309,23 +309,23 @@ export default function App() {
       description: 'The Naughty Hedgehog: Building a "Smart Fence" to keep him safe! Program a system using an ultrasonic sensor to detect the distance to the hedgehog and trigger an alarm with a buzzer if he gets too close to the boundary.',
       icon: <ShieldAlert className="text-red-500" />,
       difficulty: 'Medium',
-      components: ['Micro:bit', 'Ultrasonic Sensor', 'Buzzer']
+      components: ['Microbit', 'Ultrasonic Sensor', 'Buzzer']
     },
     {
       id: 'nightlight',
       title: 'Automatic Night Light',
-      description: 'Create an intelligent lighting system. Program the Micro:bit to monitor ambient light levels and automatically turn on the Rainbow LED with a soft white glow when the room gets dark (below 300 intensity).',
+      description: 'Create an intelligent lighting system. Program the Microbit to monitor ambient light levels and automatically turn on the Rainbow LED with a soft white glow when the room gets dark (below 300 intensity).',
       icon: <Zap className="text-blue-500" />,
       difficulty: 'Medium',
-      components: ['Micro:bit', 'Light Sensor', 'Rainbow LED']
+      components: ['Microbit', 'Light Sensor', 'Rainbow LED']
     },
     {
       id: 'planet_monitor',
       title: 'Plant Monitor',
-      description: 'Create a professional-grade plant life-support system! This project teaches you how to interface with analog sensors to measure soil moisture levels. You will program the Micro:bit to analyze these "thirsty" signals and display encouraging icons or warning LEDs to ensure your plants always get the care they need.',
+      description: 'Create a professional-grade plant life-support system! This project teaches you how to interface with analog sensors to measure soil moisture levels. You will program the Microbit to analyze these "thirsty" signals and display encouraging icons or warning LEDs to ensure your plants always get the care they need.',
       icon: <Droplets className="text-cyan-500" />,
       difficulty: 'Medium',
-      components: ['Micro:bit', 'Soil Moisture Sensor', 'LEDs']
+      components: ['Microbit', 'Soil Moisture Sensor', 'LEDs']
     },
     {
       id: 'thermostat',
@@ -333,7 +333,7 @@ export default function App() {
       description: 'Step into the shoes of a systems engineer to build a climate-controlled environment. You will program a logic sequence that monitors professional temperature sensors: if the room is cold, a heater (LED) activates; once the target temperature of 30°C is reached, the system automatically switches to cool mode by starting a high-speed DC motor fan.',
       icon: <Thermometer className="text-orange-500" />,
       difficulty: 'Hard',
-      components: ['Micro:bit', 'Temperature Sensor', 'LED', 'Fan Motor']
+      components: ['Microbit', 'Temperature Sensor', 'LED', 'Fan Motor']
     },
     {
       id: 'visual_thermometer',
@@ -341,7 +341,7 @@ export default function App() {
       description: 'Transform raw data into a clear visual dashboard! In this mission, you will use the DHT11 digital sensor to capture temperature readings. Instead of just numbers, you will program a 3-stage LED warning system (Green, Yellow, Red) that provides an instant, intuitive status update on the thermal conditions of your workspace.',
       icon: <Thermometer className="text-blue-500" />,
       difficulty: 'Hard',
-      components: ['Micro:bit', 'DHT11 Sensor', '3x LED']
+      components: ['Microbit', 'DHT11 Sensor', '3x LED']
     },
     {
       id: 'color_sorter',
@@ -349,7 +349,7 @@ export default function App() {
       description: 'An advanced automation project. The machine uses a color sensor to identify bricks, and a servo motor to tilt the sorting platform, ensuring each colored brick slides precisely into its pre-defined collection bin.',
       icon: <Palette className="text-purple-500" />,
       difficulty: 'Hard',
-      components: ['Micro:bit', 'Color Sensor (I1)', 'Servo Motor (S1)', 'Red LED (J4)', 'Green LED (J3)']
+      components: ['Microbit', 'Color Sensor (I1)', 'Servo Motor (S1)', 'Red LED (J4)', 'Green LED (J3)']
     },
     {
       id: 'gate',
@@ -357,7 +357,7 @@ export default function App() {
       description: 'Explore the future of touchless technology! Learn to program the Gesture Sensor to recognize specific hand movements. You will build a security system where a "Swipe Up" motion triggers a servo motor to open a gate (180°), while a "Swipe Down" motion securely locks it back into place (0°), simulating modern hands-free entry points.',
       icon: <Move className="text-green-500" />,
       difficulty: 'Medium',
-      components: ['Micro:bit', 'Gesture Sensor', 'Servo Motor']
+      components: ['Microbit', 'Gesture Sensor', 'Servo Motor']
     }
   ];
 
