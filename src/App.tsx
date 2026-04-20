@@ -599,9 +599,10 @@ export default function App() {
                 row: 'blocklyTreeRowCustom mbit-custom-row'
               },
               contents: [
+                { kind: 'block', type: 'microbit_show_text' },
+                { kind: 'block', type: 'microbit_stop_motor' },
                 { kind: 'block', type: 'microbit_show_icon' },
                 { kind: 'block', type: 'microbit_show_leds' },
-                { kind: 'block', type: 'microbit_show_text' },
                 {
                   kind: 'block',
                   type: 'microbit_ledgraph',
@@ -634,7 +635,6 @@ export default function App() {
                     SPEED: { shadow: { type: 'math_number', fields: { NUM: 50 } } },
                   },
                 },
-                { kind: 'block', type: 'microbit_stop_motor' },
                 {
                   kind: 'block',
                   type: 'microbit_set_servo',
