@@ -176,7 +176,7 @@
 .mbit-custom-row { background-color: #E6F0FF !important; }
 .mbit-custom-row::before { 
   background-color: #4C97FF; 
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='2'/%3E%3Cpath d='M9 9h6v6H9z'/%3E%3Cpath d='M15 2v2'/%3E%3Cpath d='M15 20v2'/%3E%3Cpath d='M2 15h2'/%3E%3Cpath d='M2 9h2'/%3E%3Cpath d='M20 15h2'/%3E%3Cpath d='M20 9h2'/%3E%3Cpath d='M9 2v2'/%3E%3Cpath d='M9 20v2'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSI0IiB5PSI0IiB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHJ4PSIyIi8+PHBhdGggZD0iTTkgOWg2djZIOXoiLz48cGF0aCBkPSJNMTUgMnYyIi8+PHBhdGggZD0iTTE1IDIwdjIiLz48cGF0aCBkPSJNMiAxNWgyIi8+PHBhdGggZD0iTTIgOWgyIi8+PHBhdGggZD0iTTIwIDE1aDInLz48cGF0aCBkPSJNMjAgOWgyIi8+PHBhdGggZD0iTTkgMnYyIi8+PHBhdGggZD0iTTkgMjB2MiIvPjwvc3ZnPg==");
 }
 
 .sensors-category { background-color: #F2E6FF !important; }
