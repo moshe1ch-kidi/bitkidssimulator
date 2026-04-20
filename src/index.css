@@ -130,8 +130,12 @@
 
 /* הבטחה שסרגל הכלים עצמו לא חותך את הבועות */
 .blocklyToolboxDiv {
-  overflow: visible !important;
-  z-index: 1000 !important;
+  z-index: 100 !important;
+}
+
+/* Fix for flyout positioning in production */
+.blocklyFlyout {
+  z-index: 50 !important;
 }
 
 /* Category Square and Icon */
