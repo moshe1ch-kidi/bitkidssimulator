@@ -573,222 +573,163 @@ export default function App() {
         });
       });
 
+      const toolbox = `
+        <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+          <category name="Events" colour="#FFBF00" css-row="blocklyTreeRowCustom events-category">
+            <block type="event_when_green_flag_clicked"></block>
+            <block type="microbit_button_pressed"></block>
+            <block type="event_broadcast"></block>
+            <block type="event_when_received"></block>
+          </category>
+          <category name="Microbit" colour="#4C97FF" css-row="blocklyTreeRowCustom mbit-custom-row">
+            <block type="microbit_show_text"></block>
+            <block type="microbit_show_icon"></block>
+            <block type="microbit_show_leds"></block>
+            <block type="microbit_ledgraph">
+              <value name="VALUE">
+                <shadow type="math_number">
+                  <field name="NUM">0</field>
+                </shadow>
+              </value>
+              <value name="MAX">
+                <shadow type="math_number">
+                  <field name="NUM">100</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="microbit_set_led_color"></block>
+            <block type="microbit_led_pin"></block>
+            <block type="microbit_blink_led"></block>
+            <block type="microbit_set_pin">
+              <value name="VALUE">
+                <shadow type="math_number">
+                  <field name="NUM">1</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="microbit_tm1637_show_number">
+              <value name="VALUE">
+                <shadow type="math_number">
+                  <field name="NUM">0</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="microbit_set_motor">
+              <value name="SPEED">
+                <shadow type="math_number">
+                  <field name="NUM">50</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="microbit_stop_motor"></block>
+            <block type="microbit_set_servo">
+              <value name="ANGLE">
+                <shadow type="math_number">
+                  <field name="NUM">90</field>
+                </shadow>
+              </value>
+            </block>
+            <block type="microbit_play_tone"></block>
+          </category>
+          <category name="Sensors" colour="#9966FF" css-row="blocklyTreeRowCustom sensors-category">
+            <block type="microbit_ultrasonic_distance"></block>
+            <block type="microbit_color_sensor"></block>
+            <block type="microbit_light_sensor"></block>
+            <block type="microbit_temperature_sensor"></block>
+            <block type="microbit_dht11"></block>
+            <block type="microbit_soil_moisture"></block>
+            <block type="microbit_potentiometer"></block>
+          </category>
+          <category name="Sound" colour="#0FBD8C" css-row="blocklyTreeRowCustom sound-category">
+            <block type="microbit_play_tone"></block>
+          </category>
+          <category name="Control" colour="#FFAB19" css-row="blocklyTreeRowCustom control-category">
+            <block type="control_wait"></block>
+            <block type="control_wait_until"></block>
+            <block type="control_repeat"></block>
+            <block type="control_forever"></block>
+            <block type="control_if"></block>
+            <block type="control_if_else"></block>
+          </category>
+          <category name="Operators" colour="#59C059" css-row="blocklyTreeRowCustom operators-category">
+            <block type="logic_boolean"></block>
+            <block type="operator_not"></block>
+            <block type="operator_and"></block>
+            <block type="operator_or"></block>
+            <block type="operator_lt">
+              <value name="OP1">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+              <value name="OP2">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+            </block>
+            <block type="operator_equals">
+              <value name="OP1">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+              <value name="OP2">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+            </block>
+            <block type="operator_gt">
+              <value name="OP1">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+              <value name="OP2">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+            </block>
+            <block type="math_number"></block>
+            <block type="text"></block>
+            <block type="operator_add">
+              <value name="NUM1">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+              <value name="NUM2">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+            </block>
+            <block type="operator_subtract">
+              <value name="NUM1">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+              <value name="NUM2">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+            </block>
+            <block type="operator_multiply">
+              <value name="NUM1">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+              <value name="NUM2">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+            </block>
+            <block type="operator_divide">
+              <value name="NUM1">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+              <value name="NUM2">
+                <shadow type="math_number"><field name="NUM">0</field></shadow>
+              </value>
+            </block>
+            <block type="operator_random">
+              <value name="FROM">
+                <shadow type="math_number"><field name="NUM">1</field></shadow>
+              </value>
+              <value name="TO">
+                <shadow type="math_number"><field name="NUM">10</field></shadow>
+              </value>
+            </block>
+          </category>
+          <category name="Variables" colour="#FF8C1A" custom="VARIABLE" css-row="blocklyTreeRowCustom variables-category"></category>
+          <category name="My Blocks" colour="#FF6680" custom="MY_BLOCKS_CUSTOM" css-row="blocklyTreeRowCustom myblocks-category"></category>
+        </xml>
+      `;
+
       workspace.current = Blockly.inject(blocklyDiv.current, {
-        toolbox: {
-          kind: 'categoryToolbox',
-          contents: [
-            {
-              kind: 'category',
-              name: 'Events',
-              colour: '#FFBF00',
-              cssConfig: {
-                row: 'blocklyTreeRowCustom events-category'
-              },
-              contents: [
-                { kind: 'block', type: 'event_when_green_flag_clicked' },
-                { kind: 'block', type: 'microbit_button_pressed' },
-                { kind: 'block', type: 'event_broadcast' },
-                { kind: 'block', type: 'event_when_received' },
-              ],
-            },
-            {
-              kind: 'category',
-              name: 'Microbit',
-              colour: '#4C97FF',
-              cssConfig: {
-                row: 'blocklyTreeRowCustom mbit-custom-row'
-              },
-              contents: [
-                { kind: 'block', type: 'microbit_show_text' },
-                { kind: 'block', type: 'microbit_stop_motor' },
-                { kind: 'block', type: 'microbit_show_icon' },
-                { kind: 'block', type: 'microbit_show_leds' },
-                {
-                  kind: 'block',
-                  type: 'microbit_ledgraph',
-                  inputs: {
-                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    MAX: { shadow: { type: 'math_number', fields: { NUM: 100 } } },
-                  },
-                },
-                { kind: 'block', type: 'microbit_set_led_color' },
-                { kind: 'block', type: 'microbit_led_pin' },
-                { kind: 'block', type: 'microbit_blink_led' },
-                {
-                  kind: 'block',
-                  type: 'microbit_set_pin',
-                  inputs: {
-                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'microbit_tm1637_show_number',
-                  inputs: {
-                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'microbit_set_motor',
-                  inputs: {
-                    SPEED: { shadow: { type: 'math_number', fields: { NUM: 50 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'microbit_set_servo',
-                  inputs: {
-                    ANGLE: { shadow: { type: 'math_number', fields: { NUM: 90 } } },
-                  },
-                },
-                { kind: 'block', type: 'microbit_play_tone' },
-              ],
-            },
-            {
-              kind: 'category',
-              name: 'Sensors',
-              colour: '#9966FF',
-              cssConfig: {
-                row: 'blocklyTreeRowCustom sensors-category'
-              },
-              contents: [
-                { kind: 'block', type: 'microbit_ultrasonic_distance' },
-                { kind: 'block', type: 'microbit_color_sensor' },
-                { kind: 'block', type: 'microbit_light_sensor' },
-                { kind: 'block', type: 'microbit_temperature_sensor' },
-                { kind: 'block', type: 'microbit_dht11' },
-                { kind: 'block', type: 'microbit_soil_moisture' },
-                { kind: 'block', type: 'microbit_potentiometer' },
-              ],
-            },
-            {
-              kind: 'category',
-              name: 'Sound',
-              colour: '#0FBD8C',
-              cssConfig: {
-                row: 'blocklyTreeRowCustom sound-category'
-              },
-              contents: [
-                { kind: 'block', type: 'microbit_play_tone' },
-              ],
-            },
-            {
-              kind: 'category',
-              name: 'Control',
-              colour: '#FFAB19',
-              cssConfig: {
-                row: 'blocklyTreeRowCustom control-category'
-              },
-              contents: [
-                { kind: 'block', type: 'control_wait' },
-                { kind: 'block', type: 'control_wait_until' },
-                { kind: 'block', type: 'control_repeat' },
-                { kind: 'block', type: 'control_forever' },
-                { kind: 'block', type: 'control_if' },
-                { kind: 'block', type: 'control_if_else' },
-              ],
-            },
-            {
-              kind: 'category',
-              name: 'Operators',
-              colour: '#59C059',
-              cssConfig: {
-                row: 'blocklyTreeRowCustom operators-category'
-              },
-              contents: [
-                { kind: 'block', type: 'logic_boolean' },
-                { kind: 'block', type: 'operator_not' },
-                { kind: 'block', type: 'operator_and' },
-                { kind: 'block', type: 'operator_or' },
-                {
-                  kind: 'block',
-                  type: 'operator_lt',
-                  inputs: {
-                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'operator_equals',
-                  inputs: {
-                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'operator_gt',
-                  inputs: {
-                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                { kind: 'block', type: 'math_number' },
-                { kind: 'block', type: 'text' },
-                {
-                  kind: 'block',
-                  type: 'operator_add',
-                  inputs: {
-                    NUM1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    NUM2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'operator_subtract',
-                  inputs: {
-                    NUM1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    NUM2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'operator_multiply',
-                  inputs: {
-                    NUM1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    NUM2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'operator_divide',
-                  inputs: {
-                    NUM1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                    NUM2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
-                  },
-                },
-                {
-                  kind: 'block',
-                  type: 'operator_random',
-                  inputs: {
-                    FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
-                    TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
-                  },
-                },
-              ],
-            },
-            {
-              kind: 'category',
-              name: 'Variables',
-              colour: '#FF8C1A',
-              custom: 'VARIABLE',
-              cssConfig: {
-                row: 'blocklyTreeRowCustom variables-category'
-              },
-            },
-            {
-              kind: 'category',
-              name: 'My Blocks',
-              colour: '#FF6680',
-              custom: 'MY_BLOCKS_CUSTOM',
-              cssConfig: {
-                row: 'blocklyTreeRowCustom myblocks-category'
-              }
-            },
-          ],
-        } as any,
+        toolbox: toolbox,
         grid: { spacing: 20, length: 3, colour: '#ccc', snap: true },
         move: { 
           scrollbars: false,
