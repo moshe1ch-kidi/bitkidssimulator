@@ -1,11 +1,11 @@
- import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
 import { pythonGenerator } from './blockly/python_generators';
-import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, List, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap, Code, ShieldCheck } from 'lucide-react';
+import { Play, Square, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut, RotateCcw, Save, FolderOpen, Monitor, HelpCircle, X, ClipboardList, List, Lightbulb, ShieldAlert, Thermometer, Droplets, Palette, Move, Zap, Code, ShieldCheck, ArrowRight } from 'lucide-react';
 import { MicrobitBoard } from './components/MicrobitBoard';
 import { ElectronicComponents, DraggableComponent } from './components/ElectronicComponents';
 
@@ -245,7 +245,7 @@ export default function App() {
     callback: (value: string | null) => void;
   } | null>(null);
   const [promptInputValue, setPromptInputValue] = useState('');
-  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer' | 'planet_monitor' | 'alarm' | 'fan_speed' | 'security_gate'>('components');
+  const [helpTab, setHelpTab] = useState<'components' | 'nightlight' | 'thermostat' | 'visual_thermometer' | 'planet_monitor' | 'alarm' | 'fan_speed' | 'security_gate' | 'color_sorter'>('components');
   const [showPythonModal, setShowPythonModal] = useState(false);
   const [pythonCode, setPythonCode] = useState('');
 
@@ -281,8 +281,8 @@ export default function App() {
   const missions = [
     {
       id: 'security_gate',
-      title: 'Security Gate',
-      description: 'Build an automated security gate that opens when a car approaches and stays open until it passes safely.',
+      title: 'Smart Crossing Gate',
+      description: 'Advance your engineering skills by building a fully automated safety crossing. In this mission, you will use dual ultrasonic sensors to detect approaching vehicles. Program the gate to lift automatically when a car is detected and, most importantly, to stay open until the second sensor confirms the vehicle has passed safely before lowering the gate.',
       icon: <ShieldCheck className="text-emerald-500" />,
       difficulty: 'Hard',
       components: ['Micro:bit', '2x Ultrasonic Sensor', 'Servo Motor', '2x LED']
@@ -290,7 +290,7 @@ export default function App() {
     {
       id: 'fan_speed',
       title: 'Variable Speed Fan',
-      description: 'In this project, we will learn how to control the rotation speed of a motor (fan) using a component called a potentiometer.',
+      description: 'Learn how to build a manual control system. Use a potentiometer to adjust the rotation speed of a DC motor in real-time, simulating a professional variable speed fan control dial.',
       icon: <RotateCcw className="text-blue-500" />,
       difficulty: 'Medium',
       components: ['Micro:bit', 'Potentiometer', 'DC Motor']
@@ -298,7 +298,7 @@ export default function App() {
     {
       id: 'lamp',
       title: 'Table Lamp',
-      description: 'Create a smart table lamp. When the external button (Crash Sensor) is pressed, the LED should turn on. When released, it should turn off.',
+      description: 'Master the fundamentals of digital logic and user interaction. In this starter mission, you will build a smart desk lamp. You will program the Micro:bit to detect when a crash sensor (button) is pressed, creating a reliable toggle system that controls an LED, forming the building block for all interactive electronics.',
       icon: <Lightbulb className="text-yellow-500" />,
       difficulty: 'Easy',
       components: ['Micro:bit', 'Crash Sensor', 'LED']
@@ -306,7 +306,7 @@ export default function App() {
     {
       id: 'alarm',
       title: 'DISTANCE ALARM',
-      description: 'The Naughty Hedgehog: Building a "Smart Fence" to keep him safe! 🦔🚩',
+      description: 'The Naughty Hedgehog: Building a "Smart Fence" to keep him safe! Program a system using an ultrasonic sensor to detect the distance to the hedgehog and trigger an alarm with a buzzer if he gets too close to the boundary.',
       icon: <ShieldAlert className="text-red-500" />,
       difficulty: 'Medium',
       components: ['Micro:bit', 'Ultrasonic Sensor', 'Buzzer']
@@ -314,15 +314,15 @@ export default function App() {
     {
       id: 'nightlight',
       title: 'Automatic Night Light',
-      description: 'Program the Micro:bit to be a night light. If the Light Sensor value drops below 300, turn on the Rainbow LED with a soft white color.',
+      description: 'Create an intelligent lighting system. Program the Micro:bit to monitor ambient light levels and automatically turn on the Rainbow LED with a soft white glow when the room gets dark (below 300 intensity).',
       icon: <Zap className="text-blue-500" />,
       difficulty: 'Medium',
       components: ['Micro:bit', 'Light Sensor', 'Rainbow LED']
     },
     {
       id: 'planet_monitor',
-      title: 'Planet Monitor',
-      description: 'Create a smart plant monitoring system. Measure soil moisture and display the status using LEDs and icons.',
+      title: 'Plant Monitor',
+      description: 'Create a professional-grade plant life-support system! This project teaches you how to interface with analog sensors to measure soil moisture levels. You will program the Micro:bit to analyze these "thirsty" signals and display encouraging icons or warning LEDs to ensure your plants always get the care they need.',
       icon: <Droplets className="text-cyan-500" />,
       difficulty: 'Medium',
       components: ['Micro:bit', 'Soil Moisture Sensor', 'LEDs']
@@ -330,31 +330,31 @@ export default function App() {
     {
       id: 'thermostat',
       title: 'Smart Fan',
-      description: 'Maintain a stable temperature of 30°C. If the temperature is below 30°C, turn on the LED to heat. If it reaches 30°C, turn off the LED and start the Fan Motor.',
+      description: 'Step into the shoes of a systems engineer to build a climate-controlled environment. You will program a logic sequence that monitors professional temperature sensors: if the room is cold, a heater (LED) activates; once the target temperature of 30°C is reached, the system automatically switches to cool mode by starting a high-speed DC motor fan.',
       icon: <Thermometer className="text-orange-500" />,
       difficulty: 'Hard',
       components: ['Micro:bit', 'Temperature Sensor', 'LED', 'Fan Motor']
     },
     {
       id: 'visual_thermometer',
-      title: 'מד חום ויזואלי',
-      description: 'בנה מערכת התרעה חזותית לטמפרטורה המשתמשת בחיישן DHT11 ושלוש נוריות לד (ירוק, צהוב, אדום) כדי להציג את רמת החום.',
+      title: 'Visual Thermometer',
+      description: 'Transform raw data into a clear visual dashboard! In this mission, you will use the DHT11 digital sensor to capture temperature readings. Instead of just numbers, you will program a 3-stage LED warning system (Green, Yellow, Red) that provides an instant, intuitive status update on the thermal conditions of your workspace.',
       icon: <Thermometer className="text-blue-500" />,
       difficulty: 'Hard',
       components: ['Micro:bit', 'DHT11 Sensor', '3x LED']
     },
     {
-      id: 'sorter',
+      id: 'color_sorter',
       title: 'Color Sorter',
-      description: 'Sort objects by color. Move the Servo Motor to 0° if Red is detected, 90° if Green is detected, and 180° if Blue is detected.',
+      description: 'An advanced automation project. The machine uses a color sensor to identify bricks, and a servo motor to tilt the sorting platform, ensuring each colored brick slides precisely into its pre-defined collection bin.',
       icon: <Palette className="text-purple-500" />,
       difficulty: 'Hard',
-      components: ['Micro:bit', 'Color Sensor', 'Servo Motor']
+      components: ['Micro:bit', 'Color Sensor (I1)', 'Servo Motor (S1)', 'Red LED (J4)', 'Green LED (J3)']
     },
     {
       id: 'gate',
-      title: 'Security Gate',
-      description: 'Use the Gesture Sensor to control a gate. Swipe "Up" to open the Servo (180°) and swipe "Down" to close it (0°).',
+      title: 'Gesture Security Gate',
+      description: 'Explore the future of touchless technology! Learn to program the Gesture Sensor to recognize specific hand movements. You will build a security system where a "Swipe Up" motion triggers a servo motor to open a gate (180°), while a "Swipe Down" motion securely locks it back into place (0°), simulating modern hands-free entry points.',
       icon: <Move className="text-green-500" />,
       difficulty: 'Medium',
       components: ['Micro:bit', 'Gesture Sensor', 'Servo Motor']
@@ -612,6 +612,7 @@ export default function App() {
                 },
                 { kind: 'block', type: 'microbit_set_led_color' },
                 { kind: 'block', type: 'microbit_led_pin' },
+                { kind: 'block', type: 'microbit_blink_led' },
                 {
                   kind: 'block',
                   type: 'microbit_set_pin',
@@ -1088,7 +1089,7 @@ export default function App() {
           if (projectData.droppedComponents) setDroppedComponents(projectData.droppedComponents);
         } catch (err) {
           console.error("Failed to load project", err);
-          alert("קובץ לא תקין");
+          alert("Invalid file");
         }
       };
       reader.readAsText(file);
@@ -1136,15 +1137,32 @@ export default function App() {
             
             <div className="flex-1 overflow-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               {missions.map((mission) => (
-                <div key={mission.id} className="border border-slate-100 rounded-2xl p-5 hover:border-blue-200 hover:bg-blue-50/30 transition-all group">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <button 
+                  key={mission.id} 
+                  onClick={() => {
+                    if (mission.id !== 'lamp') {
+                      setHelpTab(mission.id as any);
+                      setShowHelpModal(true);
+                      setShowMissionsModal(false);
+                    }
+                  }}
+                  className={`text-left border border-slate-100 rounded-3xl p-6 transition-all group focus:outline-none focus:ring-4 focus:ring-blue-100 relative overflow-hidden ${
+                    mission.id !== 'lamp' 
+                      ? 'bg-white hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-100/50 hover:-translate-y-1.5 cursor-pointer active:scale-95' 
+                      : 'bg-slate-50 opacity-60 cursor-default'
+                  }`}
+                >
+                  {/* Subtle background glow on hover */}
+                  <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-400/5 rounded-full blur-2xl group-hover:bg-blue-400/10 transition-colors" />
+                  
+                  <div className="flex items-start gap-5 relative z-10">
+                    <div className="w-14 h-14 bg-slate-50 rounded-2xl shadow-sm flex items-center justify-center shrink-0 group-hover:scale-110 group-hover:bg-blue-50 transition-all duration-300">
                       {mission.icon}
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-bold text-slate-900">{mission.title}</h3>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-bold text-slate-900 text-lg group-hover:text-blue-600 transition-colors">{mission.title}</h3>
+                        <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-lg ${
                           mission.difficulty === 'Easy' ? 'bg-green-100 text-green-700' :
                           mission.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
                           'bg-red-100 text-red-700'
@@ -1152,30 +1170,26 @@ export default function App() {
                           {mission.difficulty}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-600 mb-3 line-clamp-2">{mission.description}</p>
-                      <div className="flex flex-wrap gap-1 mb-3">
+                      <div className="text-sm text-slate-500 mb-4 leading-relaxed whitespace-normal break-words">
+                        {mission.description}
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 mb-4">
                         {mission.components.map((comp, i) => (
-                          <span key={i} className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md">
+                          <span key={i} className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md border border-slate-200/50">
                             {comp}
                           </span>
                         ))}
                       </div>
                       {mission.id !== 'lamp' && (
-                        <button 
-                          onClick={() => {
-                            setHelpTab(mission.id as any);
-                            setShowHelpModal(true);
-                            setShowMissionsModal(false);
-                          }}
-                          className="text-xs font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors"
-                        >
-                          <HelpCircle size={14} />
-                          צפה במדריך המלא
-                        </button>
+                        <div className="text-xs font-bold text-blue-600 flex items-center gap-1.5 transition-all group-hover:translate-x-1">
+                          <HelpCircle size={16} />
+                          <span>View Full Guide</span>
+                          <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                        </div>
                       )}
                     </div>
                   </div>
-                </div>
+                </button>
               ))}
             </div>
             
@@ -1302,12 +1316,13 @@ export default function App() {
                 <div className="flex flex-col">
                   <h2 className="text-2xl font-black text-slate-900 tracking-tight">
                     {helpTab === 'components' ? 'Component Guide & Connection Table' : 
-                     helpTab === 'nightlight' ? 'Automatic Night Light - מדריך משימה' : 
-                     helpTab === 'thermostat' ? 'Smart Fan - מדריך משימה' :
+                     helpTab === 'nightlight' ? 'Automatic Night Light - Mission Guide' : 
+                     helpTab === 'thermostat' ? 'Smart Fan - Mission Guide' :
                      helpTab === 'planet_monitor' ? 'Planet Monitor - Mission Guide' :
                      helpTab === 'fan_speed' ? 'Variable Speed Fan - Mission Guide' :
-                     helpTab === 'alarm' ? 'Distance Alarm - מדריך משימה' :
+                     helpTab === 'alarm' ? 'Distance Alarm - Mission Guide' :
                      helpTab === 'security_gate' ? 'Security Gate - Mission Guide' :
+                     helpTab === 'color_sorter' ? 'Color Sorter - Mission Guide' :
                      'Visual Thermometer - Mission Guide'}
                   </h2>
                   <div className="flex gap-4 mt-1">
@@ -1358,6 +1373,12 @@ export default function App() {
                       className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'security_gate' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                     >
                       Security Gate
+                    </button>
+                    <button 
+                      onClick={() => setHelpTab('color_sorter')}
+                      className={`text-xs font-bold pb-1 border-b-2 transition-all ${helpTab === 'color_sorter' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                    >
+                      Color Sorter
                     </button>
                   </div>
                 </div>
@@ -2082,6 +2103,141 @@ export default function App() {
                     </div>
                   </section>
                 </div>
+              ) : helpTab === 'color_sorter' ? (
+                <div className="max-w-4xl mx-auto space-y-10 text-left py-4" dir="ltr">
+                  <section className="bg-purple-50 p-6 rounded-3xl border border-purple-100">
+                    <h3 className="text-2xl font-black text-purple-900 mb-4">Color Sorter</h3>
+                    <p className="text-lg text-slate-700 leading-relaxed">
+                      Build an engineering project that combines control, sensing, and automation. In this machine, the color sensor identifies the brick, and the servo motor tilts the platform, causing the brick to slide precisely into the correct sorting bin.
+                    </p>
+                    <div className="mt-6 flex justify-center">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/main/src/help/colormachinmodel.png" 
+                        alt="Color Sorter Model" 
+                        className="rounded-2xl shadow-lg max-w-full h-auto border-4 border-white"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-purple-500 pl-4">1. Structure & Components</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-purple-600 font-bold">1</div>
+                        <span className="font-medium text-slate-700">Color Sensor (Port I1): Detects the brick color.</span>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-purple-600 font-bold">2</div>
+                        <span className="font-medium text-slate-700">Servo Motor (Port S1): Rotates to the correct sorting angle.</span>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-purple-600 font-bold">3</div>
+                        <span className="font-medium text-slate-700">Green LED (Port J3): Status indicator.</span>
+                      </div>
+                      <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex items-center gap-3">
+                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-purple-600 font-bold">4</div>
+                        <span className="font-medium text-slate-700">Red LED (Port J4): Status indicator.</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/main/src/help/colormachinsim.png" 
+                        alt="Color Sorter Simulation" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-purple-500 pl-4">2. Operating Logic</h3>
+                    <div className="bg-slate-900 text-white p-6 rounded-3xl space-y-4">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-purple-400 font-bold">Idle State:</span> Servo at 90°, both LEDs OFF. Waiting for a brick.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-red-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-red-400 font-bold">Red Brick Detected:</span> Blink Red LED (J4), move Servo to 180°.</p>
+                      </div>
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mt-2 shrink-0"></div>
+                        <p><span className="text-green-400 font-bold">Green Brick Detected:</span> Blink Green LED (J3), move Servo to 0°.</p>
+                      </div>
+                    </div>
+                    <div className="flex justify-center mt-4">
+                      <img 
+                        src="https://raw.githubusercontent.com/moshe1ch-kidi/bitkidssimulator/main/src/help/clormachincode.png" 
+                        alt="Color Sorter Code" 
+                        className="rounded-2xl shadow-md max-w-full h-auto border border-slate-200"
+                        referrerPolicy="no-referrer"
+                      />
+                    </div>
+                  </section>
+
+                  <section className="space-y-6">
+                    <h3 className="text-xl font-bold text-slate-900 border-l-4 border-purple-500 pl-4">3. Code Analysis</h3>
+                    <div className="space-y-8" dir="ltr">
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border border-purple-100">
+                        <h4 className="font-bold text-purple-700 mb-3 text-lg">1. Defining the Blink Function</h4>
+                        <p className="text-slate-600 mb-2">An external function is defined to perform a quick blink:</p>
+                        <ul className="list-disc list-inside text-sm text-slate-500 space-y-1">
+                          <li>It turns on the LEDs at J3 and J4.</li>
+                          <li>Waits 0.3 seconds.</li>
+                          <li>Turns both off.</li>
+                          <li>The goal: to create a quick visual indication that the machine is in standby mode.</li>
+                        </ul>
+                      </div>
+
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border border-purple-100">
+                        <h4 className="font-bold text-purple-700 mb-3 text-lg">2. Initialization Phase (When Green Flag Clicked)</h4>
+                        <p className="text-slate-600 mb-2">The first blocks reset the system:</p>
+                        <ul className="list-disc list-inside text-sm text-slate-500 space-y-1">
+                          <li>Turn off the LEDs (J3, J4).</li>
+                          <li>Move the servo (S1) to a 90-degree angle (straight horizontal position).</li>
+                        </ul>
+                      </div>
+
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border border-purple-100">
+                        <h4 className="font-bold text-purple-700 mb-3 text-lg">3. The Main Loop (Forever)</h4>
+                        <div className="space-y-4">
+                          <div className="bg-slate-50 p-4 rounded-xl">
+                            <span className="font-bold text-slate-900 mr-2">A. Color Detection:</span>
+                            <p className="text-sm text-slate-600 mt-1">Reading data from the color sensor at I1 and saving the value in the 'color' variable.</p>
+                          </div>
+                          <div className="bg-red-50 p-4 rounded-xl">
+                            <span className="font-bold text-red-900 mr-2">B. Red Brick Scenario (If color = "Red"):</span>
+                            <ul className="text-sm text-red-700 mt-1 list-disc list-inside">
+                              <li>LEDs: Turns off J3 and turns on J4.</li>
+                              <li>Sorting: Tilts the servo to 180 degrees.</li>
+                              <li>Operating Time: Waits one second to allow the brick to slide.</li>
+                            </ul>
+                          </div>
+                          <div className="bg-green-50 p-4 rounded-xl">
+                            <span className="font-bold text-green-900 mr-2">C. Green Brick Scenario (If color = "Green"):</span>
+                            <ul className="text-sm text-green-700 mt-1 list-disc list-inside">
+                              <li>LEDs: Turns off J4 and turns on J3.</li>
+                              <li>Sorting: Tilts the servo to 0 degrees.</li>
+                              <li>Operating Time: Waits one second.</li>
+                            </ul>
+                          </div>
+                          <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                            <span className="font-bold text-blue-900 mr-2">D. "No Brick" / Other Color Scenario:</span>
+                            <p className="text-sm text-blue-700 mt-1">
+                              If the sensor doesn't see red and doesn't see green (not color = Green or Red):
+                            </p>
+                            <ul className="text-sm text-blue-700 mt-1 list-disc list-inside">
+                              <li>Reset: The servo returns to 90 degrees.</li>
+                              <li>Wait: Waits one second.</li>
+                              <li>Indication: Activates the blink function defined earlier.</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
               ) : (
                 <div className="max-w-4xl mx-auto space-y-10 text-left py-4" dir="ltr">
                   <section className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
@@ -2236,7 +2392,7 @@ export default function App() {
           </button>
           <button 
             onClick={() => {
-              if (window.confirm("האם אתה בטוח שברצונך לנקות את הכל?")) {
+            if (window.confirm("Are you sure you want to clear everything?")) {
                 setWires([]);
                 setDroppedComponents([]);
                 boardRef.current?.clear();
@@ -2255,11 +2411,11 @@ export default function App() {
           </div>
         ) : drawingWireFrom ? (
           <div className="ml-auto text-sm font-bold text-white bg-blue-400/50 px-4 py-2 rounded-full border border-blue-300 shadow-sm">
-            לחץ על הדק נוסף לחיבור, או על אותו הדק לביטול
+            Click another terminal to connect, or the same terminal to cancel.
           </div>
         ) : (
           <div className="ml-auto text-sm font-bold text-white/90 bg-blue-900/20 px-4 py-2 rounded-full border border-blue-400/30">
-            לחץ על הדק לחיבור חוט. לחץ על הדק מחובר להסרה.
+            Click a terminal to connect a wire. Click a connected terminal to remove.
           </div>
         )}
       </header>
