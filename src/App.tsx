@@ -646,6 +646,10 @@ export default function App() {
                   },
                 },
                 { kind: 'block', type: 'microbit_play_tone' },
+                { kind: 'label', text: '   ' },
+                { kind: 'label', text: '   ' },
+                { kind: 'label', text: '   ' },
+                { kind: 'sep', gap: '64' }
               ],
             },
             {
@@ -663,6 +667,9 @@ export default function App() {
                 { kind: 'block', type: 'microbit_dht11' },
                 { kind: 'block', type: 'microbit_soil_moisture' },
                 { kind: 'block', type: 'microbit_potentiometer' },
+                { kind: 'label', text: '   ' },
+                { kind: 'label', text: '   ' },
+                { kind: 'sep', gap: '64' }
               ],
             },
             {
@@ -674,6 +681,9 @@ export default function App() {
               },
               contents: [
                 { kind: 'block', type: 'microbit_play_tone' },
+                { kind: 'label', text: '   ' },
+                { kind: 'label', text: '   ' },
+                { kind: 'sep', gap: '64' }
               ],
             },
             {
@@ -690,6 +700,9 @@ export default function App() {
                 { kind: 'block', type: 'control_forever' },
                 { kind: 'block', type: 'control_if' },
                 { kind: 'block', type: 'control_if_else' },
+                { kind: 'label', text: '   ' },
+                { kind: 'label', text: '   ' },
+                { kind: 'sep', gap: '64' }
               ],
             },
             {
@@ -770,6 +783,9 @@ export default function App() {
                     TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
                   },
                 },
+                { kind: 'label', text: '   ' },
+                { kind: 'label', text: '   ' },
+                { kind: 'sep', gap: '64' }
               ],
             },
             {
@@ -2429,7 +2445,7 @@ export default function App() {
             </div>
             <span className="text-sm font-bold text-gray-600">Scripts for Micro:bit</span>
           </div>
-          <div ref={blocklyDiv} className="h-[calc(100%-48px)] w-full"></div>
+          <div ref={blocklyDiv} className="h-[calc(100%-48px)] w-full overflow-hidden"></div>
         </div>
         
         <div className="bg-white rounded-lg shadow-md flex flex-row overflow-hidden relative z-0 h-full">
