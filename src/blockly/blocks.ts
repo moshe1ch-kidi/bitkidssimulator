@@ -1,25 +1,29 @@
 import * as Blockly from 'blockly';
 import 'blockly/blocks';
-import { FieldColour } from '@blockly/field-colour';
-import { FieldSlider } from '@blockly/field-slider';
-import { FieldBitmap } from '@blockly/field-bitmap';
+import * as FieldColourPkg from '@blockly/field-colour';
+import * as FieldSliderPkg from '@blockly/field-slider';
+import * as FieldBitmapPkg from '@blockly/field-bitmap';
 
-try {
-  Blockly.fieldRegistry.register('field_colour', FieldColour);
-} catch (e) {
-  console.warn('field_colour already registered');
+const FieldColour = (FieldColourPkg as any).FieldColour || (FieldColourPkg as any).default;
+const FieldSlider = (FieldSliderPkg as any).FieldSlider || (FieldSliderPkg as any).default;
+const FieldBitmap = (FieldBitmapPkg as any).FieldBitmap || (FieldBitmapPkg as any).default;
+
+if (FieldColour) {
+  try {
+    Blockly.fieldRegistry.register('field_colour', FieldColour);
+  } catch (e) {}
 }
 
-try {
-  Blockly.fieldRegistry.register('field_slider', FieldSlider);
-} catch (e) {
-  console.warn('field_slider already registered');
+if (FieldSlider) {
+  try {
+    Blockly.fieldRegistry.register('field_slider', FieldSlider);
+  } catch (e) {}
 }
 
-try {
-  Blockly.fieldRegistry.register('field_bitmap', FieldBitmap);
-} catch (e) {
-  console.warn('field_bitmap already registered');
+if (FieldBitmap) {
+  try {
+    Blockly.fieldRegistry.register('field_bitmap', FieldBitmap);
+  } catch (e) {}
 }
 
 const ICONS: { [key: string]: number[] } = {
@@ -46,7 +50,8 @@ const createIconDropdownOption = (name: string, key: string): [any, string] => {
     rects += `<rect x="${x}" y="${y}" width="4" height="4" fill="${fill}" rx="0.5" />`;
   }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">${rects}</svg>`;
-  const dataUri = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  const base64 = btoa(svg);
+  const dataUri = `data:image/svg+xml;base64,${base64}`;
   return [{ src: dataUri, width: 24, height: 24, alt: name }, key];
 };
 
