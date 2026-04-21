@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
-import './blockly/blocks'; // Register blocks
+import { microbitBlocks } from './blockly/blocks';
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
 import { pythonGenerator } from './blockly/python_generators';
@@ -572,6 +572,9 @@ export default function App() {
           callback
         });
       });
+
+      // Ensure custom blocks are defined
+      Blockly.defineBlocksWithJsonArray(microbitBlocks);
 
       workspace.current = Blockly.inject(blocklyDiv.current, {
         toolbox: {
