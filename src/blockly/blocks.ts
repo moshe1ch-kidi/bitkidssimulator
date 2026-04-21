@@ -4,27 +4,31 @@ import * as FieldColourPkg from '@blockly/field-colour';
 import * as FieldSliderPkg from '@blockly/field-slider';
 import * as FieldBitmapPkg from '@blockly/field-bitmap';
 
-const FieldColour = (FieldColourPkg as any).FieldColour || (FieldColourPkg as any).default;
-const FieldSlider = (FieldSliderPkg as any).FieldSlider || (FieldSliderPkg as any).default;
-const FieldBitmap = (FieldBitmapPkg as any).FieldBitmap || (FieldBitmapPkg as any).default;
+export const initMicrobitBlocks = (blocklyInstance: any) => {
+  const FieldColour = (FieldColourPkg as any).FieldColour || (FieldColourPkg as any).default;
+  const FieldSlider = (FieldSliderPkg as any).FieldSlider || (FieldSliderPkg as any).default;
+  const FieldBitmap = (FieldBitmapPkg as any).FieldBitmap || (FieldBitmapPkg as any).default;
 
-if (FieldColour) {
-  try {
-    Blockly.fieldRegistry.register('field_colour', FieldColour);
-  } catch (e) {}
-}
+  if (FieldColour) {
+    try {
+      blocklyInstance.fieldRegistry.register('field_colour', FieldColour);
+    } catch (e) {}
+  }
 
-if (FieldSlider) {
-  try {
-    Blockly.fieldRegistry.register('field_slider', FieldSlider);
-  } catch (e) {}
-}
+  if (FieldSlider) {
+    try {
+      blocklyInstance.fieldRegistry.register('field_slider', FieldSlider);
+    } catch (e) {}
+  }
 
-if (FieldBitmap) {
-  try {
-    Blockly.fieldRegistry.register('field_bitmap', FieldBitmap);
-  } catch (e) {}
-}
+  if (FieldBitmap) {
+    try {
+      blocklyInstance.fieldRegistry.register('field_bitmap', FieldBitmap);
+    } catch (e) {}
+  }
+
+  blocklyInstance.defineBlocksWithJsonArray(microbitBlocks);
+};
 
 const ICONS: { [key: string]: number[] } = {
   'HEART': [1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 22],
