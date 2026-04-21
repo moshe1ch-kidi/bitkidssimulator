@@ -60,7 +60,7 @@
   cursor: pointer !important;
   overflow: visible !important;
   /* הסתרת טקסט שאולי נשאר */
-  text-indent: -9999px !important;
+  font-size: 0 !important;
   color: transparent !important;
   /* הבטחה שהשורה עצמה בשכבה גבוהה */
   z-index: 10001 !important;
@@ -83,8 +83,6 @@
 
 /* עיצוב הבועה המרחפת (Tooltip) */
 .blocklyTreeRowCustom::after {
-  /* איפוס ה-text-indent לטקסט המרחף */
-  text-indent: 0 !important;
   position: fixed !important; /* שימוש ב-fixed כדי לעקוף כל בעיית שכבות */
   left: 80px !important;
   top: auto !important;
