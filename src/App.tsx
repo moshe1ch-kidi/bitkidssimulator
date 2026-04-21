@@ -593,7 +593,7 @@ export default function App() {
             },
             {
               kind: 'category',
-              name: 'Micro:bit',
+              name: 'MICROBIT',
               colour: '#4C97FF',
               cssConfig: {
                 row: 'blocklyTreeRowCustom microbit-category'
