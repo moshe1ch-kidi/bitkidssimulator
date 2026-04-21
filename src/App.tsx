@@ -2437,15 +2437,17 @@ export default function App() {
         )}
       </header>
       
-      <main className={`flex-1 grid gap-4 p-4 relative h-full ${isSimulationExpanded ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}>
-        <div className={`bg-white rounded-lg shadow-md h-full w-full z-10 relative no-scrollbar ${isSimulationExpanded ? 'hidden' : 'block'}`}>
-          <div className="bg-[#f0f0f0] border-b border-gray-200 p-2 flex items-center gap-2">
+      <main className={`flex-1 grid gap-4 p-4 relative h-full min-h-0 ${isSimulationExpanded ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2'}`}>
+        <div className={`bg-white rounded-lg shadow-md h-full w-full z-10 flex flex-col relative overflow-hidden ${isSimulationExpanded ? 'hidden' : 'flex'}`}>
+          <div className="bg-[#f0f0f0] border-b border-gray-200 p-2 flex items-center gap-2 shrink-0">
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden">
                <img src="https://img.icons8.com/color/48/000000/panda.png" alt="Panda" className="w-6 h-6" referrerPolicy="no-referrer" />
             </div>
             <span className="text-sm font-bold text-gray-600">Scripts for Micro:bit</span>
           </div>
-          <div ref={blocklyDiv} className="h-[calc(100%-48px)] w-full overflow-hidden"></div>
+          <div className="flex-1 relative w-full min-h-0">
+            <div ref={blocklyDiv} className="absolute inset-0 w-full h-full overflow-hidden"></div>
+          </div>
         </div>
         
         <div className="bg-white rounded-lg shadow-md flex flex-row overflow-hidden relative z-0 h-full">
