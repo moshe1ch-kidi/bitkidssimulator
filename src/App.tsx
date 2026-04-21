@@ -1,7 +1,6 @@
- import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
-import 'blockly/blocks';
 import './blockly/blocks'; // Register blocks
 import './blockly/generators'; // Register generators
 import { javascriptGenerator } from './blockly/generators';
@@ -282,83 +281,83 @@ export default function App() {
   const missions = [
     {
       id: 'security_gate',
-      title: 'Smart Crossing Gate',
-      description: 'Advance your engineering skills by building a fully automated safety crossing. In this mission, you will use dual ultrasonic sensors to detect approaching vehicles. Program the gate to lift automatically when a car is detected and, most importantly, to stay open until the second sensor confirms the vehicle has passed safely before lowering the gate.',
+      title: 'Security Gate',
+      description: 'Build an automated security gate that opens when a car approaches and stays open until it passes safely.',
       icon: <ShieldCheck className="text-emerald-500" />,
       difficulty: 'Hard',
-      components: ['Microbit', '2x Ultrasonic Sensor', 'Servo Motor', '2x LED']
+      components: ['Micro:bit', '2x Ultrasonic Sensor', 'Servo Motor', '2x LED']
     },
     {
       id: 'fan_speed',
       title: 'Variable Speed Fan',
-      description: 'Learn how to build a manual control system. Use a potentiometer to adjust the rotation speed of a DC motor in real-time, simulating a professional variable speed fan control dial.',
+      description: 'In this project, we will learn how to control the rotation speed of a motor (fan) using a component called a potentiometer.',
       icon: <RotateCcw className="text-blue-500" />,
       difficulty: 'Medium',
-      components: ['Microbit', 'Potentiometer', 'DC Motor']
+      components: ['Micro:bit', 'Potentiometer', 'DC Motor']
     },
     {
       id: 'lamp',
       title: 'Table Lamp',
-      description: 'Master the fundamentals of digital logic and user interaction. In this starter mission, you will build a smart desk lamp. You will program the Microbit to detect when a crash sensor (button) is pressed, creating a reliable toggle system that controls an LED, forming the building block for all interactive electronics.',
+      description: 'Create a smart table lamp. When the external button (Crash Sensor) is pressed, the LED should turn on. When released, it should turn off.',
       icon: <Lightbulb className="text-yellow-500" />,
       difficulty: 'Easy',
-      components: ['Microbit', 'Crash Sensor', 'LED']
+      components: ['Micro:bit', 'Crash Sensor', 'LED']
     },
     {
       id: 'alarm',
       title: 'DISTANCE ALARM',
-      description: 'The Naughty Hedgehog: Building a "Smart Fence" to keep him safe! Program a system using an ultrasonic sensor to detect the distance to the hedgehog and trigger an alarm with a buzzer if he gets too close to the boundary.',
+      description: 'The Naughty Hedgehog: Building a "Smart Fence" to keep him safe! 🦔🚩',
       icon: <ShieldAlert className="text-red-500" />,
       difficulty: 'Medium',
-      components: ['Microbit', 'Ultrasonic Sensor', 'Buzzer']
+      components: ['Micro:bit', 'Ultrasonic Sensor', 'Buzzer']
     },
     {
       id: 'nightlight',
       title: 'Automatic Night Light',
-      description: 'Create an intelligent lighting system. Program the Microbit to monitor ambient light levels and automatically turn on the Rainbow LED with a soft white glow when the room gets dark (below 300 intensity).',
+      description: 'Program the Micro:bit to be a night light. If the Light Sensor value drops below 300, turn on the Rainbow LED with a soft white color.',
       icon: <Zap className="text-blue-500" />,
       difficulty: 'Medium',
-      components: ['Microbit', 'Light Sensor', 'Rainbow LED']
+      components: ['Micro:bit', 'Light Sensor', 'Rainbow LED']
     },
     {
       id: 'planet_monitor',
-      title: 'Plant Monitor',
-      description: 'Create a professional-grade plant life-support system! This project teaches you how to interface with analog sensors to measure soil moisture levels. You will program the Microbit to analyze these "thirsty" signals and display encouraging icons or warning LEDs to ensure your plants always get the care they need.',
+      title: 'Planet Monitor',
+      description: 'Create a smart plant monitoring system. Measure soil moisture and display the status using LEDs and icons.',
       icon: <Droplets className="text-cyan-500" />,
       difficulty: 'Medium',
-      components: ['Microbit', 'Soil Moisture Sensor', 'LEDs']
+      components: ['Micro:bit', 'Soil Moisture Sensor', 'LEDs']
     },
     {
       id: 'thermostat',
       title: 'Smart Fan',
-      description: 'Step into the shoes of a systems engineer to build a climate-controlled environment. You will program a logic sequence that monitors professional temperature sensors: if the room is cold, a heater (LED) activates; once the target temperature of 30°C is reached, the system automatically switches to cool mode by starting a high-speed DC motor fan.',
+      description: 'Maintain a stable temperature of 30°C. If the temperature is below 30°C, turn on the LED to heat. If it reaches 30°C, turn off the LED and start the Fan Motor.',
       icon: <Thermometer className="text-orange-500" />,
       difficulty: 'Hard',
-      components: ['Microbit', 'Temperature Sensor', 'LED', 'Fan Motor']
+      components: ['Micro:bit', 'Temperature Sensor', 'LED', 'Fan Motor']
     },
     {
       id: 'visual_thermometer',
       title: 'Visual Thermometer',
-      description: 'Transform raw data into a clear visual dashboard! In this mission, you will use the DHT11 digital sensor to capture temperature readings. Instead of just numbers, you will program a 3-stage LED warning system (Green, Yellow, Red) that provides an instant, intuitive status update on the thermal conditions of your workspace.',
+      description: 'Build a visual temperature alert system using a DHT11 sensor and three LEDs (Green, Yellow, Red) to display the heat level.',
       icon: <Thermometer className="text-blue-500" />,
       difficulty: 'Hard',
-      components: ['Microbit', 'DHT11 Sensor', '3x LED']
+      components: ['Micro:bit', 'DHT11 Sensor', '3x LED']
     },
     {
       id: 'color_sorter',
       title: 'Color Sorter',
-      description: 'An advanced automation project. The machine uses a color sensor to identify bricks, and a servo motor to tilt the sorting platform, ensuring each colored brick slides precisely into its pre-defined collection bin.',
+      description: 'A classic engineering project combining control, sensing, and automation. The machine identifies the brick color, and the servo motor tilts the platform so the brick slides exactly into the correct bin.',
       icon: <Palette className="text-purple-500" />,
       difficulty: 'Hard',
-      components: ['Microbit', 'Color Sensor (I1)', 'Servo Motor (S1)', 'Red LED (J4)', 'Green LED (J3)']
+      components: ['Micro:bit', 'Color Sensor (I1)', 'Servo Motor (S1)', 'Red LED (J4)', 'Green LED (J3)']
     },
     {
       id: 'gate',
-      title: 'Gesture Security Gate',
-      description: 'Explore the future of touchless technology! Learn to program the Gesture Sensor to recognize specific hand movements. You will build a security system where a "Swipe Up" motion triggers a servo motor to open a gate (180°), while a "Swipe Down" motion securely locks it back into place (0°), simulating modern hands-free entry points.',
+      title: 'Security Gate',
+      description: 'Use the Gesture Sensor to control a gate. Swipe "Up" to open the Servo (180°) and swipe "Down" to close it (0°).',
       icon: <Move className="text-green-500" />,
       difficulty: 'Medium',
-      components: ['Microbit', 'Gesture Sensor', 'Servo Motor']
+      components: ['Micro:bit', 'Gesture Sensor', 'Servo Motor']
     }
   ];
 
@@ -574,163 +573,222 @@ export default function App() {
         });
       });
 
-      const toolbox = `
-        <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
-          <category name="Events" colour="#FFBF00" css-row="blocklyTreeRowCustom events-category">
-            <block type="event_when_green_flag_clicked"></block>
-            <block type="microbit_button_pressed"></block>
-            <block type="event_broadcast"></block>
-            <block type="event_when_received"></block>
-          </category>
-          <category name="Microbit" colour="#4C97FF" css-row="blocklyTreeRowCustom mbit-custom-row">
-            <block type="microbit_show_text"></block>
-            <block type="microbit_show_icon"></block>
-            <block type="microbit_show_leds"></block>
-            <block type="microbit_ledgraph">
-              <value name="VALUE">
-                <shadow type="math_number">
-                  <field name="NUM">0</field>
-                </shadow>
-              </value>
-              <value name="MAX">
-                <shadow type="math_number">
-                  <field name="NUM">100</field>
-                </shadow>
-              </value>
-            </block>
-            <block type="microbit_set_led_color"></block>
-            <block type="microbit_led_pin"></block>
-            <block type="microbit_blink_led"></block>
-            <block type="microbit_set_pin">
-              <value name="VALUE">
-                <shadow type="math_number">
-                  <field name="NUM">1</field>
-                </shadow>
-              </value>
-            </block>
-            <block type="microbit_tm1637_show_number">
-              <value name="VALUE">
-                <shadow type="math_number">
-                  <field name="NUM">0</field>
-                </shadow>
-              </value>
-            </block>
-            <block type="microbit_set_motor">
-              <value name="SPEED">
-                <shadow type="math_number">
-                  <field name="NUM">50</field>
-                </shadow>
-              </value>
-            </block>
-            <block type="microbit_stop_motor"></block>
-            <block type="microbit_set_servo">
-              <value name="ANGLE">
-                <shadow type="math_number">
-                  <field name="NUM">90</field>
-                </shadow>
-              </value>
-            </block>
-            <block type="microbit_play_tone"></block>
-          </category>
-          <category name="Sensors" colour="#9966FF" css-row="blocklyTreeRowCustom sensors-category">
-            <block type="microbit_ultrasonic_distance"></block>
-            <block type="microbit_color_sensor"></block>
-            <block type="microbit_light_sensor"></block>
-            <block type="microbit_temperature_sensor"></block>
-            <block type="microbit_dht11"></block>
-            <block type="microbit_soil_moisture"></block>
-            <block type="microbit_potentiometer"></block>
-          </category>
-          <category name="Sound" colour="#0FBD8C" css-row="blocklyTreeRowCustom sound-category">
-            <block type="microbit_play_tone"></block>
-          </category>
-          <category name="Control" colour="#FFAB19" css-row="blocklyTreeRowCustom control-category">
-            <block type="control_wait"></block>
-            <block type="control_wait_until"></block>
-            <block type="control_repeat"></block>
-            <block type="control_forever"></block>
-            <block type="control_if"></block>
-            <block type="control_if_else"></block>
-          </category>
-          <category name="Operators" colour="#59C059" css-row="blocklyTreeRowCustom operators-category">
-            <block type="logic_boolean"></block>
-            <block type="operator_not"></block>
-            <block type="operator_and"></block>
-            <block type="operator_or"></block>
-            <block type="operator_lt">
-              <value name="OP1">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-              <value name="OP2">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-            </block>
-            <block type="operator_equals">
-              <value name="OP1">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-              <value name="OP2">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-            </block>
-            <block type="operator_gt">
-              <value name="OP1">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-              <value name="OP2">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-            </block>
-            <block type="math_number"></block>
-            <block type="text"></block>
-            <block type="operator_add">
-              <value name="NUM1">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-              <value name="NUM2">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-            </block>
-            <block type="operator_subtract">
-              <value name="NUM1">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-              <value name="NUM2">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-            </block>
-            <block type="operator_multiply">
-              <value name="NUM1">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-              <value name="NUM2">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-            </block>
-            <block type="operator_divide">
-              <value name="NUM1">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-              <value name="NUM2">
-                <shadow type="math_number"><field name="NUM">0</field></shadow>
-              </value>
-            </block>
-            <block type="operator_random">
-              <value name="FROM">
-                <shadow type="math_number"><field name="NUM">1</field></shadow>
-              </value>
-              <value name="TO">
-                <shadow type="math_number"><field name="NUM">10</field></shadow>
-              </value>
-            </block>
-          </category>
-          <category name="Variables" colour="#FF8C1A" custom="VARIABLE" css-row="blocklyTreeRowCustom variables-category"></category>
-          <category name="My Blocks" colour="#FF6680" custom="MY_BLOCKS_CUSTOM" css-row="blocklyTreeRowCustom myblocks-category"></category>
-        </xml>
-      `;
-
       workspace.current = Blockly.inject(blocklyDiv.current, {
-        toolbox: toolbox,
+        toolbox: {
+          kind: 'categoryToolbox',
+          contents: [
+            {
+              kind: 'category',
+              name: 'Events',
+              colour: '#FFBF00',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom events-category'
+              },
+              contents: [
+                { kind: 'block', type: 'event_when_green_flag_clicked' },
+                { kind: 'block', type: 'microbit_button_pressed' },
+                { kind: 'block', type: 'event_broadcast' },
+                { kind: 'block', type: 'event_when_received' },
+              ],
+            },
+            {
+              kind: 'category',
+              name: 'Micro:bit',
+              colour: '#4C97FF',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom microbit-category'
+              },
+              contents: [
+                { kind: 'block', type: 'microbit_show_icon' },
+                { kind: 'block', type: 'microbit_show_leds' },
+                { kind: 'block', type: 'microbit_show_text' },
+                {
+                  kind: 'block',
+                  type: 'microbit_ledgraph',
+                  inputs: {
+                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    MAX: { shadow: { type: 'math_number', fields: { NUM: 100 } } },
+                  },
+                },
+                { kind: 'block', type: 'microbit_set_led_color' },
+                { kind: 'block', type: 'microbit_led_pin' },
+                { kind: 'block', type: 'microbit_blink_led' },
+                {
+                  kind: 'block',
+                  type: 'microbit_set_pin',
+                  inputs: {
+                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'microbit_tm1637_show_number',
+                  inputs: {
+                    VALUE: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'microbit_set_motor',
+                  inputs: {
+                    SPEED: { shadow: { type: 'math_number', fields: { NUM: 50 } } },
+                  },
+                },
+                { kind: 'block', type: 'microbit_stop_motor' },
+                {
+                  kind: 'block',
+                  type: 'microbit_set_servo',
+                  inputs: {
+                    ANGLE: { shadow: { type: 'math_number', fields: { NUM: 90 } } },
+                  },
+                },
+                { kind: 'block', type: 'microbit_play_tone' },
+              ],
+            },
+            {
+              kind: 'category',
+              name: 'Sensors',
+              colour: '#9966FF',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom sensors-category'
+              },
+              contents: [
+                { kind: 'block', type: 'microbit_ultrasonic_distance' },
+                { kind: 'block', type: 'microbit_color_sensor' },
+                { kind: 'block', type: 'microbit_light_sensor' },
+                { kind: 'block', type: 'microbit_temperature_sensor' },
+                { kind: 'block', type: 'microbit_dht11' },
+                { kind: 'block', type: 'microbit_soil_moisture' },
+                { kind: 'block', type: 'microbit_potentiometer' },
+              ],
+            },
+            {
+              kind: 'category',
+              name: 'Sound',
+              colour: '#0FBD8C',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom sound-category'
+              },
+              contents: [
+                { kind: 'block', type: 'microbit_play_tone' },
+              ],
+            },
+            {
+              kind: 'category',
+              name: 'Control',
+              colour: '#FFAB19',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom control-category'
+              },
+              contents: [
+                { kind: 'block', type: 'control_wait' },
+                { kind: 'block', type: 'control_wait_until' },
+                { kind: 'block', type: 'control_repeat' },
+                { kind: 'block', type: 'control_forever' },
+                { kind: 'block', type: 'control_if' },
+                { kind: 'block', type: 'control_if_else' },
+              ],
+            },
+            {
+              kind: 'category',
+              name: 'Operators',
+              colour: '#59C059',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom operators-category'
+              },
+              contents: [
+                { kind: 'block', type: 'logic_boolean' },
+                { kind: 'block', type: 'operator_not' },
+                { kind: 'block', type: 'operator_and' },
+                { kind: 'block', type: 'operator_or' },
+                {
+                  kind: 'block',
+                  type: 'operator_lt',
+                  inputs: {
+                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'operator_equals',
+                  inputs: {
+                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'operator_gt',
+                  inputs: {
+                    OP1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    OP2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                { kind: 'block', type: 'math_number' },
+                { kind: 'block', type: 'text' },
+                {
+                  kind: 'block',
+                  type: 'operator_add',
+                  inputs: {
+                    NUM1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    NUM2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'operator_subtract',
+                  inputs: {
+                    NUM1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    NUM2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'operator_multiply',
+                  inputs: {
+                    NUM1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    NUM2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'operator_divide',
+                  inputs: {
+                    NUM1: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                    NUM2: { shadow: { type: 'math_number', fields: { NUM: 0 } } },
+                  },
+                },
+                {
+                  kind: 'block',
+                  type: 'operator_random',
+                  inputs: {
+                    FROM: { shadow: { type: 'math_number', fields: { NUM: 1 } } },
+                    TO: { shadow: { type: 'math_number', fields: { NUM: 10 } } },
+                  },
+                },
+              ],
+            },
+            {
+              kind: 'category',
+              name: 'Variables',
+              colour: '#FF8C1A',
+              custom: 'VARIABLE',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom variables-category'
+              },
+            },
+            {
+              kind: 'category',
+              name: 'My Blocks',
+              colour: '#FF6680',
+              custom: 'MY_BLOCKS_CUSTOM',
+              cssConfig: {
+                row: 'blocklyTreeRowCustom myblocks-category'
+              }
+            },
+          ],
+        } as any,
         grid: { spacing: 20, length: 3, colour: '#ccc', snap: true },
         move: { 
           scrollbars: false,
@@ -1112,9 +1170,7 @@ export default function App() {
                           {mission.difficulty}
                         </span>
                       </div>
-                      <div className="text-sm text-slate-500 mb-4 leading-relaxed whitespace-normal break-words">
-                        {mission.description}
-                      </div>
+                      <p className="text-sm text-slate-500 mb-4 leading-relaxed">{mission.description}</p>
                       <div className="flex flex-wrap gap-1.5 mb-4">
                         {mission.components.map((comp, i) => (
                           <span key={i} className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md border border-slate-200/50">
@@ -1366,7 +1422,7 @@ export default function App() {
                   <section className="bg-blue-50 p-6 rounded-3xl border border-blue-100">
                     <h3 className="text-2xl font-black text-blue-900 mb-4">Automatic Night Light</h3>
                     <p className="text-lg text-slate-700 leading-relaxed">
-                      To create an automatic night light with the Microbit system, we need to build logic that constantly checks the ambient light level and responds accordingly.
+                      To create an automatic night light with the Micro:bit system, we need to build logic that constantly checks the ambient light level and responds accordingly.
                     </p>
                     <div className="mt-6 flex justify-center">
                       <img 
@@ -1464,7 +1520,7 @@ export default function App() {
                   <section className="bg-cyan-50 p-6 rounded-3xl border border-cyan-100">
                     <h3 className="text-2xl font-black text-cyan-900 mb-4">Planet Monitor (Smart Plant Pot)</h3>
                     <p className="text-lg text-slate-700 leading-relaxed">
-                      Create a system that measures soil moisture levels using Microbit (BitKIDI), displays the status using control lights (LEDs), and allows real-time monitoring.
+                      Create a system that measures soil moisture levels using Micro:bit (BitKIDI), displays the status using control lights (LEDs), and allows real-time monitoring.
                     </p>
                     <div className="mt-6 flex justify-center">
                       <img 
@@ -2368,7 +2424,7 @@ export default function App() {
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm overflow-hidden">
                <img src="https://img.icons8.com/color/48/000000/panda.png" alt="Panda" className="w-6 h-6" referrerPolicy="no-referrer" />
             </div>
-            <span className="text-sm font-bold text-gray-600">Scripts for Microbit</span>
+            <span className="text-sm font-bold text-gray-600">Scripts for Micro:bit</span>
           </div>
           <div ref={blocklyDiv} className="h-[calc(100%-48px)] w-full"></div>
         </div>
