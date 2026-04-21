@@ -2553,7 +2553,12 @@ export default function App() {
                         className={`p-2 rounded-full transition-colors ml-1 ${showVariableWatcher ? 'bg-blue-100 text-blue-600' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200'}`}
                         title={showVariableWatcher ? "Hide Variables" : "Show Variables"}
                       >
-                        <List size={20} />
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3" />
+                          <path d="M8 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3" />
+                          <path d="M9 15l3-3 3 3" />
+                          <path d="M9 9l3 3 3-3" />
+                        </svg>
                       </button>
                       <button
                         onClick={() => setShowMissionsModal(true)}
