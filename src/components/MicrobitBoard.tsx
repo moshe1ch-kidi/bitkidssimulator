@@ -68,6 +68,8 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
   const greenFlagCallbacks = useRef<(() => void)[]>([]);
   const broadcastCallbacks = useRef<{ [key: string]: (() => void)[] }>({});
 
+  const buttonPressedState = useRef<{ [key: string]: boolean }>({ 'A': false, 'B': false, 'A+B': false });
+
   // Use a ref to store the latest props to avoid useImperativeHandle re-running on every render
   const propsRef = useRef({ 
     onMotorChange, onServoChange, onPinChange, onTM1637Change, 
@@ -176,6 +178,9 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
     },
     onButtonAB: (callback: () => void) => {
       buttonABCallbacks.current.push(callback);
+    },
+    isButtonPressed: (button: string) => {
+      return buttonPressedState.current[button] || false;
     },
     onGreenFlag: (callback: () => void) => {
       greenFlagCallbacks.current.push(callback);
@@ -324,7 +329,7 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
         </div>
 
         {/* Main Device Body */}
-        <div id="microbit-board-container" className="relative w-[380px] h-[460px] bg-white rounded-[32px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)] border-b-[32px] border-[#5c636a] flex border-x-[3px] border-t-[3px] border-slate-300 z-10">
+        <div id="microbit-board-container" className="relative w-[380px] h-[460px] bg-white rounded-[32px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)] border-b-[32px] flex border-x-[3px] border-t-[3px] border-[#386ABC] z-10">
           
           {/* Left Ports (I1-I4 / IIC) */}
         <div className="absolute -left-6 top-6 bottom-6 flex flex-col justify-between w-10 z-0">
@@ -378,18 +383,27 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
             <div className="flex gap-2">
               <button 
                 onClick={() => buttonACallbacks.current.forEach(cb => cb())}
+                onPointerDown={() => buttonPressedState.current['A'] = true}
+                onPointerUp={() => buttonPressedState.current['A'] = false}
+                onPointerLeave={() => buttonPressedState.current['A'] = false}
                 className="w-12 h-12 bg-[#f8f9fa] rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.1),inset_0_-4px_4px_rgba(0,0,0,0.05)] border border-gray-200 flex items-center justify-center active:shadow-inner active:translate-y-1 transition-all"
               >
                 <span className="text-gray-400 font-bold text-lg">A</span>
               </button>
               <button 
                 onClick={() => buttonABCallbacks.current.forEach(cb => cb())}
+                onPointerDown={() => buttonPressedState.current['A+B'] = true}
+                onPointerUp={() => buttonPressedState.current['A+B'] = false}
+                onPointerLeave={() => buttonPressedState.current['A+B'] = false}
                 className="w-12 h-12 bg-[#f8f9fa] rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.1),inset_0_-4px_4px_rgba(0,0,0,0.05)] border border-gray-200 flex items-center justify-center active:shadow-inner active:translate-y-1 transition-all"
               >
                 <span className="text-gray-400 font-bold text-xs">A+B</span>
               </button>
               <button 
                 onClick={() => buttonBCallbacks.current.forEach(cb => cb())}
+                onPointerDown={() => buttonPressedState.current['B'] = true}
+                onPointerUp={() => buttonPressedState.current['B'] = false}
+                onPointerLeave={() => buttonPressedState.current['B'] = false}
                 className="w-12 h-12 bg-[#f8f9fa] rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.1),inset_0_-4px_4px_rgba(0,0,0,0.05)] border border-gray-200 flex items-center justify-center active:shadow-inner active:translate-y-1 transition-all"
               >
                 <span className="text-gray-400 font-bold text-lg">B</span>
@@ -402,43 +416,8 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
             </button>
           </div>
 
-          {/* Middle: SERVO connections */}
-          <div className="flex justify-center gap-6 mt-2">
-            {['S1', 'S2', 'S3', 'S4'].map(port => (
-              <div key={port} className="flex flex-col items-center">
-                <div className="flex flex-col items-center mb-1">
-                  <span className="text-gray-500 text-[11px] font-black tracking-tight">{port}</span>
-                </div>
-                <div className="relative w-6 bg-[#111] rounded-lg flex flex-col gap-[1px] p-[2px] shadow-inner border border-gray-600">
-                  {/* Top Pin (Signal) */}
-                  <div className="w-full aspect-square bg-[#787848] rounded-[4px] flex items-center justify-center shadow-inner border border-black/20">
-                    <div className="w-1.5 h-1.5 bg-[#e5e7eb] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] border border-[#a3a3a3]"></div>
-                  </div>
-                  {/* Middle Pin (VCC) */}
-                  <div className="w-full aspect-square bg-[#6e3b3b] rounded-[4px] flex items-center justify-center shadow-inner border border-black/20">
-                    <div className="w-1.5 h-1.5 bg-[#e5e7eb] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] border border-[#a3a3a3]"></div>
-                  </div>
-                  {/* Bottom Pin (GND) */}
-                  <div className="w-full aspect-square bg-[#333333] rounded-[4px] flex items-center justify-center shadow-inner border border-black/20">
-                    <div className="w-1.5 h-1.5 bg-[#e5e7eb] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] border border-[#a3a3a3]"></div>
-                  </div>
-                  
-                  {/* Drag Connection Node */}
-                  <div
-                    id={`port-${port}`}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 bg-yellow-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center group z-20"
-                    title={`Connect to ${port}`}
-                    onClick={() => onPinClick(`port-${port}`)}
-                  >
-                    <div className="w-1.5 h-1.5 bg-white rounded-full group-hover:scale-75 transition-transform"></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Bottom: 5x5 LED Matrix (Speaker grill area) and Front Ports */}
-          <div className="mt-auto flex flex-col items-center gap-4">
+          {/* Middle: 5x5 LED Matrix */}
+          <div className="flex justify-center mt-2">
             <div className="grid grid-cols-5 gap-2.5 p-4 bg-gray-50 rounded-xl shadow-inner border border-gray-100">
               {leds.map((on, i) => (
                 <div
@@ -448,6 +427,44 @@ export const MicrobitBoard = forwardRef(({ onPinClick, onMotorChange, motorState
                   }`}
                   style={on ? { backgroundColor: ledColor, boxShadow: `0 0 8px ${ledColor}` } : {}}
                 />
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom: SERVO connections and Front Ports */}
+          <div className="mt-auto flex flex-col items-center gap-4">
+            {/* SERVO connections */}
+            <div className="flex justify-center gap-6">
+              {['S1', 'S2', 'S3', 'S4'].map(port => (
+                <div key={port} className="flex flex-col items-center">
+                  <div className="flex flex-col items-center mb-1">
+                    <span className="text-gray-500 text-[11px] font-black tracking-tight">{port}</span>
+                  </div>
+                  <div className="relative w-6 bg-[#111] rounded-lg flex flex-col gap-[1px] p-[2px] shadow-inner border border-gray-600">
+                    {/* Top Pin (Signal) */}
+                    <div className="w-full aspect-square bg-[#787848] rounded-[4px] flex items-center justify-center shadow-inner border border-black/20">
+                      <div className="w-1.5 h-1.5 bg-[#e5e7eb] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] border border-[#a3a3a3]"></div>
+                    </div>
+                    {/* Middle Pin (VCC) */}
+                    <div className="w-full aspect-square bg-[#6e3b3b] rounded-[4px] flex items-center justify-center shadow-inner border border-black/20">
+                      <div className="w-1.5 h-1.5 bg-[#e5e7eb] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] border border-[#a3a3a3]"></div>
+                    </div>
+                    {/* Bottom Pin (GND) */}
+                    <div className="w-full aspect-square bg-[#333333] rounded-[4px] flex items-center justify-center shadow-inner border border-black/20">
+                      <div className="w-1.5 h-1.5 bg-[#e5e7eb] rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] border border-[#a3a3a3]"></div>
+                    </div>
+                    
+                    {/* Drag Connection Node */}
+                    <div
+                      id={`port-${port}`}
+                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 bg-yellow-500 rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform flex items-center justify-center group z-20"
+                      title={`Connect to ${port}`}
+                      onClick={() => onPinClick(`port-${port}`)}
+                    >
+                      <div className="w-1.5 h-1.5 bg-white rounded-full group-hover:scale-75 transition-transform"></div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
 
