@@ -247,6 +247,15 @@ export const microbitBlocks = [
     colour: '#4C97FF',
   },
   {
+    type: 'microbit_is_button_pressed',
+    message0: 'Button %1 pressed?',
+    args0: [
+      { type: 'field_dropdown', name: 'BUTTON', options: [['A', 'A'], ['B', 'B'], ['A+B', 'A+B']] },
+    ],
+    output: 'Boolean',
+    colour: '#9966FF',
+  },
+  {
     type: 'microbit_ultrasonic_distance',
     message0: 'Ultrasonic sensor %1 distance',
     args0: [
