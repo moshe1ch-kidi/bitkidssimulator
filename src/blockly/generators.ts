@@ -131,6 +131,11 @@ const register = (gen: any) => {
     return `boardRef.current.setServo('${port}', ${angle});\n`;
   };
 
+  target['microbit_is_button_pressed'] = function(block: any) {
+    const button = block.getFieldValue('BUTTON');
+    return [`await boardRef.current.isButtonPressed('${button}')`, Order.AWAIT];
+  };
+
   target['microbit_ultrasonic_distance'] = function(block: any) {
     const port = block.getFieldValue('PORT');
     return [`await boardRef.current.getUltrasonicDistance('${port}')`, Order.AWAIT];

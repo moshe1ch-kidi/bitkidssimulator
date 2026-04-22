@@ -121,7 +121,16 @@ const registerPython = (gen: any) => {
     const port = block.getFieldValue('PORT');
     return [`microbit.get_temperature('${port}')`, Order.FUNCTION_CALL];
   };
-  
+
+  target['microbit_is_button_pressed'] = function(block: any) {
+    const button = block.getFieldValue('BUTTON');
+    if (button === 'A+B') {
+        return [`button_a.is_pressed() and button_b.is_pressed()`, Order.LOGICAL_AND];
+    }
+    const btn = button.toLowerCase();
+    return [`button_${btn}.is_pressed()`, Order.FUNCTION_CALL];
+  };
+
   target['microbit_soil_moisture'] = function(block: any) {
     const port = block.getFieldValue('PORT');
     return [`microbit.get_soil_moisture('${port}')`, Order.FUNCTION_CALL];
