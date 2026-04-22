@@ -660,6 +660,7 @@ export default function App() {
                 row: 'blocklyTreeRowCustom sensors-category'
               },
               contents: [
+                { kind: 'block', type: 'microbit_is_button_pressed' },
                 { kind: 'block', type: 'microbit_ultrasonic_distance' },
                 { kind: 'block', type: 'microbit_color_sensor' },
                 { kind: 'block', type: 'microbit_light_sensor' },
