@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, useDragControls, AnimatePresence } from 'motion/react';
 import * as Blockly from 'blockly';
 import { initMicrobitBlocks } from './blockly/blocks';
@@ -98,37 +98,8 @@ const WireCanvas = ({ wires, drawingWireFrom, mousePos, resizeTrigger }: { wires
              }
           }
           d += `L ${endX} ${endY}`;
-        } else if (isS) {
-          // 90-degree bypass routing for S ports
-          // Route UP first to the top area of the board to avoid side ports (I/J)
-          const isLeft = endX < startX;
-          const sideX = isLeft 
-            ? boardRect.left - 50 - svgRect.left - portOffset
-            : boardRect.right + 50 - svgRect.left + portOffset;
-            
-          // Bypass Y: near the top of the board but below the very top edge
-          const bypassY = boardRect.top + 15 - svgRect.top - portOffset;
-          
-          d += `L ${startX} ${bypassY} `;
-          d += `L ${sideX} ${bypassY} `;
-          
-          const midY = endY - 30 - (portOffset / 2);
-          const isUnderBoard = endY > boardRect.bottom - svgRect.top;
-          
-          if (isUnderBoard) {
-            // If component is below the board, route around the bottom
-            const bottomBypassY = boardRect.bottom + 40 - svgRect.top + portOffset;
-            d += `L ${sideX} ${bottomBypassY} `;
-            d += `L ${endX} ${bottomBypassY} `;
-          } else {
-            // If component is to the side, route to its midY
-            d += `L ${sideX} ${midY} `;
-            d += `L ${endX} ${midY} `;
-          }
-          
-          d += `L ${endX} ${endY}`;
-        } else if (isM) {
-          // 90-degree routing for M ports
+        } else if (isM || isS) {
+          // 90-degree routing for M and S ports downwards
           const dropY = Math.max(boardBottom, startY + 30) + portOffset;
           const midY = Math.max(dropY, endY - 30);
           d += `L ${startX} ${midY} `;
